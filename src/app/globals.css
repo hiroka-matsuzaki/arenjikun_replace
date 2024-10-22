@@ -1,12 +1,12 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f5f5f5; /* ライトモードの背景を淡いグレーに */
+  --foreground: #171717; /* テキストを濃いグレーに */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #1e1e1e; /* ダークモードの背景を暗いグレーに */
+    --foreground: #e0e0e0; /* テキストを淡いグレーに */
   }
 }
 
@@ -19,7 +19,7 @@ body {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Arial', 'Helvetica', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -31,12 +31,71 @@ body {
 }
 
 a {
-  color: inherit;
+  color: var(--foreground);
   text-decoration: none;
 }
 
+/* ヘッダーのスタイル */
+header {
+  background-color: var(--foreground);
+  color: var(--background);
+  padding: 1rem;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* フッターのスタイル */
+footer {
+  background-color: var(--foreground);
+  color: var(--background);
+  padding: 0.5rem;
+  text-align: center;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+/* カードのレイアウト調整 */
+.card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  margin: 1rem;
+}
+
+/* ボタンのスタイル */
+button {
+  background-color: #1976d2;
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #1565c0;
+}
+
+/* ダークモード時のリンクとボタン */
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
+  }
+
+  .card {
+    background-color: #2c2c2c;
+  }
+
+  button {
+    background-color: #64b5f6;
+    color: #000;
+  }
+
+  button:hover {
+    background-color: #42a5f5;
   }
 }

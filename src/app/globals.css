@@ -5,8 +5,10 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #1e1e1e; /* ダークモードの背景を暗いグレーに */
-    --foreground: #e0e0e0; /* テキストを淡いグレーに */
+    --background: #f5f5f5; /* ライトモードの背景を淡いグレーに */
+    --foreground: #171717; /* テキストを濃いグレーに */
+    /*    --background: #1e1e1e; /* ダークモードの背景を暗いグレーに */
+    /*    --foreground: #e0e0e0; /* テキストを淡いグレーに */
   }
 }
 

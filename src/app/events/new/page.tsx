@@ -5,18 +5,18 @@ import { Box, Typography } from '@mui/material';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { EventRow } from '@/types/EventRow';
 
-const EventsPage = () => {
+const NewEventPage: React.FC = () => {
   const columns: GridColDef<(typeof rows)[number]>[] = [
     {
       field: 'date',
       headerName: '作成日',
-      flex: 1,
+      width: 150,
       editable: true,
     },
     {
       field: 'eventName',
       headerName: 'イベント名',
-      flex: 2,
+      width: 300,
       editable: true,
     },
     {
@@ -24,15 +24,12 @@ const EventsPage = () => {
       headerName: '内容',
       description: 'This column has a value getter and is not sortable.',
       sortable: false,
-      flex: 2.5,
+      width: 300,
     },
     {
       field: 'action',
       headerName: '',
-      flex: 0.5,
-      disableColumnMenu: true,
-      sortable: false,
-      filterable: false,
+      width: 100,
       renderCell: (params: GridRenderCellParams) => (
         <button
           onClick={() => handleButtonClick(params.row)}
@@ -43,6 +40,7 @@ const EventsPage = () => {
       ),
     },
   ];
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const rows = [
     { id: 1, date: '2024/10/01', eventName: 'TeastEvent1', note: 'aaa' },
     { id: 2, date: '2024/10/02', eventName: 'TeastEvent2', note: 'aaa' },
@@ -70,7 +68,7 @@ const EventsPage = () => {
         }}
       >
         <Typography variant="h4" gutterBottom>
-          イベント一覧
+          新規イベント
         </Typography>
       </Box>
       <Box
@@ -83,41 +81,13 @@ const EventsPage = () => {
           border: '1px solid #ccc', // 四角の枠線
           padding: '20px', // 内側の余白
           mx: '15%', // 左右の余白を画面幅の3%に設定
-          backgroundColor: 'white',
+          // backgroundColor: "white",
         }}
       >
         <br></br>
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            density="standard"
-            autoHeight
-            sx={{
-              '& .MuiDataGrid-columnHeaders': {
-                borderBottom: 'none', // ヘッダー下の線を削除
-              },
-              '& .MuiDataGrid-columnSeparator': {
-                display: 'none', // 列の区切り線を非表示
-              },
-              boxShadow: 1,
-              minWidth: 900,
-              overflowX: 'auto',
-            }}
-            initialState={{
-              pagination: {
-                paginationModel: {
-                  pageSize: 15,
-                },
-              },
-            }}
-            disableRowSelectionOnClick
-            disableColumnSelector
-          />
-        </div>
       </Box>
     </>
   );
 };
 
-export default EventsPage;
+export default NewEventPage;

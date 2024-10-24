@@ -1,8 +1,8 @@
-"use client";  // クライアントコンポーネント
+'use client'; // クライアントコンポーネント
 
-import ResponsiveAppBar from "@/components/ResponsiveAppBar";
-import "./globals.css";  // 共通CSSの読み込み
-import { ReactNode } from "react";
+import ResponsiveAppBar from '@/components/ResponsiveAppBar';
+import './globals.css'; // 共通CSSの読み込み
+import { ReactNode } from 'react';
 
 export default function RootLayout({
   children,

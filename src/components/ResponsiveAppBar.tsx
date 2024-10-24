@@ -1,4 +1,4 @@
-"use client"; 
+'use client';
 import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -16,20 +16,20 @@ import { useRouter } from 'next/navigation';
 
 const pages = [
   {
-    name:'一覧', 
-    path:'/events',
-    icon:<Search sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 ,fontSize: '2rem'}}/>
+    name: '一覧',
+    path: '/events',
+    icon: <Search sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, fontSize: '2rem' }} />,
   },
   {
-    name:'新規イベント',
-    path:'/events/new',
-    icon:<Add sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, fontSize: '2rem' }}/>
+    name: '新規イベント',
+    path: '/events/new',
+    icon: <Add sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, fontSize: '2rem' }} />,
   },
   {
-    name:'使い方',
-    path:'/',
-    icon:<Info sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, fontSize: '2rem' }}/>
-  }
+    name: '使い方',
+    path: '/',
+    icon: <Info sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, fontSize: '2rem' }} />,
+  },
 ];
 
 function ResponsiveAppBar() {
@@ -50,12 +50,11 @@ function ResponsiveAppBar() {
   // ページ遷移の共通関数
   const goTo = (path: string) => router.push(path);
 
-
   return (
-    <AppBar position="static" sx={{ paddingY: '0px', minHeight: '0px' }} >
-      <Container maxWidth="xl" >
+    <AppBar position="static" sx={{ paddingY: '0px', minHeight: '0px' }}>
+      <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <CalendarMonth sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 ,fontSize: '3rem'}} />
+          <CalendarMonth sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, fontSize: '3rem' }} />
           <Typography
             variant="h6"
             noWrap
@@ -104,7 +103,8 @@ function ResponsiveAppBar() {
             >
               {pages.map((page) => (
                 <MenuItem key={page.name} onClick={handleCloseNavMenu}>
-                  <Typography sx={{ textAlign: 'center', ml: 1 }}>{page.name}</Typography> {/* アイコンとテキストの間にマージンを追加 */}
+                  <Typography sx={{ textAlign: 'center', ml: 1 }}>{page.name}</Typography>{' '}
+                  {/* アイコンとテキストの間にマージンを追加 */}
                 </MenuItem>
               ))}
             </Menu>
@@ -132,7 +132,7 @@ function ResponsiveAppBar() {
             {pages.map((page) => (
               // eslint-disable-next-line react/jsx-key
               <Button
-                sx={{ my: 2, color: 'white', display: 'flex', alignItems: 'center'  }}
+                sx={{ my: 2, color: 'white', display: 'flex', alignItems: 'center' }}
                 onClick={() => goTo(page.path)}
               >
                 {page.icon}

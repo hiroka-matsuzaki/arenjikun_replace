@@ -1,0 +1,10 @@
+{
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/636ddcfd-8ed4-4110-916a-4cefba198d05/resourceGroups/smatsu-test/providers/Microsoft.Web/sites/arenjikun-replace-react",
+    "appService.deploySubpath": ".",
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+}

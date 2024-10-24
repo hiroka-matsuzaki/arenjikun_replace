@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
+    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --fix"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
@@ -24,8 +25,11 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "eslint": "^8",
+    "eslint": "^8.57.1",
     "eslint-config-next": "14.2.15",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "prettier": "^3.3.3",
     "typescript": "^5"
   }
 }

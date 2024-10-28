@@ -1,30 +1,67 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
-import { EventRow } from '@/types/EventRow';
+import { Event, EventList } from '@/types/event';
 import { useRouter } from 'next/navigation';
 
 const EventsPage = () => {
   const router = useRouter();
   const goTo = (path: string) => router.push(path);
 
-  const columns: GridColDef<(typeof rows)[number]>[] = [
+  const [events, setEvents] = useState<EventList>([]); //
+
+  // イベントを取得する関数
+  const fetchEvents = async () => {
+    try {
+      // const functionUrl = process.env.NEXT_PUBLIC_FUNCTION_URL;
+
+      const response = await fetch(
+        'https://azure-api-opf.azurewebsites.net/api/events?email=s.sunagawa@hiroka.biz'
+      );
+      if (!response.ok) {
+        throw new Error(`HTTPエラー: ${response.status}`);
+      }
+      const data: EventList = await response.json();
+      // created_atの日付をフォーマットしてからセット
+      const formattedData = data.map((event) => ({
+        ...event,
+        created_at: formatDate(event.created_at), // created_atを変換
+      }));
+
+      setEvents(formattedData); // フォーマットしたデータをセット
+    } catch (error) {
+      console.error('データ取得エラー:', error);
+    }
+  };
+
+  // 初回レンダリング時のみ実行
+  useEffect(() => {
+    fetchEvents();
+  }, []); // 空の依存配列
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    return `${year}年${month}月${day}日`;
+  };
+  const columns: GridColDef<(typeof events)[number]>[] = [
     {
-      field: 'date',
+      field: 'created_at',
       headerName: '作成日',
       flex: 1,
       editable: true,
     },
     {
-      field: 'eventName',
+      field: 'subject',
       headerName: 'イベント名',
       flex: 2,
       editable: true,
     },
     {
-      field: 'note',
+      field: 'description',
       headerName: '内容',
       description: 'This column has a value getter and is not sortable.',
       sortable: false,
@@ -47,19 +84,8 @@ const EventsPage = () => {
       ),
     },
   ];
-  const rows = [
-    { id: 1, date: '2024/10/01', eventName: 'TeastEvent1', note: 'aaa' },
-    { id: 2, date: '2024/10/02', eventName: 'TeastEvent2', note: 'aaa' },
-    { id: 3, date: '2024/10/03', eventName: 'TeastEvent3', note: 'aaa' },
-    { id: 4, date: '2024/10/04', eventName: 'TeastEvent4', note: 'aaa' },
-    { id: 5, date: '2024/10/05', eventName: 'TeastEvent5', note: null },
-    { id: 6, date: '2024/10/06', eventName: 'TeastEvent6', note: 'aaa' },
-    { id: 7, date: '2024/10/07', eventName: 'TeastEvent7', note: 'aaa' },
-    { id: 8, date: '2024/10/08', eventName: 'TeastEvent8', note: 'aaa' },
-    { id: 9, date: '2024/10/09', eventName: 'TeastEvent9', note: 'aaa' },
-  ];
-  const handleButtonClick = (row: EventRow) => {
-    goTo(`/events/${row.id}`);
+  const handleButtonClick = (event: Event) => {
+    goTo(`/events/${event.url}`);
   };
   return (
     <>
@@ -69,8 +95,8 @@ const EventsPage = () => {
           height: '80px', // 縦方向の中央揃え
           border: '1px solid #ccc', // 四角の枠線
           padding: '20px', // 内側の余白
-          mx: '15%', // 左右の余白を画面幅の3%に設定
-          mt: '2%', // 上部に20pxのマージンを追加
+          mx: '10%', // 左右の余白を画面幅の設定
+          mt: '2%', // 上部にマージンを追加
         }}
       >
         <Typography variant="h4" gutterBottom>
@@ -87,14 +113,14 @@ const EventsPage = () => {
           // minWidth: 900,
           border: '1px solid #ccc', // 四角の枠線
           padding: '20px', // 内側の余白
-          mx: '15%', // 左右の余白を画面幅の3%に設定
+          mx: '10%', // 左右の余白を画面幅の3%に設定
           backgroundColor: 'white',
         }}
       >
         <br></br>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <DataGrid
-            rows={rows}
+            rows={events}
             columns={columns}
             density="standard"
             pageSizeOptions={[5, 10, 15]}
@@ -118,7 +144,7 @@ const EventsPage = () => {
             }}
             disableRowSelectionOnClick
             disableColumnSelector
-            getRowId={(row) => row.id}
+            getRowId={(events) => events.id}
           />
         </div>
       </Box>

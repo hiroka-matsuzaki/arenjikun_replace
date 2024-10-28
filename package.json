@@ -12,13 +12,17 @@
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
-    "@mui/icons-material": "^6.1.4",
-    "@mui/material": "^6.1.4",
+    "@mui/icons-material": "^6.1.5",
+    "@mui/lab": "^6.0.0-beta.13",
+    "@mui/material": "^6.1.5",
     "@mui/x-data-grid": "^7.21.0",
+    "@mui/x-date-pickers": "^7.21.0",
     "axios": "^1.7.7",
+    "dayjs": "^1.11.13",
     "next": "14.2.15",
     "react": "^18",
     "react-dom": "^18",
+    "react-hook-form": "^7.53.1",
     "react-router-dom": "^6.27.0"
   },
   "devDependencies": {

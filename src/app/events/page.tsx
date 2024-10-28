@@ -1,11 +1,15 @@
 'use client';
 
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { EventRow } from '@/types/EventRow';
+import { useRouter } from 'next/navigation';
 
 const EventsPage = () => {
+  const router = useRouter();
+  const goTo = (path: string) => router.push(path);
+
   const columns: GridColDef<(typeof rows)[number]>[] = [
     {
       field: 'date',
@@ -55,7 +59,7 @@ const EventsPage = () => {
     { id: 9, date: '2024/10/09', eventName: 'TeastEvent9', note: 'aaa' },
   ];
   const handleButtonClick = (row: EventRow) => {
-    alert(`イベント名: ${row.eventName}\n日付: ${row.date}`);
+    goTo(`/events/${row.id}`);
   };
   return (
     <>
@@ -79,7 +83,8 @@ const EventsPage = () => {
           flexDirection: 'column',
           alignItems: 'left',
           justifyContent: 'left',
-          height: '70vh', // 縦方向の中央揃え
+          // height: '70vh', // 縦方向の中央揃え
+          // minWidth: 900,
           border: '1px solid #ccc', // 四角の枠線
           padding: '20px', // 内側の余白
           mx: '15%', // 左右の余白を画面幅の3%に設定
@@ -92,7 +97,7 @@ const EventsPage = () => {
             rows={rows}
             columns={columns}
             density="standard"
-            autoHeight
+            pageSizeOptions={[5, 10, 15]}
             sx={{
               '& .MuiDataGrid-columnHeaders': {
                 borderBottom: 'none', // ヘッダー下の線を削除
@@ -101,7 +106,7 @@ const EventsPage = () => {
                 display: 'none', // 列の区切り線を非表示
               },
               boxShadow: 1,
-              minWidth: 900,
+              // minWidth: 900,
               overflowX: 'auto',
             }}
             initialState={{
@@ -113,6 +118,7 @@ const EventsPage = () => {
             }}
             disableRowSelectionOnClick
             disableColumnSelector
+            getRowId={(row) => row.id}
           />
         </div>
       </Box>

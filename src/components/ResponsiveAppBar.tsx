@@ -16,18 +16,21 @@ import { useRouter } from 'next/navigation';
 
 const pages = [
   {
+    id: 1,
     name: '一覧',
     path: '/events',
     icon: <Search sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, fontSize: '2rem' }} />,
   },
   {
+    id: 2,
     name: '新規イベント',
     path: '/events/new',
     icon: <Add sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, fontSize: '2rem' }} />,
   },
   {
+    id: 3,
     name: '使い方',
-    path: '/',
+    path: '/manual',
     icon: <Info sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, fontSize: '2rem' }} />,
   },
 ];
@@ -102,7 +105,7 @@ function ResponsiveAppBar() {
               sx={{ display: { xs: 'block', md: 'none' } }}
             >
               {pages.map((page) => (
-                <MenuItem key={page.name} onClick={handleCloseNavMenu}>
+                <MenuItem key={page.id} onClick={handleCloseNavMenu}>
                   <Typography sx={{ textAlign: 'center', ml: 1 }}>{page.name}</Typography>{' '}
                   {/* アイコンとテキストの間にマージンを追加 */}
                 </MenuItem>
@@ -132,6 +135,7 @@ function ResponsiveAppBar() {
             {pages.map((page) => (
               // eslint-disable-next-line react/jsx-key
               <Button
+                key={page.id}
                 sx={{ my: 2, color: 'white', display: 'flex', alignItems: 'center' }}
                 onClick={() => goTo(page.path)}
               >

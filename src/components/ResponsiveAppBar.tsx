@@ -51,7 +51,11 @@ function ResponsiveAppBar() {
   const router = useRouter();
 
   // ページ遷移の共通関数
-  const goTo = (path: string) => router.push(path);
+  const goTo = (path: string) => {
+    if (path === '/manual') {
+      window.open('./app/sample.pdf', '_blank');
+    } else router.push(path);
+  };
 
   return (
     <AppBar position="static" sx={{ paddingY: '0px', minHeight: '0px' }}>

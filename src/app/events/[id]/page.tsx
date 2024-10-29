@@ -1,7 +1,7 @@
 'use client';
 
 import { EventList, EventResponse } from '@/types/event';
-import { Box, Typography } from '@mui/material';
+import { Backdrop, Box, Button, Typography } from '@mui/material';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
@@ -45,7 +45,7 @@ const EventDetail: React.FC = () => {
     };
     return weekdayMap[weekday] || '';
   };
-
+  const [onOff, setonOff] = React.useState(false);
   return (
     <>
       <Box
@@ -55,7 +55,7 @@ const EventDetail: React.FC = () => {
           height: '80px', // 縦方向の中央揃え
           border: '1px solid #ccc', // 四角の枠線
           padding: '20px', // 内側の余白
-          mx: '15%', // 左右の余白を画面幅の3%に設定
+          mx: '10%', // 左右の余白を画面幅の3%に設定
           mt: '2%', // 上部に20pxのマージンを追加
         }}
       >
@@ -72,7 +72,7 @@ const EventDetail: React.FC = () => {
           // height: '70vh', // ボックス全体の高さ
           border: '1px solid #ccc', // 四角の枠線
           padding: '20px', // 内側の余白
-          mx: '15%', // 左右の余白を画面幅の3%に設定
+          mx: '10%', // 左右の余白を画面幅の3%に設定
           backgroundColor: 'white',
           gap: 4,
         }}
@@ -111,6 +111,13 @@ const EventDetail: React.FC = () => {
               </Box>
             );
           })}
+        </Box>
+        <Box>
+          <Typography gutterBottom>参加・不参加の入力</Typography>
+          <Backdrop open={onOff} onClick={() => setonOff(false)}>
+            <Typography>入力画面を出す</Typography>
+          </Backdrop>
+          <Button onClick={() => setonOff(true)}>ユーザーを追加して参加不参加を入力する</Button>
         </Box>
       </Box>
     </>

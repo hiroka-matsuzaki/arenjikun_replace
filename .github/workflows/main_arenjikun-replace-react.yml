@@ -59,4 +59,4 @@ jobs:
           app-name: 'arenjikun-replace-react'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_21E4DA0FB64749B8B939C1127E2266FE }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_71041356B8A843CAB81BD672D689E110 }}

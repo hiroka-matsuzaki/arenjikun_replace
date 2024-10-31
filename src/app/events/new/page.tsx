@@ -22,9 +22,7 @@ import {
   AddSharp,
   RemoveCircleOutlineSharp,
   CalendarMonthSharp,
-  NoteAltSharp,
   Event,
-  MeetingRoom,
   Notes,
 } from '@mui/icons-material';
 import { LocalizationProvider, DatePicker, TimePicker } from '@mui/x-date-pickers';
@@ -60,7 +58,26 @@ const NewEventPage: React.FC = () => {
   };
 
   const onSubmit: SubmitHandler<FormData> = (data) => {
-    console.log('送信データ:', data);
+    // フォーマットを調整する関数
+    const formatDateTime = (date: string, time: string) => {
+      return `${dayjs(date).format('YYYY-MM-DD')} ${dayjs(time).format('HH:mm:ss')}`;
+    };
+
+    // dateOptionsを変換してdate_fromとdate_toの配列を作成
+    const dateFrom = data.dateOptions.map((option) => formatDateTime(option.date, option.start));
+
+    const dateTo = data.dateOptions.map((option) => formatDateTime(option.date, option.end));
+
+    // 整形されたデータをオブジェクトにまとめる
+    const payload = {
+      subject: data.eventName,
+      description: data.venue,
+      date_from: dateFrom,
+      date_to: dateTo,
+    };
+
+    // コンソールに表示
+    console.log('変換後のデータ:', payload);
   };
 
   return (

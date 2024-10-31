@@ -1,8 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
-import { EventList, EventResponse } from '@/types/event';
+import { EventResponse } from '@/types/event';
 import { Backdrop, Box, Button, Typography } from '@mui/material';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
 const EventDetail: React.FC = () => {

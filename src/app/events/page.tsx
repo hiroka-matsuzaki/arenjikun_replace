@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { Event, EventList } from '@/types/event';
 import { useRouter } from 'next/navigation';
@@ -13,31 +13,31 @@ const EventsPage = () => {
   const [events, setEvents] = useState<EventList>([]); //
 
   // イベントを取得する関数
-  const fetchEvents = async () => {
-    try {
-      // const functionUrl = process.env.NEXT_PUBLIC_FUNCTION_URL;
-
-      const response = await fetch(
-        'https://azure-api-opf.azurewebsites.net/api/events?email=s.sunagawa@hiroka.biz'
-      );
-      if (!response.ok) {
-        throw new Error(`HTTPエラー: ${response.status}`);
-      }
-      const data: EventList = await response.json();
-      // created_atの日付をフォーマットしてからセット
-      const formattedData = data.map((event) => ({
-        ...event,
-        created_at: formatDate(event.created_at), // created_atを変換
-      }));
-
-      setEvents(formattedData); // フォーマットしたデータをセット
-    } catch (error) {
-      console.error('データ取得エラー:', error);
-    }
-  };
 
   // 初回レンダリング時のみ実行
   useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        // const functionUrl = process.env.NEXT_PUBLIC_FUNCTION_URL;
+
+        const response = await fetch(
+          'https://azure-api-opf.azurewebsites.net/api/events?email=s.sunagawa@hiroka.biz'
+        );
+        if (!response.ok) {
+          throw new Error(`HTTPエラー: ${response.status}`);
+        }
+        const data: EventList = await response.json();
+        // created_atの日付をフォーマットしてからセット
+        const formattedData = data.map((event) => ({
+          ...event,
+          created_at: formatDate(event.created_at), // created_atを変換
+        }));
+
+        setEvents(formattedData); // フォーマットしたデータをセット
+      } catch (error) {
+        console.error('データ取得エラー:', error);
+      }
+    };
     fetchEvents();
   }, []); // 空の依存配列
   const formatDate = (dateString: string): string => {

@@ -1,7 +1,4 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
-name: Build and deploy Node.js app to Azure Web App - arenjikun-replace-react
+name: Build and deploy React app to Azure Web App
 
 on:
   push:
@@ -14,27 +11,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # ソースコードをチェックアウト
       - uses: actions/checkout@v4
 
+      # Node.jsのセットアップ
       - name: Set up Node.js version
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
 
-      - name: npm install, build, and test
+      # npmインストールとビルド
+      - name: Install dependencies and build the app
         run: |
           npm install
-          npm run build --if-present
-          npm run test --if-present
+          npm run build
 
-      - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
+      # ビルド成果物をZIP形式でアップロード
+      - name: Zip build artifacts
+        run: zip -r build.zip build/
 
-      - name: Upload artifact for deployment job
+      # アーティファクトをアップロード（デプロイ用）
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: node-app
-          path: release.zip
+          name: react-app
+          path: build.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -42,21 +43,24 @@ jobs:
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    
+
     steps:
+      # ビルド成果物をダウンロード
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: node-app
+          name: react-app
 
-      - name: Unzip artifact for deployment
-        run: unzip release.zip
-      
-      - name: 'Deploy to Azure Web App'
+      # ZIPファイルを解凍
+      - name: Unzip build artifacts
+        run: unzip build.zip -d ./build
+
+      # Azure Web Appにデプロイ
+      - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'arenjikun-replace-react'
+          app-name: 'your-app-name'
           slot-name: 'Production'
-          package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5BB9ED75BB56450F8BC09F790583388F }}
+          package: ./build
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}

@@ -57,7 +57,7 @@ const NewEventPage: React.FC = () => {
     );
   };
 
-  const onSubmit: SubmitHandler<FormData> = (data) => {
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
     // フォーマットを調整する関数
     const formatDateTime = (date: string, time: string) => {
       return `${dayjs(date).format('YYYY-MM-DD')} ${dayjs(time).format('HH:mm:ss')}`;
@@ -76,6 +76,27 @@ const NewEventPage: React.FC = () => {
       date_to: dateTo,
     };
 
+    try {
+      const response = await fetch(
+        'https://azure-api-opf.azurewebsites.net/api/events?email=s.sunagawa@hiroka.biz',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTPエラー! status: ${response.status}`);
+      }
+
+      const result = await response;
+      console.log('APIからのレスポンス:', result);
+    } catch (error) {
+      console.error('エラーが発生しました:', error);
+    }
     // コンソールに表示
     console.log('変換後のデータ:', payload);
   };

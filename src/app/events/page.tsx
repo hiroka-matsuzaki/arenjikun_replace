@@ -11,17 +11,13 @@ const EventsPage = () => {
   const goTo = (path: string) => router.push(path);
 
   const [events, setEvents] = useState<EventList>([]); //
-
-  // イベントを取得する関数
-
-  // 初回レンダリング時のみ実行
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         // const functionUrl = process.env.NEXT_PUBLIC_FUNCTION_URL;
 
         const response = await fetch(
-          'https://azure-api-opf.azurewebsites.net/api/events?email=s.sunagawa@hiroka.biz'
+          'https://azure-api-opf.azurewebsites.net/api/events?email=s.sunagawa@hiroka.biz' //テスト用ベタ打ち
         );
         if (!response.ok) {
           throw new Error(`HTTPエラー: ${response.status}`);

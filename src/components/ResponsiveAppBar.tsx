@@ -35,7 +35,11 @@ const pages = [
   },
 ];
 
-function ResponsiveAppBar() {
+interface Props {
+  userName: string | null; // ユーザー名を受け取るプロパティ
+}
+
+const ResponsiveAppBar: React.FC<Props> = ({ userName }) => {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -150,11 +154,15 @@ function ResponsiveAppBar() {
           </Box>
           <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center' }}>
             <Person sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
-            <Typography>ゲストユーザー</Typography>
+            {userName ? (
+              <Typography>{userName}</Typography> // ユーザー名があれば表示
+            ) : (
+              <Typography>login</Typography> // ユーザー名がなければログイン促し
+            )}
           </Box>
         </Toolbar>
       </Container>
     </AppBar>
   );
-}
+};
 export default ResponsiveAppBar;

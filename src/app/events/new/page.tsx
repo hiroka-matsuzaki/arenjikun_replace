@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import {
@@ -17,6 +17,7 @@ import {
   TextField,
   Typography,
   Button,
+  CircularProgress,
 } from '@mui/material';
 import {
   AddSharp,
@@ -35,13 +36,17 @@ type FormData = {
 };
 
 const NewEventPage: React.FC = () => {
-  const { control, handleSubmit, register, watch, setValue } = useForm<FormData>({
+  const { control, handleSubmit, register, watch, setValue, reset } = useForm<FormData>({
     defaultValues: {
       eventName: '',
       venue: '',
       dateOptions: [{ id: 1, date: '', start: '', end: '' }],
     },
   });
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const dateOptions = watch('dateOptions'); // 日時候補のリアルタイム監視
 
@@ -57,28 +62,25 @@ const NewEventPage: React.FC = () => {
     );
   };
 
+  const formatDateTime = (date: string, time: string) => {
+    return `${dayjs(date).format('YYYY-MM-DD')} ${dayjs(time).format('HH:mm:ss')}`;
+  };
+
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    // フォーマットを調整する関数
-    const formatDateTime = (date: string, time: string) => {
-      return `${dayjs(date).format('YYYY-MM-DD')} ${dayjs(time).format('HH:mm:ss')}`;
-    };
+    setIsLoading(true);
+    setSuccessMessage('');
+    setErrorMessage('');
 
-    // dateOptionsを変換してdate_fromとdate_toの配列を作成
-    const dateFrom = data.dateOptions.map((option) => formatDateTime(option.date, option.start));
-
-    const dateTo = data.dateOptions.map((option) => formatDateTime(option.date, option.end));
-
-    // 整形されたデータをオブジェクトにまとめる
     const payload = {
       subject: data.eventName,
       description: data.venue,
-      date_from: dateFrom,
-      date_to: dateTo,
+      date_from: data.dateOptions.map((opt) => formatDateTime(opt.date, opt.start)),
+      date_to: data.dateOptions.map((opt) => formatDateTime(opt.date, opt.end)),
     };
 
     try {
       const response = await fetch(
-        'https://azure-api-opf.azurewebsites.net/api/events?email=s.sunagawa@hiroka.biz',
+        'https://azure-api-opf.azurewebsites.net/api/events?email=s.matsuzaki@hiroka.biz',
         {
           method: 'POST',
           headers: {
@@ -92,13 +94,17 @@ const NewEventPage: React.FC = () => {
         throw new Error(`HTTPエラー! status: ${response.status}`);
       }
 
-      const result = await response;
-      console.log('APIからのレスポンス:', result);
+      console.log('APIからのレスポンス:', await response);
+
+      // 登録成功時の処理
+      reset();
+      setSuccessMessage('イベントが正常に登録されました！');
     } catch (error) {
       console.error('エラーが発生しました:', error);
+      setErrorMessage('登録中にエラーが発生しました。');
+    } finally {
+      setIsLoading(false);
     }
-    // コンソールに表示
-    console.log('変換後のデータ:', payload);
   };
 
   return (
@@ -169,30 +175,23 @@ const NewEventPage: React.FC = () => {
           </FormLabel>
           <Table sx={{ border: '1px solid #ccc' }}>
             <TableHead>
-              <TableRow sx={{ fontWeight: 'bold', height: '10px' }}>
-                <TableCell align="center" sx={{ fontWeight: 'bold', padding: '10px' }}>
-                  日付
-                </TableCell>
-                <TableCell align="center" sx={{ fontWeight: 'bold', padding: '10px' }}>
-                  開始
-                </TableCell>
-                <TableCell align="center" sx={{ fontWeight: 'bold', padding: '10px' }}>
-                  終了
-                </TableCell>
-                <TableCell align="center" sx={{ fontWeight: 'bold', padding: '10px' }}></TableCell>
+              <TableRow>
+                <TableCell align="center">日付</TableCell>
+                <TableCell align="center">開始</TableCell>
+                <TableCell align="center">終了</TableCell>
+                <TableCell align="center"></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {dateOptions.map((row, index) => (
                 <TableRow key={row.id}>
-                  <TableCell align="center" sx={{ padding: '0px' }}>
+                  <TableCell align="center">
                     <Controller
                       control={control}
                       name={`dateOptions.${index}.date`}
-                      render={({ field: { value, onChange, ...rest } }) => (
+                      render={({ field: { value, onChange } }) => (
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DatePicker
-                            {...rest}
                             value={value ? dayjs(value) : null}
                             onChange={(newValue) =>
                               onChange(newValue ? newValue.toISOString() : '')
@@ -203,14 +202,13 @@ const NewEventPage: React.FC = () => {
                       )}
                     />
                   </TableCell>
-                  <TableCell align="center" sx={{ padding: '0px' }}>
+                  <TableCell align="center">
                     <Controller
                       control={control}
                       name={`dateOptions.${index}.start`}
-                      render={({ field: { value, onChange, ...rest } }) => (
+                      render={({ field: { value, onChange } }) => (
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <TimePicker
-                            {...rest}
                             value={value ? dayjs(value) : null}
                             onChange={(newValue) =>
                               onChange(newValue ? newValue.toISOString() : '')
@@ -225,10 +223,9 @@ const NewEventPage: React.FC = () => {
                     <Controller
                       control={control}
                       name={`dateOptions.${index}.end`}
-                      render={({ field: { value, onChange, ...rest } }) => (
+                      render={({ field: { value, onChange } }) => (
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <TimePicker
-                            {...rest}
                             value={value ? dayjs(value) : null}
                             onChange={(newValue) =>
                               onChange(newValue ? newValue.toISOString() : '')
@@ -239,18 +236,15 @@ const NewEventPage: React.FC = () => {
                       )}
                     />
                   </TableCell>
-                  <TableCell align="center" sx={{ padding: '0px' }}>
+                  <TableCell align="center">
                     <IconButton color="secondary" onClick={() => handleRowRemove(row.id)}>
                       <RemoveCircleOutlineSharp />
                     </IconButton>
                   </TableCell>
                 </TableRow>
               ))}
-              {/* 空白行（入力エリア非表示） */}
               <TableRow>
-                <TableCell align="center"></TableCell>
-                <TableCell align="center"></TableCell>
-                <TableCell align="center"></TableCell>
+                <TableCell colSpan={3}></TableCell>
                 <TableCell align="center">
                   <IconButton color="primary" onClick={handleRowAdd}>
                     <AddSharp />
@@ -261,9 +255,21 @@ const NewEventPage: React.FC = () => {
           </Table>
         </FormControl>
 
-        <Button variant="contained" color="primary" type="submit">
-          登録
+        <Button variant="contained" color="primary" type="submit" disabled={isLoading}>
+          {isLoading ? <CircularProgress size={24} /> : '登録'}
         </Button>
+
+        {successMessage && (
+          <Typography variant="body1" color="success" sx={{ mt: 2 }}>
+            {successMessage}
+          </Typography>
+        )}
+
+        {errorMessage && (
+          <Typography variant="body1" color="error" sx={{ mt: 2 }}>
+            {errorMessage}
+          </Typography>
+        )}
       </Box>
     </form>
   );

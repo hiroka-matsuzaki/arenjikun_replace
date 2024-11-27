@@ -2,11 +2,25 @@
 'use client';
 
 import { EventResponse } from '@/types/event';
-import { Backdrop, Box, Button, Typography } from '@mui/material';
+import Grid from '@mui/material/Grid2';
+
+import {
+  Backdrop,
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  OutlinedInput,
+  Typography,
+} from '@mui/material';
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
+import { useUser } from '@/app/context/UserContext';
+import { Add, EmojiPeople } from '@mui/icons-material';
 
 const EventDetail: React.FC = () => {
+  const { user } = useUser(); // UserContextからユーザー情報を取得
+
   const [eventDetail, setEventDetail] = useState<EventResponse>(); //
   const { id } = useParams();
   // イベントを取得する関数
@@ -115,10 +129,135 @@ const EventDetail: React.FC = () => {
         </Box>
         <Box>
           <Typography gutterBottom>参加・不参加の入力</Typography>
-          <Backdrop open={onOff} onClick={() => setonOff(false)}>
-            <Typography>入力画面を出す</Typography>
-          </Backdrop>
-          <Button onClick={() => setonOff(true)}>ユーザーを追加して参加不参加を入力する</Button>
+
+          {/* Backdrop */}
+          <Backdrop
+            open={onOff}
+            onClick={() => setonOff(false)} // 背景クリックで閉じる
+            sx={{ zIndex: (theme) => theme.zIndex.modal - 1 }}
+          />
+          {/* モーダル風フォーム */}
+          {onOff && (
+            <Box
+              sx={{
+                position: 'fixed',
+                top: '30%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                bgcolor: 'background.paper',
+                p: 3,
+                borderRadius: 2,
+                boxShadow: 24,
+                zIndex: (theme) => theme.zIndex.modal, // Backdropより上に表示
+                width: '70%',
+              }}
+            >
+              <Typography variant="h5" gutterBottom>
+                参加・不参加の入力
+              </Typography>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'left',
+                  justifyContent: 'left',
+                  // height: '70vh', // ボックス全体の高さ
+                  border: '1px solid #ccc', // 四角の枠線
+                  padding: '20px', // 内側の余白
+                  backgroundColor: 'white',
+                }}
+              >
+                <Grid container spacing={2}>
+                  {/* ログインID */}
+                  <Grid size={6}>
+                    <FormControl fullWidth>
+                      <Box sx={{ display: 'flex', alignItems: 'center' }} gap={1}>
+                        <FormLabel>ログインID</FormLabel>
+                      </Box>
+                      <OutlinedInput defaultValue={user?.login_code} disabled />
+                    </FormControl>
+                  </Grid>
+
+                  {/* 社員番号 */}
+                  <Grid size={6}>
+                    <FormControl fullWidth>
+                      <Box sx={{ display: 'flex', alignItems: 'center' }} gap={1}>
+                        <FormLabel>社員番号</FormLabel>
+                      </Box>
+                      <OutlinedInput defaultValue="99999" disabled />
+                    </FormControl>
+                  </Grid>
+
+                  {/* 会社 */}
+                  <Grid size={6}>
+                    <FormControl fullWidth>
+                      <Box sx={{ display: 'flex', alignItems: 'center' }} gap={1}>
+                        <FormLabel>会社</FormLabel>
+                      </Box>
+                      <OutlinedInput defaultValue={user?.company} disabled />
+                    </FormControl>
+                  </Grid>
+
+                  {/* 部署 */}
+                  <Grid size={6}>
+                    <FormControl fullWidth>
+                      <Box sx={{ display: 'flex', alignItems: 'center' }} gap={1}>
+                        <FormLabel>部署</FormLabel>
+                      </Box>
+                      <OutlinedInput defaultValue={user?.department} disabled />
+                    </FormControl>
+                  </Grid>
+                  <FormControl fullWidth>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }} gap={1}>
+                      <FormLabel>名前</FormLabel>
+                    </Box>
+                    <OutlinedInput defaultValue={user?.user_name} disabled />
+                  </FormControl>
+                </Grid>
+              </Box>
+              {/* ボタン */}
+              <Box mt={2} sx={{ display: 'flex', justifyContent: 'center' }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{
+                    backgroundColor: '#a0c4ff', // 薄い青の背景色
+                    '&:hover': {
+                      backgroundColor: '#7bb7f0', // ホバー時の色
+                    },
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1, // アイコンと文字の間にスペースを追加
+                  }}
+                >
+                  登録
+                  <Add sx={{ fontSize: 20 }} /> {/* アイコンのサイズを調整 */}
+                </Button>
+              </Box>
+            </Box>
+          )}
+
+          {/* トリガーボタン */}
+          <Button
+            onClick={() => setonOff(true)}
+            variant="contained"
+            color="primary"
+            sx={{
+              backgroundColor: '#a0c4ff', // 薄い青の背景色
+              '&:hover': {
+                backgroundColor: '#7bb7f0', // ホバー時の色
+              },
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1, // アイコンと文字の間にスペースを追加
+            }}
+          >
+            <Typography sx={{ fontSize: 18, textAlign: 'left', whiteSpace: 'pre-line' }}>
+              ユーザーを追加して
+              <br /> 参加不参加を入力する
+            </Typography>
+            <EmojiPeople sx={{ fontSize: 60 }} /> {/* アイコンのサイズを調整 */}
+          </Button>
         </Box>
       </Box>
     </>

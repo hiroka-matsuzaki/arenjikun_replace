@@ -17,7 +17,7 @@ const EventsPage = () => {
         // const functionUrl = process.env.NEXT_PUBLIC_FUNCTION_URL;
 
         const response = await fetch(
-          'https://azure-api-opf.azurewebsites.net/api/events?email=s.sunagawa@hiroka.biz' //テスト用ベタ打ち
+          'https://azure-api-opf.azurewebsites.net/api/events?email=s.matsuzaki@hiroka.biz' //テスト用ベタ打ち
         );
         if (!response.ok) {
           throw new Error(`HTTPエラー: ${response.status}`);

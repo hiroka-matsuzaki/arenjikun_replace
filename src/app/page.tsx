@@ -9,6 +9,7 @@ const HomePage: React.FC = () => {
   const router = useRouter();
 
   const goToNewEvent = () => router.push('/events/new');
+
   return (
     <div>
       <Box

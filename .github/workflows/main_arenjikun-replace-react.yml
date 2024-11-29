@@ -28,7 +28,7 @@ jobs:
           npm run test --if-present
 
       - name: Zip artifact for deployment
-        run: zip -r release.zip .next
+        run: zip -r release.zip .next package.json package-lock.json public
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -58,5 +58,5 @@ jobs:
         with:
           app-name: 'arenjikun-replace-react'
           slot-name: 'Production'
-          package: .
+          package: release.zip
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_434974EAEC314099931C07F19778D4D6 }}

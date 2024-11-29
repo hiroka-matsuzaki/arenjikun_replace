@@ -3,10 +3,11 @@ import React, { createContext, useState, ReactNode, useContext } from 'react';
 
 // ユーザー情報の型
 export interface User {
+  email: string;
   user_name: string;
   login_code: string;
   department: string;
-  company: string;
+  companyts: string;
 }
 
 interface UserContextType {

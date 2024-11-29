@@ -194,7 +194,7 @@ const EventDetail: React.FC = () => {
                       <Box sx={{ display: 'flex', alignItems: 'center' }} gap={1}>
                         <FormLabel>会社</FormLabel>
                       </Box>
-                      <OutlinedInput defaultValue={user?.company} disabled />
+                      <OutlinedInput defaultValue={user?.companyts} disabled />
                     </FormControl>
                   </Grid>
 

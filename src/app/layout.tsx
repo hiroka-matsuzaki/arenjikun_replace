@@ -6,7 +6,17 @@ import ResponsiveAppBar from '@/components/ResponsiveAppBar';
 import './globals.css'; // 共通CSSの読み込み
 import { ReactNode } from 'react';
 import { User, UserProvider, useUser } from './context/UserContext';
+import { PublicClientApplication } from '@azure/msal-browser';
+import { MsalProvider, useAccount, useMsal } from '@azure/msal-react';
 
+const msalConfig = {
+  auth: {
+    clientId: process.env.AZURE_AD_CLIENT_ID as string,
+    authority: `https://login.microsoftonline.com/${process.env.AZURE_AD_TENANT_ID}`,
+    redirectUri: process.env.NEXTAUTH_URL as string,
+  },
+};
+const msalInstance = new PublicClientApplication(msalConfig);
 const mockUserData: User = {
   user_name: '松崎 祥也',
   login_code: 'ShoyaMatsuzaki',
@@ -23,9 +33,11 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body>
-        <UserProvider>
-          <MainContent>{children}</MainContent> {/* 子コンポーネントを渡す */}
-        </UserProvider>
+        <MsalProvider instance={msalInstance}>
+          <UserProvider>
+            <MainContent>{children}</MainContent> {/* 子コンポーネントを渡す */}
+          </UserProvider>
+        </MsalProvider>
       </body>
     </html>
   );
@@ -33,6 +45,16 @@ export default function RootLayout({
 
 // メインコンテンツでユーザー情報を渡す
 const MainContent: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { instance, accounts } = useMsal();
+  const account = useAccount(accounts[0] || {});
+
+  const handleLogin = () => {
+    instance.loginPopup({ scopes: ['User.Read'] }).catch((e) => console.error(e));
+  };
+
+  const handleLogout = () => {
+    instance.logoutPopup().catch((e) => console.error(e));
+  };
   const { setUser } = useUser(); // UserContextからsetUserを取得
 
   useEffect(() => {
@@ -44,6 +66,15 @@ const MainContent: React.FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <>
       <ResponsiveAppBar userName={user ? user.user_name : null} /> {/* ユーザー名を渡す */}
+      <div>
+        {!account && <button onClick={handleLogin}>ログイン</button>}
+        {account && (
+          <>
+            <p>ログイン済み: {account.username}</p>
+            <button onClick={handleLogout}>ログアウト</button>
+          </>
+        )}
+      </div>
       <main>{children}</main> {/* 各ページのコンテンツ */}
     </>
   );

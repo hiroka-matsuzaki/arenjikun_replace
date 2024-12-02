@@ -10,6 +10,8 @@
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --fix"
   },
   "dependencies": {
+    "@azure/msal-browser": "^3.27.0",
+    "@azure/msal-react": "^2.2.0",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^6.1.5",

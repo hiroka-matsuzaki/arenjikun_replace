@@ -192,12 +192,12 @@ const EventDetail: React.FC = () => {
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'flex-start', // 左寄せ
-                  border: '1px solid #ccc',
+                  // border: '1px solid #ccc',
                   padding: 2, // 内側の余白
                   backgroundColor: 'white',
                   borderRadius: 1, // 角丸を少しつける
                   mb: 2, // 下に余白を追加
-                  border: '3px solid pink,',
+                  border: '3px solid green',
                 }}
               >
                 <Grid container spacing={2}>

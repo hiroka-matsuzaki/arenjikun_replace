@@ -33,6 +33,7 @@ import { Controller, useForm } from 'react-hook-form';
 type FormData = {
   [key: string]: string | number; // 動的に生成されるフィールドをサポート
 };
+
 const EventDetail: React.FC = () => {
   const { user } = useUser(); // UserContextからユーザー情報を取得
 
@@ -77,7 +78,7 @@ const EventDetail: React.FC = () => {
   const [onOff, setonOff] = React.useState(false);
   const { handleSubmit, control } = useForm<FormData>();
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = async (data: FormData) => {
     const formattedData = eventDetail?.event_dates.map((event, index) => ({
       dated_on: event.dated_on,
       start_time: event.start_time,
@@ -88,6 +89,54 @@ const EventDetail: React.FC = () => {
 
     console.log('送信データ:', formattedData);
     // ここでPOSTリクエストを送信
+    try {
+      // 1. GETリクエストで user_id を取得
+      const userEmail = user?.email;
+      if (!userEmail) {
+        throw new Error('ユーザーのメールアドレスが見つかりません。');
+      }
+
+      const userResponse = await fetch(
+        `https://azure-api-opf.azurewebsites.net/api/users?email=${userEmail}`
+      );
+
+      if (!userResponse.ok) {
+        throw new Error(`ユーザーID取得エラー: ${userResponse.statusText}`);
+      }
+
+      const userId = await userResponse.text();
+      console.log('取得したユーザーID:', userId);
+
+      // 2. PUTリクエストで formattedData を送信
+
+      const updateResponse = await fetch(
+        `https://azure-api-opf.azurewebsites.net/api/events/${id}/update_join?user_id=${userId}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formattedData),
+        }
+      );
+
+      if (!updateResponse.ok) {
+        throw new Error(`更新エラー: ${updateResponse.statusText}`);
+      }
+
+      const updateResult = await updateResponse.text();
+      console.log('更新結果:', updateResult);
+
+      alert('データが正常に送信されました！');
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error('エラー:', error.message);
+        alert('エラーが発生しました: ' + error.message);
+      } else {
+        console.error('未知のエラー:', error);
+        alert('未知のエラーが発生しました。');
+      }
+    }
   };
   return (
     <>
@@ -179,8 +228,8 @@ const EventDetail: React.FC = () => {
                 width: '80%', // 幅を調整
                 maxWidth: '800px', // 最大幅を指定（任意）
                 height: 'auto', // 高さは自動調整
-                maxHeight: '50vh', // 高さを画面の80%に制限
                 border: '3px solid red',
+                overflowY: 'auto', // はみ出す部分はスクロール
               }}
             >
               <Typography variant="h5" gutterBottom>
@@ -241,7 +290,7 @@ const EventDetail: React.FC = () => {
                     </FormControl>
                   </Grid>
                 </Grid>
-                <Box mb={2} sx={{ border: '3px solid blue' }}>
+                <Box mb={2} sx={{ border: '3px solid blue', width: '100%' }}>
                   <form onSubmit={handleSubmit(onSubmit)}>
                     <TableContainer component={Paper}>
                       <Table>

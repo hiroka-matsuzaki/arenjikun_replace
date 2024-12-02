@@ -36,7 +36,6 @@ const MainContent: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { setUser } = useUser(); // UserContextからsetUserを取得
 
   useEffect(() => {
-    // EntraIDから取得した情報を仮データで設定
     setUser(mockUserData);
   }, [setUser]);
 

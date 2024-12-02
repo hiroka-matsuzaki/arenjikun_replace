@@ -10,18 +10,33 @@ import {
   Button,
   FormControl,
   FormLabel,
+  MenuItem,
   OutlinedInput,
+  Paper,
+  Select,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
   Typography,
 } from '@mui/material';
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useUser } from '@/app/context/UserContext';
-import { Add, EmojiPeople } from '@mui/icons-material';
+import { EmojiPeople } from '@mui/icons-material';
+import { Controller, useForm } from 'react-hook-form';
 
+// フォームデータの型
+type FormData = {
+  [key: string]: string | number; // 動的に生成されるフィールドをサポート
+};
 const EventDetail: React.FC = () => {
   const { user } = useUser(); // UserContextからユーザー情報を取得
 
-  const [eventDetail, setEventDetail] = useState<EventResponse>(); //
+  const [eventDetail, setEventDetail] = useState<EventResponse>();
   const { id } = useParams();
   // イベントを取得する関数
   const fetchEventDetail = async () => {
@@ -39,7 +54,6 @@ const EventDetail: React.FC = () => {
     }
   };
 
-  // 初回レンダリング時のみ実行
   useEffect(() => {
     fetchEventDetail();
   }, []); // 空の依存配列
@@ -61,6 +75,20 @@ const EventDetail: React.FC = () => {
     return weekdayMap[weekday] || '';
   };
   const [onOff, setonOff] = React.useState(false);
+  const { handleSubmit, control } = useForm<FormData>();
+
+  const onSubmit = (data: FormData) => {
+    const formattedData = eventDetail?.event_dates.map((event, index) => ({
+      dated_on: event.dated_on,
+      start_time: event.start_time,
+      end_time: event.end_time,
+      possibility: data[`possibility_${index}`] as number,
+      comment: data[`comment_${index}`] as string,
+    }));
+
+    console.log('送信データ:', formattedData);
+    // ここでPOSTリクエストを送信
+  };
   return (
     <>
       <Box
@@ -136,44 +164,47 @@ const EventDetail: React.FC = () => {
             onClick={() => setonOff(false)} // 背景クリックで閉じる
             sx={{ zIndex: (theme) => theme.zIndex.modal - 1 }}
           />
-          {/* モーダル風フォーム */}
           {onOff && (
             <Box
               sx={{
                 position: 'fixed',
-                top: '30%',
+                top: '3%', // 上部に配置
                 left: '50%',
-                transform: 'translate(-50%, -50%)',
+                transform: 'translateX(-50%)', // 横方向に中央配置
                 bgcolor: 'background.paper',
-                p: 3,
+                p: 2, // パディングを少し小さくしてコンパクトに
                 borderRadius: 2,
                 boxShadow: 24,
                 zIndex: (theme) => theme.zIndex.modal, // Backdropより上に表示
-                width: '70%',
+                width: '80%', // 幅を調整
+                maxWidth: '800px', // 最大幅を指定（任意）
+                height: 'auto', // 高さは自動調整
+                maxHeight: '50vh', // 高さを画面の80%に制限
+                border: '3px solid red',
               }}
             >
               <Typography variant="h5" gutterBottom>
                 参加・不参加の入力
               </Typography>
+
               <Box
                 sx={{
                   display: 'flex',
                   flexDirection: 'column',
-                  alignItems: 'left',
-                  justifyContent: 'left',
-                  // height: '70vh', // ボックス全体の高さ
-                  border: '1px solid #ccc', // 四角の枠線
-                  padding: '20px', // 内側の余白
+                  alignItems: 'flex-start', // 左寄せ
+                  border: '1px solid #ccc',
+                  padding: 2, // 内側の余白
                   backgroundColor: 'white',
+                  borderRadius: 1, // 角丸を少しつける
+                  mb: 2, // 下に余白を追加
+                  border: '3px solid pink,',
                 }}
               >
                 <Grid container spacing={2}>
                   {/* ログインID */}
                   <Grid size={6}>
                     <FormControl fullWidth>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }} gap={1}>
-                        <FormLabel>ログインID</FormLabel>
-                      </Box>
+                      <FormLabel>ログインID</FormLabel>
                       <OutlinedInput defaultValue={user?.login_code} disabled />
                     </FormControl>
                   </Grid>
@@ -181,9 +212,7 @@ const EventDetail: React.FC = () => {
                   {/* 社員番号 */}
                   <Grid size={6}>
                     <FormControl fullWidth>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }} gap={1}>
-                        <FormLabel>社員番号</FormLabel>
-                      </Box>
+                      <FormLabel>社員番号</FormLabel>
                       <OutlinedInput defaultValue="99999" disabled />
                     </FormControl>
                   </Grid>
@@ -191,9 +220,7 @@ const EventDetail: React.FC = () => {
                   {/* 会社 */}
                   <Grid size={6}>
                     <FormControl fullWidth>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }} gap={1}>
-                        <FormLabel>会社</FormLabel>
-                      </Box>
+                      <FormLabel>会社</FormLabel>
                       <OutlinedInput defaultValue={user?.companyts} disabled />
                     </FormControl>
                   </Grid>
@@ -201,39 +228,108 @@ const EventDetail: React.FC = () => {
                   {/* 部署 */}
                   <Grid size={6}>
                     <FormControl fullWidth>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }} gap={1}>
-                        <FormLabel>部署</FormLabel>
-                      </Box>
+                      <FormLabel>部署</FormLabel>
                       <OutlinedInput defaultValue={user?.department} disabled />
                     </FormControl>
                   </Grid>
-                  <FormControl fullWidth>
-                    <Box sx={{ display: 'flex', alignItems: 'center' }} gap={1}>
+
+                  {/* 名前 */}
+                  <Grid size={12}>
+                    <FormControl fullWidth>
                       <FormLabel>名前</FormLabel>
-                    </Box>
-                    <OutlinedInput defaultValue={user?.user_name} disabled />
-                  </FormControl>
+                      <OutlinedInput defaultValue={user?.user_name} disabled />
+                    </FormControl>
+                  </Grid>
                 </Grid>
+                <Box mb={2} sx={{ border: '3px solid blue' }}>
+                  <form onSubmit={handleSubmit(onSubmit)}>
+                    <TableContainer component={Paper}>
+                      <Table>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>イベント候補日</TableCell>
+                            <TableCell>参加可否</TableCell>
+                            <TableCell>コメント</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {eventDetail?.event_dates.map((event_date, index) => (
+                            <TableRow key={event_date.id}>
+                              <TableCell sx={{ padding: '10px' }}>
+                                {new Date(event_date.dated_on).toLocaleDateString()}
+                              </TableCell>
+                              <TableCell sx={{ padding: '10px' }}>
+                                <Controller
+                                  name={`possibility_${index}`}
+                                  control={control}
+                                  defaultValue=""
+                                  rules={{ required: '選択してください' }}
+                                  render={({ field, fieldState }) => (
+                                    <Select
+                                      {...field}
+                                      error={!!fieldState.error}
+                                      displayEmpty
+                                      sx={{
+                                        minHeight: '30px', // 最小高さを指定
+                                        height: 'auto',
+                                        '& .MuiSelect-select': {
+                                          paddingTop: '5px',
+                                          paddingBottom: '5px',
+                                        },
+                                        '& .MuiInputBase-root': {
+                                          height: 'auto',
+                                        },
+                                      }}
+                                    >
+                                      <MenuItem value="" disabled>
+                                        選択
+                                      </MenuItem>
+                                      <MenuItem value={1}>いける</MenuItem>
+                                      <MenuItem value={5}>わからん</MenuItem>
+                                      <MenuItem value={0}>無理</MenuItem>
+                                    </Select>
+                                  )}
+                                />
+                              </TableCell>
+                              <TableCell sx={{ padding: '5px' }}>
+                                <Controller
+                                  name={`comment_${index}`}
+                                  control={control}
+                                  defaultValue=""
+                                  render={({ field }) => (
+                                    <TextField
+                                      {...field}
+                                      placeholder="コメント"
+                                      multiline
+                                      rows={1}
+                                      sx={{
+                                        '& .MuiInputBase-root': {
+                                          height: '30px',
+                                          paddingTop: '5px',
+                                          paddingBottom: '5px',
+                                        },
+                                        '& .MuiInputBase-input': {
+                                          padding: '5px', // 内部の余白を微調整
+                                        },
+                                      }}
+                                    />
+                                  )}
+                                />
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                    <Box mt={2} sx={{ display: 'flex', justifyContent: 'center' }}>
+                      <Button variant="contained" type="submit">
+                        送信
+                      </Button>
+                    </Box>
+                  </form>
+                </Box>
               </Box>
-              {/* ボタン */}
-              <Box mt={2} sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  sx={{
-                    backgroundColor: '#a0c4ff', // 薄い青の背景色
-                    '&:hover': {
-                      backgroundColor: '#7bb7f0', // ホバー時の色
-                    },
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1, // アイコンと文字の間にスペースを追加
-                  }}
-                >
-                  登録
-                  <Add sx={{ fontSize: 20 }} /> {/* アイコンのサイズを調整 */}
-                </Button>
-              </Box>
+              {/* 登録ボタン */}
             </Box>
           )}
 

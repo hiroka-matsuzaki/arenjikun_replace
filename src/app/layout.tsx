@@ -11,9 +11,9 @@ import { MsalProvider, useAccount, useMsal } from '@azure/msal-react';
 
 const msalConfig = {
   auth: {
-    clientId: process.env.AZURE_AD_CLIENT_ID as string,
-    authority: `https://login.microsoftonline.com/${process.env.AZURE_AD_TENANT_ID}`,
-    redirectUri: process.env.NEXTAUTH_URL as string,
+    clientId: '19083be0-6d02-4e46-bbf8-47d99e3d6434',
+    authority: 'https://login.microsoftonline.com/31bbd1bf-718f-4ab6-bcf6-661042060c09',
+    redirectUri: 'http://localhost:3000',
   },
 };
 const msalInstance = new PublicClientApplication(msalConfig);

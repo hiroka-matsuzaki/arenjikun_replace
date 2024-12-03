@@ -50,6 +50,7 @@ const MainContent: React.FC<{ children: ReactNode }> = ({ children }) => {
   const account = useAccount(accounts[0] || {});
 
   const handleLogin = () => {
+    console.log('Redirect URI:', process.env.NEXT_PUBLIC_AZURE_REDIRECT_URI);
     instance.loginPopup({ scopes: ['User.Read'] }).catch((e) => console.error(e));
   };
 

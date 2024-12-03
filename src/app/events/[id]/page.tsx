@@ -38,7 +38,9 @@ const EventDetail: React.FC = () => {
   const { user } = useUser(); // UserContextからユーザー情報を取得
 
   const [eventDetail, setEventDetail] = useState<EventResponse>();
-  const { id } = useParams();
+  const params = useParams();
+  const id = params?.id as string | undefined;
+
   // イベントを取得する関数
   const fetchEventDetail = async () => {
     try {

@@ -11,11 +11,12 @@ import { MsalProvider, useAccount, useMsal } from '@azure/msal-react';
 
 const msalConfig = {
   auth: {
-    clientId: '19083be0-6d02-4e46-bbf8-47d99e3d6434',
-    authority: 'https://login.microsoftonline.com/31bbd1bf-718f-4ab6-bcf6-661042060c09',
-    redirectUri: 'http://localhost:3000',
+    clientId: process.env.NEXT_PUBLIC_AZURE_CLIENT_ID || '',
+    authority: process.env.NEXT_PUBLIC_AZURE_AUTHORITY || '',
+    redirectUri: process.env.NEXT_PUBLIC_AZURE_REDIRECT_URI || '',
   },
 };
+
 const msalInstance = new PublicClientApplication(msalConfig);
 const mockUserData: User = {
   user_name: '松崎 祥也',

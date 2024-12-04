@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
-import { EventResponse } from '@/types/event';
+import { EventDate, EventResponse, MergedgatedData, UserPossibility } from '@/types/event';
 import Grid from '@mui/material/Grid2';
 
 import {
@@ -36,11 +36,47 @@ type FormData = {
 
 const EventDetail: React.FC = () => {
   const { user } = useUser(); // UserContextからユーザー情報を取得
-
   const [eventDetail, setEventDetail] = useState<EventResponse>();
   const params = useParams();
   const id = params?.id as string | undefined;
 
+  const mergedEventData = (
+    eventDates: EventDate[],
+    userPossibilities: UserPossibility[]
+  ): MergedgatedData[] => {
+    // user_possibilities を事前に event_date_id でグループ化
+    const groupedPossibilities = (userPossibilities || []).reduce(
+      (acc, possibility) => {
+        if (!acc[possibility.event_date_id]) {
+          acc[possibility.event_date_id] = [];
+        }
+        acc[possibility.event_date_id].push(possibility);
+        return acc;
+      },
+      {} as Record<number, UserPossibility[]>
+    );
+
+    // event_dates を整形
+    return eventDates.map((eventDate) => ({
+      id: eventDate.id,
+      dated_on: eventDate.dated_on,
+      event_id: eventDate.event_id,
+      start_time: eventDate.start_time,
+      end_time: eventDate.end_time,
+      possibilities: (groupedPossibilities[eventDate.id] || []).map((possibility) => ({
+        user_id: possibility.user_id,
+        user_name: possibility.user_name,
+        possibility: possibility.possibility,
+        comment: possibility.comment,
+      })),
+    }));
+  };
+
+  const aggregatedData = eventDetail
+    ? mergedEventData(eventDetail.event_dates, eventDetail.user_possibilities)
+    : [];
+
+  console.log(aggregatedData);
   // イベントを取得する関数
   const fetchEventDetail = async () => {
     try {
@@ -177,7 +213,7 @@ const EventDetail: React.FC = () => {
         </Box>
         <Box>
           <Typography gutterBottom>イベント参加の状況</Typography>
-          {eventDetail?.event_dates?.map((eventDate) => {
+          {aggregatedData?.map((eventDate) => {
             // 日付のフォーマット
             const formattedDate = new Date(eventDate.dated_on);
             const options: Intl.DateTimeFormatOptions = {
@@ -202,6 +238,27 @@ const EventDetail: React.FC = () => {
                 sx={{ mb: 2, p: 2, border: '1px solid #ccc', borderRadius: '4px' }}
               >
                 <Typography variant="h6">{`${dateString} (${shortWeekday}) ${startTime}-${endTime}`}</Typography>
+                <Typography>
+                  {`〇：
+                    ${
+                      eventDate.possibilities.filter((possibility) => possibility.possibility === 1)
+                        .length
+                    }`}
+                </Typography>
+                <Typography>
+                  {`？：
+                    ${
+                      eventDate.possibilities.filter((possibility) => possibility.possibility === 5)
+                        .length
+                    }`}
+                </Typography>
+                <Typography>
+                  {`×：
+                    ${
+                      eventDate.possibilities.filter((possibility) => possibility.possibility === 0)
+                        .length
+                    }`}
+                </Typography>
               </Box>
             );
           })}

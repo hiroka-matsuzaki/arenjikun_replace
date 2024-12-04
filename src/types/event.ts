@@ -32,8 +32,24 @@ export interface UserPossibility {
 export interface EventResponse {
   events: Event;
   event_dates: EventDate[];
-  users_possibility: UserPossibility[];
+  user_possibilities: UserPossibility[];
 }
 
 // イベントの配列型
 export type EventList = Event[];
+
+export type MergedPossibility = {
+  user_id: number;
+  user_name: string;
+  possibility: number;
+  comment: string;
+};
+
+export type MergedgatedData = {
+  id: number;
+  dated_on: string;
+  event_id: number;
+  start_time: number;
+  end_time: number;
+  possibilities: MergedPossibility[];
+};

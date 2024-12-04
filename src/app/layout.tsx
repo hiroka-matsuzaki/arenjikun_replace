@@ -1,11 +1,19 @@
 // app/layout.tsx
 /* eslint-disable react/react-in-jsx-scope */
 'use client'; // クライアントコンポーネント
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import ResponsiveAppBar from '@/components/ResponsiveAppBar';
 import './globals.css'; // 共通CSSの読み込み
 import { ReactNode } from 'react';
-import { UserProvider, useUser } from './context/UserContext';
+import { User, UserProvider, useUser } from './context/UserContext';
+
+const mockUserData: User = {
+  user_name: '松崎 祥也',
+  login_code: 'ShoyaMatsuzaki',
+  department: '開発チーム',
+  companyts: 'HIROKA',
+  email: 's.matsuzaki@hiroka.biz',
+};
 
 export default function RootLayout({
   children,
@@ -25,21 +33,10 @@ export default function RootLayout({
 
 // メインコンテンツでユーザー情報を渡す
 const MainContent: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [userEmail, setUserEmail] = useState<string | null>(null);
   const { setUser } = useUser(); // UserContextからsetUserを取得
 
   useEffect(() => {
-    // クライアントから取得したユーザー情報（App Service 認証によるメールアドレス）
-    const fetchUserEmail = async () => {
-      const response = await fetch('/api/getUserInfo');
-      if (response.ok) {
-        const data = await response.json();
-        setUserEmail(data.email); // メールアドレスを設定
-        setUser(data); // UserContext にユーザー情報を設定
-      }
-    };
-
-    fetchUserEmail();
+    setUser(mockUserData);
   }, [setUser]);
 
   const { user } = useUser(); // UserContextからユーザー情報を取得
@@ -47,9 +44,6 @@ const MainContent: React.FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <>
       <ResponsiveAppBar userName={user ? user.user_name : null} /> {/* ユーザー名を渡す */}
-      <div>
-        {userEmail && <p>ログイン済み: {userEmail}</p>} {/* メールアドレスを表示 */}
-      </div>
       <main>{children}</main> {/* 各ページのコンテンツ */}
     </>
   );

@@ -269,7 +269,10 @@ const EventDetail: React.FC = () => {
           {/* Backdrop */}
           <Backdrop
             open={onOff}
-            onClick={() => setonOff(false)} // 背景クリックで閉じる
+            onClick={() => {
+              setonOff(false);
+              fetchEventDetail();
+            }} // 背景クリックで閉じる
             sx={{ zIndex: (theme) => theme.zIndex.modal - 1 }}
           />
           {onOff && (

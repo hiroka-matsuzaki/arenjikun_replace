@@ -10,10 +10,8 @@ import {
   Button,
   FormControl,
   FormLabel,
-  MenuItem,
   OutlinedInput,
   Paper,
-  Select,
   Table,
   TableBody,
   TableCell,
@@ -21,17 +19,50 @@ import {
   TableHead,
   TableRow,
   TextField,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
 } from '@mui/material';
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useUser } from '@/app/context/UserContext';
-import { EmojiPeople } from '@mui/icons-material';
+import {
+  CircleOutlined,
+  ClearOutlined,
+  EmojiPeople,
+  QuestionMarkOutlined,
+} from '@mui/icons-material';
 import { Controller, useForm } from 'react-hook-form';
 
 // フォームデータの型
 type FormData = {
   [key: string]: string | number; // 動的に生成されるフィールドをサポート
+};
+
+const formatTime = (time: number): string => {
+  const hours = Math.floor(time / 60);
+  const minutes = time % 60;
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+};
+const formatDate = (isoDateString: string) => {
+  const date = new Date(isoDateString);
+
+  // 年、月、日、曜日を取得
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  const weekDays = ['日', '月', '火', '水', '木', '金', '土'];
+  const dayOfWeek = weekDays[date.getDay()];
+
+  // フォーマット
+  return `${year}年${month}月${day}日(${dayOfWeek})`;
+};
+const formattedDataAndTime = (eventDate: EventDate) => {
+  const formattedDate = formatDate(eventDate.dated_on);
+  // 開始時間と終了時間のフォーマット
+  const startTime = formatTime(eventDate.start_time);
+  const endTime = formatTime(eventDate.end_time);
+  return `${formattedDate} ${startTime}-${endTime}`;
 };
 
 const EventDetail: React.FC = () => {
@@ -96,23 +127,6 @@ const EventDetail: React.FC = () => {
   useEffect(() => {
     fetchEventDetail();
   }, []); // 空の依存配列
-  const formatTime = (time: number): string => {
-    const hours = Math.floor(time / 60);
-    const minutes = time % 60;
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-  };
-  const convertToShortWeekday = (weekday: string): string => {
-    const weekdayMap: { [key: string]: string } = {
-      日曜日: '日',
-      月曜日: '月',
-      火曜日: '火',
-      水曜日: '水',
-      木曜日: '木',
-      金曜日: '金',
-      土曜日: '土',
-    };
-    return weekdayMap[weekday] || '';
-  };
   const [onOff, setonOff] = React.useState(false);
   const { handleSubmit, control } = useForm<FormData>();
 
@@ -213,55 +227,91 @@ const EventDetail: React.FC = () => {
         </Box>
         <Box>
           <Typography gutterBottom>イベント参加の状況</Typography>
-          {aggregatedData?.map((eventDate) => {
-            // 日付のフォーマット
-            const formattedDate = new Date(eventDate.dated_on);
-            const options: Intl.DateTimeFormatOptions = {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            };
-            const dateString = formattedDate.toLocaleDateString('ja-JP', options);
-
-            // 曜日を取得して変換
-            const weekdayOptions: Intl.DateTimeFormatOptions = { weekday: 'long' };
-            const weekday = formattedDate.toLocaleDateString('ja-JP', weekdayOptions);
-            const shortWeekday = convertToShortWeekday(weekday); // （木）形式に変換
-
-            // 開始時間と終了時間のフォーマット
-            const startTime = formatTime(eventDate.start_time);
-            const endTime = formatTime(eventDate.end_time);
-
-            return (
-              <Box
-                key={eventDate.id}
-                sx={{ mb: 2, p: 2, border: '1px solid #ccc', borderRadius: '4px' }}
-              >
-                <Typography variant="h6">{`${dateString} (${shortWeekday}) ${startTime}-${endTime}`}</Typography>
-                <Typography>
-                  {`〇：
-                    ${
-                      eventDate.possibilities.filter((possibility) => possibility.possibility === 1)
-                        .length
-                    }`}
-                </Typography>
-                <Typography>
-                  {`？：
-                    ${
-                      eventDate.possibilities.filter((possibility) => possibility.possibility === 5)
-                        .length
-                    }`}
-                </Typography>
-                <Typography>
-                  {`×：
-                    ${
-                      eventDate.possibilities.filter((possibility) => possibility.possibility === 0)
-                        .length
-                    }`}
-                </Typography>
-              </Box>
-            );
-          })}
+          <Box sx={{ mb: 2, p: 2, border: '1px solid #ccc', borderRadius: '4px' }}>
+            <TableContainer component={Paper} sx={{ boxShadow: 2, padding: 1, overflowX: 'auto' }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ minWidth: 170 }}>イベント候補日</TableCell>
+                    <TableCell sx={{ minWidth: 50 }}>
+                      <CircleOutlined color="success" />
+                    </TableCell>
+                    <TableCell sx={{ minWidth: 50 }}>
+                      <QuestionMarkOutlined color="action" />
+                    </TableCell>
+                    <TableCell sx={{ minWidth: 50 }}>
+                      <ClearOutlined color="error" />
+                    </TableCell>
+                    {eventDetail?.user_possibilities.map((user_possibilitie, index) => (
+                      <TableCell key={index} sx={{ minWidth: 100 }}>
+                        {user_possibilitie.user_name}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {eventDetail?.event_dates.map((event_date) => (
+                    <TableRow key={event_date.id}>
+                      <TableCell sx={{ padding: '10px' }}>
+                        <Typography>{formattedDataAndTime(event_date)}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography sx={{ textAlign: 'center' }}>
+                          {
+                            eventDetail?.user_possibilities.filter(
+                              (possibility) => possibility.possibility === 1
+                            ).length
+                          }
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography sx={{ textAlign: 'center' }}>
+                          {
+                            eventDetail?.user_possibilities.filter(
+                              (possibility) => possibility.possibility === 5
+                            ).length
+                          }
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography sx={{ textAlign: 'center' }}>
+                          {
+                            eventDetail?.user_possibilities.filter(
+                              (possibility) => possibility.possibility === 0
+                            ).length
+                          }
+                        </Typography>
+                      </TableCell>
+                      {eventDetail?.user_possibilities
+                        .filter(
+                          (user_possibilitie) => user_possibilitie.event_date_id === event_date.id
+                        )
+                        .map((user_possibilitie, index) => (
+                          <TableCell key={index} sx={{ minWidth: 100, textAlign: 'center' }}>
+                            <Typography
+                              sx={{
+                                color:
+                                  user_possibilitie.possibility === 1
+                                    ? 'green'
+                                    : user_possibilitie.possibility === 5
+                                      ? 'gray'
+                                      : 'red',
+                              }}
+                            >
+                              {user_possibilitie.possibility === 1
+                                ? '〇'
+                                : user_possibilitie.possibility === 5
+                                  ? '？'
+                                  : '×'}
+                            </Typography>
+                          </TableCell>
+                        ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
         </Box>
         <Box>
           <Typography gutterBottom>参加・不参加の入力</Typography>
@@ -290,7 +340,7 @@ const EventDetail: React.FC = () => {
                 width: '80%', // 幅を調整
                 maxWidth: '800px', // 最大幅を指定（任意）
                 height: 'auto', // 高さは自動調整
-                border: '3px solid red',
+                // border: '3px solid red',
                 overflowY: 'auto', // はみ出す部分はスクロール
               }}
             >
@@ -303,12 +353,12 @@ const EventDetail: React.FC = () => {
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'flex-start', // 左寄せ
-                  // border: '1px solid #ccc',
+                  border: '1px solid #ccc',
                   padding: 2, // 内側の余白
                   backgroundColor: 'white',
                   borderRadius: 1, // 角丸を少しつける
                   mb: 2, // 下に余白を追加
-                  border: '3px solid green',
+                  // border: '3px solid green',
                 }}
               >
                 <Grid container spacing={2}>
@@ -352,9 +402,9 @@ const EventDetail: React.FC = () => {
                     </FormControl>
                   </Grid>
                 </Grid>
-                <Box mb={2} sx={{ border: '3px solid blue', width: '100%' }}>
+                <Box mb={2} sx={{ width: '100%', pt: 2 }}>
                   <form onSubmit={handleSubmit(onSubmit)}>
-                    <TableContainer component={Paper}>
+                    <TableContainer component={Paper} sx={{ boxShadow: 2, padding: 1 }}>
                       <Table>
                         <TableHead>
                           <TableRow>
@@ -373,35 +423,94 @@ const EventDetail: React.FC = () => {
                                 <Controller
                                   name={`possibility_${index}`}
                                   control={control}
-                                  defaultValue=""
+                                  defaultValue={5} // 初期値を "？" に設定
                                   rules={{ required: '選択してください' }}
-                                  render={({ field, fieldState }) => (
-                                    <Select
-                                      {...field}
-                                      error={!!fieldState.error}
-                                      displayEmpty
+                                  render={({ field }) => (
+                                    <ToggleButtonGroup
+                                      value={field.value} // 選択状態を管理
+                                      exclusive // 単一選択モード
+                                      onChange={(event, newValue) => {
+                                        if (newValue !== null) {
+                                          field.onChange(newValue); // 値を更新
+                                        }
+                                      }}
                                       sx={{
-                                        minHeight: '30px', // 最小高さを指定
-                                        height: 'auto',
-                                        '& .MuiSelect-select': {
-                                          paddingTop: '5px',
-                                          paddingBottom: '5px',
-                                        },
-                                        '& .MuiInputBase-root': {
-                                          height: 'auto',
+                                        '& .MuiToggleButtonGroup-grouped': {
+                                          margin: 0, // ボタン間の隙間をなくす
+                                          border: '1px solid #ddd', // ボーダーの色
+                                          borderRadius: '4px', // 角を丸める
+                                          '&:not(:last-of-type)': {
+                                            borderRight: 'none', // ボタン同士をくっつける
+                                          },
+                                          '&.Mui-selected': {
+                                            color: '#fff', // 選択されたボタンの文字色
+                                          },
                                         },
                                       }}
+                                      aria-label="選択肢"
                                     >
-                                      <MenuItem value="" disabled>
-                                        選択
-                                      </MenuItem>
-                                      <MenuItem value={1}>いける</MenuItem>
-                                      <MenuItem value={5}>わからん</MenuItem>
-                                      <MenuItem value={0}>無理</MenuItem>
-                                    </Select>
+                                      <ToggleButton
+                                        value={1}
+                                        aria-label="〇"
+                                        sx={{
+                                          backgroundColor: 'white', // 未選択時は背景を白に
+                                          color: '#4caf50', // 枠と文字は緑色
+                                          '&.Mui-selected': {
+                                            backgroundColor: '#4caf50', // 選択時は緑の背景
+                                            borderColor: '#4caf50', // 枠も緑
+                                            color: '#fff', // 文字は白
+                                          },
+                                          '&:hover': {
+                                            backgroundColor: '#e8f5e9', // ホバー時はうっすら緑色に
+                                          },
+                                          fontSize: '20px', // 文字を少し大きくする
+                                        }}
+                                      >
+                                        〇
+                                      </ToggleButton>
+                                      <ToggleButton
+                                        value={5}
+                                        aria-label="？"
+                                        sx={{
+                                          backgroundColor: 'white', // 未選択時は背景を白に
+                                          color: '#9e9e9e', // 枠と文字はグレー
+                                          '&.Mui-selected': {
+                                            backgroundColor: '#9e9e9e', // 選択時はグレーの背景
+                                            borderColor: '#9e9e9e', // 枠もグレー
+                                            color: '#fff', // 文字は白
+                                          },
+                                          '&:hover': {
+                                            backgroundColor: '#f5f5f5', // ホバー時はうっすらグレーに
+                                          },
+                                          fontSize: '20px', // 文字を少し大きくする
+                                        }}
+                                      >
+                                        ？
+                                      </ToggleButton>
+                                      <ToggleButton
+                                        value={0}
+                                        aria-label="×"
+                                        sx={{
+                                          backgroundColor: 'white', // 未選択時は背景を白に
+                                          color: '#f44336', // 枠と文字は赤色
+                                          '&.Mui-selected': {
+                                            backgroundColor: '#f44336', // 選択時は赤の背景
+                                            borderColor: '#f44336', // 枠も赤
+                                            color: '#fff', // 文字は白
+                                          },
+                                          '&:hover': {
+                                            backgroundColor: '#ffebee', // ホバー時はうっすら赤色に
+                                          },
+                                          fontSize: '20px', // 文字を少し大きくする
+                                        }}
+                                      >
+                                        ×
+                                      </ToggleButton>
+                                    </ToggleButtonGroup>
                                   )}
                                 />
                               </TableCell>
+
                               <TableCell sx={{ padding: '5px' }}>
                                 <Controller
                                   name={`comment_${index}`}

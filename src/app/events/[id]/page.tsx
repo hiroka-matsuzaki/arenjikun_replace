@@ -23,7 +23,7 @@ import {
   ToggleButtonGroup,
   Typography,
 } from '@mui/material';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useUser } from '@/app/context/UserContext';
 import {
@@ -70,6 +70,11 @@ const EventDetail: React.FC = () => {
   const [eventDetail, setEventDetail] = useState<EventResponse>();
   const params = useParams();
   const id = params?.id as string | undefined;
+  const router = useRouter();
+  const goTo = (path: string) => router.push(path);
+  const handleEditClick = () => {
+    goTo(`/events/${id}/edit`);
+  };
 
   const mergedEventData = (
     eventDates: EventDate[],
@@ -575,6 +580,12 @@ const EventDetail: React.FC = () => {
             <EmojiPeople sx={{ fontSize: 60 }} /> {/* アイコンのサイズを調整 */}
           </Button>
         </Box>
+        <Typography
+          sx={{ cursor: 'pointer', color: 'primary.main', fontWeight: 'bold' }}
+          onClick={handleEditClick}
+        >
+          編集
+        </Typography>
       </Box>
     </>
   );

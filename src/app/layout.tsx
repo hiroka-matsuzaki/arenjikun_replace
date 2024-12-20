@@ -40,7 +40,7 @@ const MainContent: React.FC<{ children: ReactNode }> = ({ children }) => {
     if (process.env.NODE_ENV === 'development') {
       return {
         email: 's.matsuzaki@hiroka.biz',
-        user_name: 'テストユーザー',
+        user_name: 'matsuzaki shoya',
         login_code: '999999',
         department: 'テスト部署',
         companyts: 'テスト株式会社',

@@ -63,6 +63,8 @@ const formattedDataAndTime = (eventDate: EventDate) => {
 const EventDetail: React.FC = () => {
   const { user } = useUser(); // UserContextからユーザー情報を取得
   const [eventDetail, setEventDetail] = useState<EventResponse>();
+  const [myPossibilities, setMyPossibilities] = useState<UserPossibility[]>();
+
   const params = useParams();
   const id = params?.id as string | undefined;
   const router = useRouter();
@@ -118,9 +120,22 @@ const EventDetail: React.FC = () => {
       console.log('データ:', data);
 
       setEventDetail(data);
+      fetchMyPossibilities(data);
     } catch (error) {
       console.error('データ取得エラー:', error);
     }
+  };
+
+  const fetchMyPossibilities = async (eventDetail: EventResponse | undefined) => {
+    if (!eventDetail) {
+      throw new Error("fetchMyPossibilities: 引数 'eventDetail' が undefined です。");
+    }
+    const myPossibilities = eventDetail.user_possibilities.filter(
+      (item) => item.user_name === user?.user_name
+    );
+    console.log('myPossibilities:', myPossibilities);
+
+    setMyPossibilities(myPossibilities || null);
   };
 
   useEffect(() => {
@@ -316,8 +331,8 @@ const EventDetail: React.FC = () => {
           <Backdrop
             open={onOff}
             onClick={() => {
-              setonOff(false);
               fetchEventDetail();
+              setonOff(false);
             }} // 背景クリックで閉じる
             sx={{ zIndex: (theme) => theme.zIndex.modal - 1 }}
           />
@@ -419,7 +434,11 @@ const EventDetail: React.FC = () => {
                                 <Controller
                                   name={`possibility_${index}`}
                                   control={control}
-                                  defaultValue={5} // 初期値を "？" に設定
+                                  defaultValue={
+                                    myPossibilities?.find(
+                                      (item) => item.event_date_id === event_date.id
+                                    )?.possibility
+                                  }
                                   rules={{ required: '選択してください' }}
                                   render={({ field }) => (
                                     <ToggleButtonGroup

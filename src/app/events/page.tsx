@@ -5,19 +5,22 @@ import { Box, Typography } from '@mui/material';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { Event, EventList } from '@/types/event';
 import { useRouter } from 'next/navigation';
+import { useUser } from '../context/UserContext';
 
 const EventsPage = () => {
   const router = useRouter();
   const goTo = (path: string) => router.push(path);
 
+  const { user } = useUser(); // UserContextからユーザー情報を取得
+
   const [events, setEvents] = useState<EventList>([]); //
   useEffect(() => {
-    const fetchEvents = async () => {
+    const fetchEvents = async (email: string | undefined) => {
       try {
         // const functionUrl = process.env.NEXT_PUBLIC_FUNCTION_URL;
 
         const response = await fetch(
-          'https://azure-api-opf.azurewebsites.net/api/events?email=s.matsuzaki@hiroka.biz' //テスト用ベタ打ち
+          `https://azure-api-opf.azurewebsites.net/api/events?email=${email}` //テスト用ベタ打ち
         );
         if (!response.ok) {
           throw new Error(`HTTPエラー: ${response.status}`);
@@ -34,8 +37,8 @@ const EventsPage = () => {
         console.error('データ取得エラー:', error);
       }
     };
-    fetchEvents();
-  }, []); // 空の依存配列
+    fetchEvents(user?.email);
+  }, [user?.email]); // 空の依存配列
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
     const year = date.getFullYear();

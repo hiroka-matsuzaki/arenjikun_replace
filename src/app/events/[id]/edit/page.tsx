@@ -29,12 +29,14 @@ import {
 } from '@mui/icons-material';
 import { LocalizationProvider, DatePicker, TimePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
+import { useUser } from '@/app/context/UserContext';
 
 type FormData = {
   eventName: string;
   venue: string;
   dateOptions: { id: number; date: string; start: string; end: string }[];
 };
+
 const NewEventPage: React.FC = () => {
   const {
     control,
@@ -58,6 +60,7 @@ const NewEventPage: React.FC = () => {
       ],
     },
   });
+  const { user } = useUser(); // UserContextからユーザー情報を取得
 
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
@@ -100,7 +103,7 @@ const NewEventPage: React.FC = () => {
 
     try {
       const response = await fetch(
-        'https://azure-api-opf.azurewebsites.net/api/events?email=s.matsuzaki@hiroka.biz',
+        `https://azure-api-opf.azurewebsites.net/api/events?email=${user?.email}`,
         {
           method: 'POST',
           headers: {

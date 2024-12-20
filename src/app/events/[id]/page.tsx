@@ -106,18 +106,17 @@ const EventDetail: React.FC = () => {
   const aggregatedData = eventDetail
     ? mergedEventData(eventDetail.event_dates, eventDetail.user_possibilities)
     : [];
-
   console.log(aggregatedData);
   // イベントを取得する関数
   const fetchEventDetail = async () => {
     try {
-      // const functionUrl = process.env.NEXT_PUBLIC_FUNCTION_URL;
-
       const response = await fetch(`https://azure-api-opf.azurewebsites.net/api/events/${id}`);
       if (!response.ok) {
         throw new Error(`HTTPエラー: ${response.status}`);
       }
       const data: EventResponse = await response.json();
+      console.log('データ:', data);
+
       setEventDetail(data);
     } catch (error) {
       console.error('データ取得エラー:', error);
@@ -140,9 +139,8 @@ const EventDetail: React.FC = () => {
     }));
 
     console.log('送信データ:', formattedData);
-    // ここでPOSTリクエストを送信
+
     try {
-      // 1. GETリクエストで user_id を取得
       const userEmail = user?.email;
       if (!userEmail) {
         throw new Error('ユーザーのメールアドレスが見つかりません。');
@@ -158,8 +156,6 @@ const EventDetail: React.FC = () => {
 
       const userId = await userResponse.text();
       console.log('取得したユーザーID:', userId);
-
-      // 2. PUTリクエストで formattedData を送信
 
       const updateResponse = await fetch(
         `https://azure-api-opf.azurewebsites.net/api/events/${id}/update_join?user_id=${userId}`,
@@ -374,7 +370,7 @@ const EventDetail: React.FC = () => {
                   <Grid size={6}>
                     <FormControl fullWidth>
                       <FormLabel>社員番号</FormLabel>
-                      <OutlinedInput defaultValue="99999" disabled />
+                      <OutlinedInput defaultValue={user?.employee_id} disabled />
                     </FormControl>
                   </Grid>
 

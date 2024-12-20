@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import {
@@ -30,6 +31,9 @@ import {
 import { LocalizationProvider, DatePicker, TimePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import { useUser } from '@/app/context/UserContext';
+import { EventResponse } from '@/types/event';
+import { useParams } from 'next/navigation';
+// import { EventResponse } from '@/types/event';
 
 type FormData = {
   eventName: string;
@@ -38,6 +42,14 @@ type FormData = {
 };
 
 const NewEventPage: React.FC = () => {
+  const { user } = useUser(); // UserContextからユーザー情報を取得
+  const [isLoading, setIsLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [eventDetail, setEventDetail] = useState<EventResponse>();
+  const params = useParams();
+
+  const id = params?.id as string | undefined;
   const {
     control,
     handleSubmit,
@@ -48,25 +60,30 @@ const NewEventPage: React.FC = () => {
     formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
-      eventName: '',
-      venue: '',
-      dateOptions: [
-        {
-          id: 1,
-          date: dayjs().startOf('day').toISOString(),
-          start: dayjs().startOf('day').hour(9).toISOString(),
-          end: dayjs().startOf('day').hour(11).toISOString(),
-        },
-      ],
+      eventName: eventDetail?.events.subject,
+      venue: eventDetail?.events.description,
+      dateOptions: [],
     },
   });
-  const { user } = useUser(); // UserContextからユーザー情報を取得
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchEventDetail = async () => {
+    try {
+      const response = await fetch(`https://azure-api-opf.azurewebsites.net/api/events/${id}`);
+      if (!response.ok) {
+        throw new Error(`HTTPエラー: ${response.status}`);
+      }
+      const data: EventResponse = await response.json();
+      console.log('データ:', data);
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-
-  const dateOptions = watch('dateOptions'); // 日時候補のリアルタイム監視
+      setEventDetail(data);
+      defaultRowAdd(data);
+    } catch (error) {
+      console.error('データ取得エラー:', error);
+    }
+  };
+  useEffect(() => {
+    fetchEventDetail();
+  }, []); // 空の依存配列
 
   const handleRowAdd = () => {
     const newRow = {
@@ -88,6 +105,34 @@ const NewEventPage: React.FC = () => {
   const formatDateTime = (date: string, time: string) => {
     return `${dayjs(date).format('YYYY-MM-DD')} ${dayjs(time).format('HH:mm:ss')}`;
   };
+
+  const defaultRowAdd = (data: EventResponse) => {
+    // eventDetail?.event_dates が undefined または空の場合のチェックを追加
+    const defaultRow =
+      data?.event_dates?.map((event_date) => ({
+        id: event_date.id,
+        date: dayjs(event_date.dated_on).startOf('day').toISOString(),
+        start: dayjs(event_date.dated_on)
+          .startOf('day')
+          .add(event_date.start_time, 'minute')
+          .toISOString(),
+        end: dayjs(event_date.dated_on)
+          .startOf('day')
+          .add(event_date.end_time, 'minute')
+          .toISOString(),
+      })) || []; // event_dates が undefined または空の場合は空配列を返す
+
+    console.log('defaultRow:', defaultRow);
+
+    // dateOptions が空でない場合のみ setValue を呼び出す
+    if (defaultRow.length > 0) {
+      setValue('dateOptions', defaultRow); // defaultRow を dateOptions に設定
+    }
+    setValue('eventName', data?.events.subject);
+    setValue('venue', data?.events.description);
+  };
+
+  const dateOptions = watch('dateOptions'); // 日時候補のリアルタイム監視
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     setIsLoading(true);

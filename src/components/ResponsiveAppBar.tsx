@@ -114,7 +114,9 @@ const ResponsiveAppBar: React.FC<Props> = ({ userName }) => {
             >
               {pages.map((page) => (
                 <MenuItem key={page.id} onClick={handleCloseNavMenu}>
-                  <Typography sx={{ textAlign: 'center', ml: 1 }}>{page.name}</Typography>{' '}
+                  <Typography sx={{ textAlign: 'center', ml: 1 }} onClick={() => goTo(page.path)}>
+                    {page.name}
+                  </Typography>{' '}
                   {/* アイコンとテキストの間にマージンを追加 */}
                 </MenuItem>
               ))}

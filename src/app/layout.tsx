@@ -34,10 +34,19 @@ export default function RootLayout({
 // メインコンテンツでユーザー情報を渡す
 const MainContent: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { setUser } = useUser(); // UserContextからsetUserを取得
-  const fetchUserUser = async (loginEmail: string): Promise<User> => {
+  const fetchUser = async (loginEmail: string): Promise<User> => {
     // const functionUrl = process.env.NEXT_PUBLIC_FUNCTION_URL;
     console.log('Email:', loginEmail);
-
+    if (process.env.NODE_ENV === 'development') {
+      return {
+        email: 's.matsuzaki@hiroka.biz',
+        user_name: 'テストユーザー',
+        login_code: '999999',
+        department: 'テスト部署',
+        companyts: 'テスト株式会社',
+        employee_id: 999999,
+      };
+    }
     const response = await fetch(
       `https://azure-api-opf.azurewebsites.net/api/users?email=${loginEmail}` //テスト用ベタ打ち
     );
@@ -57,7 +66,7 @@ const MainContent: React.FC<{ children: ReactNode }> = ({ children }) => {
     const fetchData = async () => {
       try {
         const loginEmail = await fetchUserEmail();
-        const userData = await fetchUserUser(loginEmail);
+        const userData = await fetchUser(loginEmail);
         setUser(userData);
         console.log('取得したユーザー情報:', userData);
       } catch (error) {

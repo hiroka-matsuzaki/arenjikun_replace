@@ -26,12 +26,7 @@ import {
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useUser } from '@/app/context/UserContext';
-import {
-  CircleOutlined,
-  ClearOutlined,
-  EmojiPeople,
-  QuestionMarkOutlined,
-} from '@mui/icons-material';
+import { EmojiPeople } from '@mui/icons-material';
 import { Controller, useForm } from 'react-hook-form';
 
 // フォームデータの型
@@ -239,13 +234,13 @@ const EventDetail: React.FC = () => {
                   <TableRow>
                     <TableCell sx={{ minWidth: 170 }}>イベント候補日</TableCell>
                     <TableCell sx={{ minWidth: 50 }}>
-                      <CircleOutlined color="success" />
+                      <Typography color="success">〇</Typography>
                     </TableCell>
                     <TableCell sx={{ minWidth: 50 }}>
-                      <QuestionMarkOutlined color="action" />
+                      <Typography color="action">？</Typography>
                     </TableCell>
                     <TableCell sx={{ minWidth: 50 }}>
-                      <ClearOutlined color="error" />
+                      <Typography color="error">×</Typography>
                     </TableCell>
                     {eventDetail?.user_possibilities.map((user_possibilitie, index) => (
                       <TableCell key={index} sx={{ minWidth: 100 }}>

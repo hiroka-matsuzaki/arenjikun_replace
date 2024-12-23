@@ -116,8 +116,7 @@ const EventsPage = () => {
           backgroundColor: 'white',
         }}
       >
-        <br></br>
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <Box style={{ display: 'flex', flexDirection: 'column' }}>
           <DataGrid
             rows={events}
             columns={columns}
@@ -129,6 +128,9 @@ const EventsPage = () => {
               },
               '& .MuiDataGrid-columnSeparator': {
                 display: 'none', // 列の区切り線を非表示
+              },
+              '& .MuiDataGrid-row:hover': {
+                backgroundColor: 'inherit', // ホバー時の背景色を変更しない
               },
               boxShadow: 1,
               // minWidth: 900,
@@ -145,7 +147,7 @@ const EventsPage = () => {
             disableColumnSelector
             getRowId={(events) => events.id}
           />
-        </div>
+        </Box>
       </Box>
     </>
   );

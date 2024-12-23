@@ -8,7 +8,7 @@ export interface User {
   login_code: string;
   department: string;
   companyts: string;
-  employee_id: number;
+  user_code: string;
 }
 
 interface UserContextType {

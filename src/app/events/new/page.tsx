@@ -246,7 +246,7 @@ const NewEventPage: React.FC = () => {
               {dateOptions.map((row, index) => (
                 <TableRow key={row.id}>
                   {/* 日付 */}
-                  <TableCell align="center">
+                  <TableCell>
                     <Controller
                       control={control}
                       name={`dateOptions.${index}.date`}

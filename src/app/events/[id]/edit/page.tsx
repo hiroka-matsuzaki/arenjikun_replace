@@ -287,7 +287,7 @@ const NewEventPage: React.FC = () => {
             <TableBody>
               {dateOptions.map((row, index) => (
                 <TableRow key={row.id}>
-                  <TableCell align="center">
+                  <TableCell>
                     <Controller
                       control={control}
                       name={`dateOptions.${index}.date`}
@@ -324,7 +324,7 @@ const NewEventPage: React.FC = () => {
                     />
                   </TableCell>
 
-                  <TableCell align="center">
+                  <TableCell>
                     <Controller
                       control={control}
                       name={`dateOptions.${index}.start`}
@@ -352,7 +352,7 @@ const NewEventPage: React.FC = () => {
                     />
                   </TableCell>
 
-                  <TableCell align="center">
+                  <TableCell>
                     <Controller
                       control={control}
                       name={`dateOptions.${index}.end`}

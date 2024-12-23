@@ -168,24 +168,24 @@ const EventDetail: React.FC = () => {
     console.log('送信データ:', formattedData);
 
     try {
-      const userEmail = user?.email;
-      if (!userEmail) {
-        throw new Error('ユーザーのメールアドレスが見つかりません。');
-      }
+      // const userEmail = user?.email;
+      // if (!userEmail) {
+      //   throw new Error('ユーザーのメールアドレスが見つかりません。');
+      // }
 
-      const userResponse = await fetch(
-        `https://azure-api-opf.azurewebsites.net/api/users?email=${userEmail}`
-      );
+      // const userResponse = await fetch(
+      //   `https://azure-api-opf.azurewebsites.net/api/users?email=${userEmail}`
+      // );
 
-      if (!userResponse.ok) {
-        throw new Error(`ユーザーID取得エラー: ${userResponse.statusText}`);
-      }
+      // if (!userResponse.ok) {
+      //   throw new Error(`ユーザーID取得エラー: ${userResponse.statusText}`);
+      // }
 
-      const userId = await userResponse.text();
-      console.log('取得したユーザーID:', userId);
+      // const userCode = await userResponse.text();
+      console.log('取得した従業員ID:', user?.user_code);
 
       const updateResponse = await fetch(
-        `https://azure-api-opf.azurewebsites.net/api/events/${id}/update_join?user_id=${userId}`,
+        `https://azure-api-opf.azurewebsites.net/api/events/${id}/update_join?user_code=${user?.user_code}`,
         {
           method: 'PUT',
           headers: {
@@ -249,12 +249,28 @@ const EventDetail: React.FC = () => {
           gap: 4,
         }}
       >
-        <Box>
-          <Typography gutterBottom>会議室・会場・備考等</Typography>
+        <Box
+          sx={{
+            borderLeft: '5px solid #4caf50', // 緑色の縦ライン
+            boxShadow: 2, // 左端に縦ラインを追加（カラー調整可）
+            paddingLeft: '10px', // 文字を右に少しずらす
+          }}
+        >
+          <Typography variant="h5" gutterBottom>
+            会議室・会場・備考等
+          </Typography>
           {eventDetail?.events.description}
         </Box>
-        <Box>
-          <Typography gutterBottom>イベント参加の状況</Typography>
+        <Box
+          sx={{
+            borderLeft: '5px solid #fbc02d', // ダークイエローの縦ライン
+            boxShadow: 2, // 左端に縦ラインを追加（カラー調整可）
+            paddingLeft: '10px', // 文字を右に少しずらす
+          }}
+        >
+          <Typography variant="h5" gutterBottom>
+            イベント参加の状況
+          </Typography>
           <Box sx={{ mb: 2, p: 2, border: '1px solid #ccc', borderRadius: '4px' }}>
             <TableContainer component={Paper} sx={{ boxShadow: 2, padding: 1, overflowX: 'auto' }}>
               <Table>
@@ -341,8 +357,16 @@ const EventDetail: React.FC = () => {
             </TableContainer>
           </Box>
         </Box>
-        <Box>
-          <Typography gutterBottom>参加・不参加の入力</Typography>
+        <Box
+          sx={{
+            borderLeft: '5px solid #f44336', // 赤色の縦ライン
+            boxShadow: 2, // 左端に縦ラインを追加（カラー調整可）
+            paddingLeft: '10px', // 文字を右に少しずらす
+          }}
+        >
+          <Typography variant="h5" gutterBottom>
+            参加・不参加の入力
+          </Typography>
 
           {/* Backdrop */}
           <Backdrop
@@ -402,7 +426,7 @@ const EventDetail: React.FC = () => {
                   <Grid size={6}>
                     <FormControl fullWidth>
                       <FormLabel>社員番号</FormLabel>
-                      <OutlinedInput defaultValue={user?.employee_id} disabled />
+                      <OutlinedInput defaultValue={user?.user_code} disabled />
                     </FormControl>
                   </Grid>
 

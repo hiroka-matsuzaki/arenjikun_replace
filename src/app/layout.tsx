@@ -44,7 +44,7 @@ const MainContent: React.FC<{ children: ReactNode }> = ({ children }) => {
         login_code: '999999',
         department: 'テスト部署',
         companyts: 'テスト株式会社',
-        employee_id: 999999,
+        user_code: '602371',
       };
     }
     const response = await fetch(

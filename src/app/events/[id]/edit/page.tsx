@@ -107,7 +107,6 @@ const NewEventPage: React.FC = () => {
   };
 
   const defaultRowAdd = (data: EventResponse) => {
-    // eventDetail?.event_dates が undefined または空の場合のチェックを追加
     const defaultRow =
       data?.event_dates?.map((event_date) => ({
         id: event_date.id,
@@ -120,13 +119,12 @@ const NewEventPage: React.FC = () => {
           .startOf('day')
           .add(event_date.end_time, 'minute')
           .toISOString(),
-      })) || []; // event_dates が undefined または空の場合は空配列を返す
+      })) || [];
 
     console.log('defaultRow:', defaultRow);
 
-    // dateOptions が空でない場合のみ setValue を呼び出す
     if (defaultRow.length > 0) {
-      setValue('dateOptions', defaultRow); // defaultRow を dateOptions に設定
+      setValue('dateOptions', defaultRow);
     }
     setValue('eventName', data?.events.subject);
     setValue('venue', data?.events.description);
@@ -176,11 +174,12 @@ const NewEventPage: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <Box onSubmit={handleSubmit(onSubmit)}>
       <Box
         display="flex"
+        alignItems="center" // 垂直方向を中央揃え
         sx={{
-          justifyContent: 'left',
+          justifyContent: 'space-between', // アイコンとテキストの間隔調整用
           height: '80px',
           border: '1px solid #ccc',
           padding: '20px',
@@ -222,15 +221,12 @@ const NewEventPage: React.FC = () => {
             })}
             sx={{
               '& fieldset': {
-                // デフォルト
                 borderColor: errors.eventName ? 'error.main' : 'grey.400',
               },
               '&:hover fieldset': {
-                // ホバー時
                 borderColor: errors.eventName ? 'error.main' : 'grey.600',
               },
               '&.Mui-focused fieldset': {
-                // フォーカス時
                 borderColor: errors.eventName ? 'error.main' : 'primary.main',
               },
             }}
@@ -291,7 +287,6 @@ const NewEventPage: React.FC = () => {
             <TableBody>
               {dateOptions.map((row, index) => (
                 <TableRow key={row.id}>
-                  {/* 日付 */}
                   <TableCell align="center">
                     <Controller
                       control={control}
@@ -329,7 +324,6 @@ const NewEventPage: React.FC = () => {
                     />
                   </TableCell>
 
-                  {/* 開始 */}
                   <TableCell align="center">
                     <Controller
                       control={control}
@@ -358,7 +352,6 @@ const NewEventPage: React.FC = () => {
                     />
                   </TableCell>
 
-                  {/* 終了 */}
                   <TableCell align="center">
                     <Controller
                       control={control}
@@ -397,7 +390,6 @@ const NewEventPage: React.FC = () => {
                     />
                   </TableCell>
 
-                  {/* 削除ボタン */}
                   <TableCell align="center">
                     {index !== 0 && (
                       <IconButton color="secondary" onClick={() => handleRowRemove(row.id)}>
@@ -407,7 +399,7 @@ const NewEventPage: React.FC = () => {
                   </TableCell>
                 </TableRow>
               ))}
-              {/* 行追加ボタン */}
+
               <TableRow>
                 <TableCell colSpan={3}></TableCell>
                 <TableCell align="center">
@@ -436,7 +428,7 @@ const NewEventPage: React.FC = () => {
           </Typography>
         )}
       </Box>
-    </form>
+    </Box>
   );
 };
 

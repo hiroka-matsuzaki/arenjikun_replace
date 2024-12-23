@@ -10,6 +10,7 @@ import {
   Button,
   FormControl,
   FormLabel,
+  IconButton,
   OutlinedInput,
   Paper,
   Table,
@@ -21,12 +22,13 @@ import {
   TextField,
   ToggleButton,
   ToggleButtonGroup,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useUser } from '@/app/context/UserContext';
-import { EmojiPeople } from '@mui/icons-material';
+import { EmojiPeople, Link } from '@mui/icons-material';
 import { Controller, useForm } from 'react-hook-form';
 
 // フォームデータの型
@@ -143,7 +145,17 @@ const EventDetail: React.FC = () => {
   }, []); // 空の依存配列
   const [onOff, setonOff] = React.useState(false);
   const { handleSubmit, control } = useForm<FormData>();
-
+  const handleCopyLink = () => {
+    const urlToCopy = window.location.href; // 現在のURL
+    navigator.clipboard
+      .writeText(urlToCopy)
+      .then(() => {
+        alert('URLをコピーしました: ' + urlToCopy);
+      })
+      .catch((err) => {
+        console.error('URLコピーに失敗しました', err);
+      });
+  };
   const onSubmit = async (data: FormData) => {
     const formattedData = eventDetail?.event_dates.map((event, index) => ({
       dated_on: event.dated_on,
@@ -217,6 +229,11 @@ const EventDetail: React.FC = () => {
         <Typography variant="h4" gutterBottom>
           {eventDetail?.events.subject}
         </Typography>
+        <Tooltip title="URLをコピー">
+          <IconButton onClick={handleCopyLink} color="primary">
+            <Link />
+          </IconButton>
+        </Tooltip>
       </Box>
       <Box
         sx={{

@@ -1,7 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
-import { EventDate, EventResponse, MergedgatedData, UserPossibility } from '@/types/event';
+import {
+  EventDate,
+  EventResponse,
+  MergedgatedData,
+  Respondent,
+  UserPossibility,
+} from '@/types/event';
 import Grid from '@mui/material/Grid2';
 
 import {
@@ -65,6 +71,8 @@ const formattedDataAndTime = (eventDate: EventDate) => {
 const EventDetail: React.FC = () => {
   const { user } = useUser(); // UserContextからユーザー情報を取得
   const [eventDetail, setEventDetail] = useState<EventResponse>();
+  const [respondents, setRespondent] = useState<Respondent[]>();
+
   const [myPossibilities, setMyPossibilities] = useState<UserPossibility[]>();
 
   const params = useParams();
@@ -120,7 +128,17 @@ const EventDetail: React.FC = () => {
       }
       const data: EventResponse = await response.json();
       console.log('データ:', data);
-
+      const users = Array.from(
+        data.user_possibilities
+          .reduce((map, item) => {
+            if (!map.has(item.user_id)) {
+              map.set(item.user_id, { user_id: item.user_id, user_name: item.user_name });
+            }
+            return map;
+          }, new Map())
+          .values()
+      );
+      setRespondent(users);
       setEventDetail(data);
       fetchMyPossibilities(data);
     } catch (error) {
@@ -168,22 +186,6 @@ const EventDetail: React.FC = () => {
     console.log('送信データ:', formattedData);
 
     try {
-      // const userEmail = user?.email;
-      // if (!userEmail) {
-      //   throw new Error('ユーザーのメールアドレスが見つかりません。');
-      // }
-
-      // const userResponse = await fetch(
-      //   `https://azure-api-opf.azurewebsites.net/api/users?email=${userEmail}`
-      // );
-
-      // if (!userResponse.ok) {
-      //   throw new Error(`ユーザーID取得エラー: ${userResponse.statusText}`);
-      // }
-
-      // const userCode = await userResponse.text();
-      console.log('取得した従業員ID:', user?.user_code);
-
       const updateResponse = await fetch(
         `https://azure-api-opf.azurewebsites.net/api/events/${id}/update_join?user_code=${user?.user_code}`,
         {
@@ -296,9 +298,9 @@ const EventDetail: React.FC = () => {
                   <TableCell sx={{ minWidth: 50 }}>
                     <Typography color="error">×</Typography>
                   </TableCell>
-                  {eventDetail?.user_possibilities.map((user_possibilitie, index) => (
+                  {respondents?.map((respondent, index) => (
                     <TableCell key={index} sx={{ minWidth: 100 }}>
-                      {user_possibilitie.user_name}
+                      {respondent.user_name}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -313,7 +315,9 @@ const EventDetail: React.FC = () => {
                       <Typography sx={{ textAlign: 'center' }}>
                         {
                           eventDetail?.user_possibilities.filter(
-                            (possibility) => possibility.possibility === 1
+                            (possibility) =>
+                              possibility.possibility === 1 &&
+                              possibility.event_date_id === event_date.id
                           ).length
                         }
                       </Typography>
@@ -322,7 +326,9 @@ const EventDetail: React.FC = () => {
                       <Typography sx={{ textAlign: 'center' }}>
                         {
                           eventDetail?.user_possibilities.filter(
-                            (possibility) => possibility.possibility === 5
+                            (possibility) =>
+                              possibility.possibility === 5 &&
+                              possibility.event_date_id === event_date.id
                           ).length
                         }
                       </Typography>
@@ -331,35 +337,37 @@ const EventDetail: React.FC = () => {
                       <Typography sx={{ textAlign: 'center' }}>
                         {
                           eventDetail?.user_possibilities.filter(
-                            (possibility) => possibility.possibility === 0
+                            (possibility) =>
+                              possibility.possibility === 0 &&
+                              possibility.event_date_id === event_date.id
                           ).length
                         }
                       </Typography>
                     </TableCell>
-                    {eventDetail?.user_possibilities
-                      .filter(
-                        (user_possibilitie) => user_possibilitie.event_date_id === event_date.id
-                      )
-                      .map((user_possibilitie, index) => (
-                        <TableCell key={index} sx={{ minWidth: 100, textAlign: 'center' }}>
-                          <Typography
-                            sx={{
-                              color:
-                                user_possibilitie.possibility === 1
-                                  ? 'green'
-                                  : user_possibilitie.possibility === 5
-                                    ? 'gray'
-                                    : 'red',
-                            }}
-                          >
-                            {user_possibilitie.possibility === 1
-                              ? '〇'
-                              : user_possibilitie.possibility === 5
-                                ? '？'
-                                : '×'}
-                          </Typography>
-                        </TableCell>
-                      ))}
+                    {respondents?.map((respondent, index) =>
+                      eventDetail.user_possibilities
+                        .filter(
+                          (item) =>
+                            item.event_date_id === event_date.id &&
+                            item.user_id === respondent.user_id
+                        )
+                        .map((data) => (
+                          <TableCell key={index} sx={{ minWidth: 100, textAlign: 'center' }}>
+                            <Typography
+                              sx={{
+                                color:
+                                  data.possibility === 1
+                                    ? 'green'
+                                    : data.possibility === 5
+                                      ? 'gray'
+                                      : 'red',
+                              }}
+                            >
+                              {data.possibility === 1 ? '〇' : data.possibility === 5 ? '？' : '×'}
+                            </Typography>
+                          </TableCell>
+                        ))
+                    )}
                   </TableRow>
                 ))}
               </TableBody>

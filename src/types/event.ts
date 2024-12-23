@@ -38,6 +38,11 @@ export interface EventResponse {
 // イベントの配列型
 export type EventList = Event[];
 
+export interface Respondent {
+  user_id: number;
+  user_name: string;
+}
+
 export type MergedPossibility = {
   user_id: number;
   user_name: string;

@@ -323,7 +323,6 @@ const NewEventPage: React.FC = () => {
                       )}
                     />
                   </TableCell>
-
                   <TableCell>
                     <Controller
                       control={control}

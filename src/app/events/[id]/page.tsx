@@ -252,119 +252,132 @@ const EventDetail: React.FC = () => {
         <Box
           sx={{
             borderLeft: '5px solid #4caf50', // 緑色の縦ライン
-            boxShadow: 2, // 左端に縦ラインを追加（カラー調整可）
-            paddingLeft: '10px', // 文字を右に少しずらす
+            boxShadow: 2, // ボックスの影
+            paddingLeft: '20px', // 左側の余白を広げる（縦ラインからの距離を調整）
+            paddingRight: '20px', // 右側の余白
+            paddingTop: '16px', // 上部の余白
+            paddingBottom: '16px', // 下部の余白
+            borderRadius: '8px', // ボックスの角を丸くする
           }}
         >
-          <Typography variant="h5" gutterBottom>
+          <Typography variant="h5" sx={{ fontWeight: 'bold' }} gutterBottom>
             会議室・会場・備考等
           </Typography>
-          {eventDetail?.events.description}
+          <Typography variant="body1" sx={{ color: '#555' }}>
+            {eventDetail?.events.description}
+          </Typography>
         </Box>
+
         <Box
           sx={{
             borderLeft: '5px solid #fbc02d', // ダークイエローの縦ライン
             boxShadow: 2, // 左端に縦ラインを追加（カラー調整可）
-            paddingLeft: '10px', // 文字を右に少しずらす
+            paddingLeft: '20px', // 左側の余白を広げる（縦ラインからの距離を調整）
+            paddingRight: '20px', // 右側の余白
+            paddingTop: '16px', // 上部の余白
+            paddingBottom: '16px', // 下部の余白
+            borderRadius: '8px', // ボックスの角を丸くする
           }}
         >
-          <Typography variant="h5" gutterBottom>
+          <Typography variant="h5" sx={{ fontWeight: 'bold' }} gutterBottom>
             イベント参加の状況
           </Typography>
-          <Box sx={{ mb: 2, p: 2, border: '1px solid #ccc', borderRadius: '4px' }}>
-            <TableContainer component={Paper} sx={{ boxShadow: 2, padding: 1, overflowX: 'auto' }}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ minWidth: 170 }}>イベント候補日</TableCell>
-                    <TableCell sx={{ minWidth: 50 }}>
-                      <Typography color="success">〇</Typography>
+          <TableContainer component={Paper} sx={{ boxShadow: 2, padding: 1, overflowX: 'auto' }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ minWidth: 170 }}>イベント候補日</TableCell>
+                  <TableCell sx={{ minWidth: 50 }}>
+                    <Typography color="success">〇</Typography>
+                  </TableCell>
+                  <TableCell sx={{ minWidth: 50 }}>
+                    <Typography color="action">？</Typography>
+                  </TableCell>
+                  <TableCell sx={{ minWidth: 50 }}>
+                    <Typography color="error">×</Typography>
+                  </TableCell>
+                  {eventDetail?.user_possibilities.map((user_possibilitie, index) => (
+                    <TableCell key={index} sx={{ minWidth: 100 }}>
+                      {user_possibilitie.user_name}
                     </TableCell>
-                    <TableCell sx={{ minWidth: 50 }}>
-                      <Typography color="action">？</Typography>
-                    </TableCell>
-                    <TableCell sx={{ minWidth: 50 }}>
-                      <Typography color="error">×</Typography>
-                    </TableCell>
-                    {eventDetail?.user_possibilities.map((user_possibilitie, index) => (
-                      <TableCell key={index} sx={{ minWidth: 100 }}>
-                        {user_possibilitie.user_name}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {eventDetail?.event_dates.map((event_date) => (
-                    <TableRow key={event_date.id}>
-                      <TableCell sx={{ padding: '10px' }}>
-                        <Typography>{formattedDataAndTime(event_date)}</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography sx={{ textAlign: 'center' }}>
-                          {
-                            eventDetail?.user_possibilities.filter(
-                              (possibility) => possibility.possibility === 1
-                            ).length
-                          }
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography sx={{ textAlign: 'center' }}>
-                          {
-                            eventDetail?.user_possibilities.filter(
-                              (possibility) => possibility.possibility === 5
-                            ).length
-                          }
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography sx={{ textAlign: 'center' }}>
-                          {
-                            eventDetail?.user_possibilities.filter(
-                              (possibility) => possibility.possibility === 0
-                            ).length
-                          }
-                        </Typography>
-                      </TableCell>
-                      {eventDetail?.user_possibilities
-                        .filter(
-                          (user_possibilitie) => user_possibilitie.event_date_id === event_date.id
-                        )
-                        .map((user_possibilitie, index) => (
-                          <TableCell key={index} sx={{ minWidth: 100, textAlign: 'center' }}>
-                            <Typography
-                              sx={{
-                                color:
-                                  user_possibilitie.possibility === 1
-                                    ? 'green'
-                                    : user_possibilitie.possibility === 5
-                                      ? 'gray'
-                                      : 'red',
-                              }}
-                            >
-                              {user_possibilitie.possibility === 1
-                                ? '〇'
-                                : user_possibilitie.possibility === 5
-                                  ? '？'
-                                  : '×'}
-                            </Typography>
-                          </TableCell>
-                        ))}
-                    </TableRow>
                   ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Box>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {eventDetail?.event_dates.map((event_date) => (
+                  <TableRow key={event_date.id}>
+                    <TableCell sx={{ padding: '10px' }}>
+                      <Typography>{formattedDataAndTime(event_date)}</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography sx={{ textAlign: 'center' }}>
+                        {
+                          eventDetail?.user_possibilities.filter(
+                            (possibility) => possibility.possibility === 1
+                          ).length
+                        }
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography sx={{ textAlign: 'center' }}>
+                        {
+                          eventDetail?.user_possibilities.filter(
+                            (possibility) => possibility.possibility === 5
+                          ).length
+                        }
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography sx={{ textAlign: 'center' }}>
+                        {
+                          eventDetail?.user_possibilities.filter(
+                            (possibility) => possibility.possibility === 0
+                          ).length
+                        }
+                      </Typography>
+                    </TableCell>
+                    {eventDetail?.user_possibilities
+                      .filter(
+                        (user_possibilitie) => user_possibilitie.event_date_id === event_date.id
+                      )
+                      .map((user_possibilitie, index) => (
+                        <TableCell key={index} sx={{ minWidth: 100, textAlign: 'center' }}>
+                          <Typography
+                            sx={{
+                              color:
+                                user_possibilitie.possibility === 1
+                                  ? 'green'
+                                  : user_possibilitie.possibility === 5
+                                    ? 'gray'
+                                    : 'red',
+                            }}
+                          >
+                            {user_possibilitie.possibility === 1
+                              ? '〇'
+                              : user_possibilitie.possibility === 5
+                                ? '？'
+                                : '×'}
+                          </Typography>
+                        </TableCell>
+                      ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Box>
         <Box
           sx={{
             borderLeft: '5px solid #f44336', // 赤色の縦ライン
             boxShadow: 2, // 左端に縦ラインを追加（カラー調整可）
-            paddingLeft: '10px', // 文字を右に少しずらす
+            paddingLeft: '20px', // 左側の余白を広げる（縦ラインからの距離を調整）
+            paddingRight: '20px', // 右側の余白
+            paddingTop: '16px', // 上部の余白
+            paddingBottom: '16px', // 下部の余白
+            borderRadius: '8px', // ボックスの角を丸くする
           }}
         >
-          <Typography variant="h5" gutterBottom>
+          <Typography variant="h5" sx={{ fontWeight: 'bold' }} gutterBottom>
             参加・不参加の入力
           </Typography>
 
@@ -621,14 +634,20 @@ const EventDetail: React.FC = () => {
               },
               display: 'flex',
               alignItems: 'center',
-              gap: 1, // アイコンと文字の間にスペースを追加
+              gap: 2, // アイコンと文字の間のスペースを広げる
+              padding: '16px 32px', // ボタンのパディングを大きく
+              fontSize: '20px', // 文字のサイズをさらに大きく
+              borderRadius: '10px', // ボタンの角を丸く
+              minHeight: '80px', // ボタンの最小高さを設定
+              width: 'auto', // 幅を自動調整
+              justifyContent: 'center', // コンテンツを中央に配置
             }}
           >
-            <Typography sx={{ fontSize: 18, textAlign: 'left', whiteSpace: 'pre-line' }}>
+            <Typography sx={{ fontSize: 30, textAlign: 'left', whiteSpace: 'pre-line' }}>
               ユーザーを追加して
               <br /> 参加不参加を入力する
             </Typography>
-            <EmojiPeople sx={{ fontSize: 60 }} /> {/* アイコンのサイズを調整 */}
+            <EmojiPeople sx={{ fontSize: 100 }} /> {/* アイコンのサイズを調整 */}
           </Button>
         </Box>
         <Typography

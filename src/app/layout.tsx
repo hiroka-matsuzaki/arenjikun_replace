@@ -58,6 +58,11 @@ const MainContent: React.FC<{ children: ReactNode }> = ({ children }) => {
     return data;
   };
   useEffect(() => {
+    const fetchAccessToken = async () => {
+      const response = await fetch('/api/getAccessToken');
+      const data = await response.json();
+      return data.token; // メールアドレスを設定// UserContext にユーザー情報を設定
+    };
     const fetchUserEmail = async () => {
       const response = await fetch('/api/getUserEmail');
       const data = await response.json();
@@ -65,7 +70,11 @@ const MainContent: React.FC<{ children: ReactNode }> = ({ children }) => {
     };
     const fetchData = async () => {
       try {
+        const AccessToken = await fetchAccessToken();
+        console.log('AccessToken:', AccessToken);
+
         const loginEmail = await fetchUserEmail();
+        console.log('loginEmail:', loginEmail);
         const userData = await fetchUser(loginEmail);
         setUser(userData);
         console.log('取得したユーザー情報:', userData);

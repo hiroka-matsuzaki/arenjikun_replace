@@ -142,13 +142,15 @@ const NewEventPage: React.FC = () => {
       description: data.venue,
       date_from: data.dateOptions.map((opt) => formatDateTime(opt.date, opt.start)),
       date_to: data.dateOptions.map((opt) => formatDateTime(opt.date, opt.end)),
+      event_dates_id: eventDetail?.event_dates.map((opt) => opt.id),
     };
+    console.log('payload:', await payload);
 
     try {
       const response = await fetch(
-        `https://azure-api-opf.azurewebsites.net/api/events?email=${user?.email}`,
+        `https://azure-api-opf.azurewebsites.net/api/events/${id}?email=${user?.email}`,
         {
-          method: 'POST',
+          method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
           },

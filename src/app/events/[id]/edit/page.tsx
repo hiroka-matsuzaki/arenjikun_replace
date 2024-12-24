@@ -176,7 +176,7 @@ const NewEventPage: React.FC = () => {
   };
 
   return (
-    <Box onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <Box
         display="flex"
         alignItems="center" // 垂直方向を中央揃え
@@ -429,7 +429,7 @@ const NewEventPage: React.FC = () => {
           </Typography>
         )}
       </Box>
-    </Box>
+    </form>
   );
 };
 

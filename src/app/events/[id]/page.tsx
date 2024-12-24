@@ -524,7 +524,7 @@ const EventDetail: React.FC = () => {
                   </Grid>
                 </Grid>
                 <Box mb={2} sx={{ width: '100%', pt: 2 }}>
-                  <Box onSubmit={handleSubmit(onSubmit)}>
+                  <form onSubmit={handleSubmit(onSubmit)}>
                     <TableContainer
                       component={Paper}
                       sx={{ boxShadow: 2, padding: 1, overflowX: 'auto' }}
@@ -674,7 +674,7 @@ const EventDetail: React.FC = () => {
                         送信
                       </Button>
                     </Box>
-                  </Box>
+                  </form>
                 </Box>
               </Box>
             </Box>

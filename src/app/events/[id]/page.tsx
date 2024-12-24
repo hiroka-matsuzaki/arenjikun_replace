@@ -115,6 +115,7 @@ const EventDetail: React.FC = () => {
   useEffect(() => {
     fetchEventDetail();
   }, []);
+
   const [onOff, setonOff] = React.useState(false);
   const { handleSubmit, control } = useForm<FormData>();
   const handleCopyLink = () => {
@@ -159,7 +160,8 @@ const EventDetail: React.FC = () => {
       const updateResult = await updateResponse.text();
       console.log('更新結果:', updateResult);
 
-      alert('データが正常に送信されました！');
+      await fetchEventDetail();
+      setonOff(false);
     } catch (error) {
       if (error instanceof Error) {
         console.error('エラー:', error.message);

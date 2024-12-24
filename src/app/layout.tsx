@@ -5,6 +5,7 @@ import ResponsiveAppBar from '@/components/ResponsiveAppBar';
 import './globals.css';
 import { ReactNode } from 'react';
 import { User, UserProvider, useUser } from './context/UserContext';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 export default function RootLayout({
   children,
@@ -21,7 +22,9 @@ export default function RootLayout({
     </html>
   );
 }
-
+interface DecodedToken extends JwtPayload {
+  upn: string; // JwtPayload を拡張して 'upn' プロパティを追加
+}
 const MainContent: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { setUser } = useUser();
   const fetchUser = async (loginEmail: string): Promise<User> => {
@@ -54,13 +57,21 @@ const MainContent: React.FC<{ children: ReactNode }> = ({ children }) => {
     };
     const fetchData = async () => {
       try {
-        const decodeToken = await fetchDecodeToken();
-        console.log('decodeToken:', decodeToken);
-        const loginEmail = decodeToken['upn'];
-        console.log('loginEmail:', loginEmail);
-        const userData = await fetchUser(loginEmail);
-        setUser(userData);
-        console.log('取得したユーザー情報:', userData);
+        const accessToken = await fetchDecodeToken();
+        console.log('accessToken:', accessToken);
+        const decoded = jwt.decode(accessToken);
+
+        // decoded が JwtPayload 型で upn プロパティがある場合の型ガード
+        if (decoded && typeof decoded !== 'string' && 'upn' in decoded) {
+          const loginEmail = (decoded as DecodedToken).upn;
+          console.log('loginEmail:', loginEmail);
+
+          const userData = await fetchUser(loginEmail);
+          setUser(userData);
+          console.log('取得したユーザー情報:', userData);
+        } else {
+          console.error('トークンのデコードに失敗しました。無効なトークンかもしれません。');
+        }
       } catch (error) {
         console.error('データ取得エラー:', error);
       }

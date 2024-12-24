@@ -1,13 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
-import {
-  EventDate,
-  EventResponse,
-  MergedgatedData,
-  Respondent,
-  UserPossibility,
-} from '@/types/event';
+import { EventDate, EventResponse, Respondent, UserPossibility } from '@/types/event';
 import Grid from '@mui/material/Grid2';
 
 import {
@@ -38,9 +32,8 @@ import { EmojiPeople, Link } from '@mui/icons-material';
 import { Controller, useForm } from 'react-hook-form';
 import typographyStyles from '@/styles/typographyStyles';
 
-// フォームデータの型
 type FormData = {
-  [key: string]: string | number; // 動的に生成されるフィールドをサポート
+  [key: string]: string | number;
 };
 
 const formatTime = (time: number): string => {
@@ -50,8 +43,6 @@ const formatTime = (time: number): string => {
 };
 const formatDate = (isoDateString: string) => {
   const date = new Date(isoDateString);
-
-  // 年、月、日、曜日を取得
   const year = date.getFullYear();
   const month = (date.getMonth() + 1).toString().padStart(2, '0');
   const day = date.getDate().toString().padStart(2, '0');
@@ -63,14 +54,13 @@ const formatDate = (isoDateString: string) => {
 };
 const formattedDataAndTime = (eventDate: EventDate) => {
   const formattedDate = formatDate(eventDate.dated_on);
-  // 開始時間と終了時間のフォーマット
   const startTime = formatTime(eventDate.start_time);
   const endTime = formatTime(eventDate.end_time);
   return `${formattedDate} ${startTime}-${endTime}`;
 };
 
 const EventDetail: React.FC = () => {
-  const { user } = useUser(); // UserContextからユーザー情報を取得
+  const { user } = useUser();
   const [eventDetail, setEventDetail] = useState<EventResponse>();
   const [respondents, setRespondent] = useState<Respondent[]>();
 
@@ -84,43 +74,6 @@ const EventDetail: React.FC = () => {
     goTo(`/events/${id}/edit`);
   };
 
-  const mergedEventData = (
-    eventDates: EventDate[],
-    userPossibilities: UserPossibility[]
-  ): MergedgatedData[] => {
-    // user_possibilities を事前に event_date_id でグループ化
-    const groupedPossibilities = (userPossibilities || []).reduce(
-      (acc, possibility) => {
-        if (!acc[possibility.event_date_id]) {
-          acc[possibility.event_date_id] = [];
-        }
-        acc[possibility.event_date_id].push(possibility);
-        return acc;
-      },
-      {} as Record<number, UserPossibility[]>
-    );
-
-    // event_dates を整形
-    return eventDates.map((eventDate) => ({
-      id: eventDate.id,
-      dated_on: eventDate.dated_on,
-      event_id: eventDate.event_id,
-      start_time: eventDate.start_time,
-      end_time: eventDate.end_time,
-      possibilities: (groupedPossibilities[eventDate.id] || []).map((possibility) => ({
-        user_id: possibility.user_id,
-        user_name: possibility.user_name,
-        possibility: possibility.possibility,
-        comment: possibility.comment,
-      })),
-    }));
-  };
-
-  const aggregatedData = eventDetail
-    ? mergedEventData(eventDetail.event_dates, eventDetail.user_possibilities)
-    : [];
-  console.log(aggregatedData);
-  // イベントを取得する関数
   const fetchEventDetail = async () => {
     try {
       const response = await fetch(`https://azure-api-opf.azurewebsites.net/api/events/${id}`);
@@ -129,6 +82,9 @@ const EventDetail: React.FC = () => {
       }
       const data: EventResponse = await response.json();
       console.log('データ:', data);
+      setEventDetail(data);
+      fetchMyPossibilities(data);
+
       const users = Array.from(
         data.user_possibilities
           .reduce((map, item) => {
@@ -140,8 +96,6 @@ const EventDetail: React.FC = () => {
           .values()
       );
       setRespondent(users);
-      setEventDetail(data);
-      fetchMyPossibilities(data);
     } catch (error) {
       console.error('データ取得エラー:', error);
     }
@@ -161,11 +115,11 @@ const EventDetail: React.FC = () => {
 
   useEffect(() => {
     fetchEventDetail();
-  }, []); // 空の依存配列
+  }, []);
   const [onOff, setonOff] = React.useState(false);
   const { handleSubmit, control } = useForm<FormData>();
   const handleCopyLink = () => {
-    const urlToCopy = window.location.href; // 現在のURL
+    const urlToCopy = window.location.href;
     navigator.clipboard
       .writeText(urlToCopy)
       .then(() => {
@@ -222,11 +176,11 @@ const EventDetail: React.FC = () => {
         display="flex"
         sx={{
           justifyContent: 'left',
-          height: '80px', // 縦方向の中央揃え
-          border: '1px solid #ccc', // 四角の枠線
-          padding: '20px', // 内側の余白
-          mx: '10%', // 左右の余白を画面幅の3%に設定
-          mt: '2%', // 上部に20pxのマージンを追加
+          height: '80px',
+          border: '1px solid #ccc',
+          padding: '20px',
+          mx: '10%',
+          mt: '2%',
         }}
       >
         <Typography variant="h4" gutterBottom sx={typographyStyles.header}>
@@ -244,23 +198,22 @@ const EventDetail: React.FC = () => {
           flexDirection: 'column',
           alignItems: 'left',
           justifyContent: 'left',
-          // height: '70vh', // ボックス全体の高さ
-          border: '1px solid #ccc', // 四角の枠線
-          padding: '20px', // 内側の余白
-          mx: '10%', // 左右の余白を画面幅の3%に設定
+          border: '1px solid #ccc',
+          padding: '20px',
+          mx: '10%',
           backgroundColor: 'white',
           gap: 4,
         }}
       >
         <Box
           sx={{
-            borderLeft: '5px solid #4caf50', // 緑色の縦ライン
-            boxShadow: 2, // ボックスの影
-            paddingLeft: '20px', // 左側の余白を広げる（縦ラインからの距離を調整）
-            paddingRight: '20px', // 右側の余白
-            paddingTop: '16px', // 上部の余白
-            paddingBottom: '16px', // 下部の余白
-            borderRadius: '8px', // ボックスの角を丸くする
+            borderLeft: '5px solid #4caf50',
+            boxShadow: 2,
+            paddingLeft: '20px',
+            paddingRight: '20px',
+            paddingTop: '16px',
+            paddingBottom: '16px',
+            borderRadius: '8px',
           }}
         >
           <Typography variant="h5" gutterBottom sx={typographyStyles.subHeader}>

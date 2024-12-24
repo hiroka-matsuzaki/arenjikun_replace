@@ -42,19 +42,3 @@ export interface Respondent {
   user_id: number;
   user_name: string;
 }
-
-export type MergedPossibility = {
-  user_id: number;
-  user_name: string;
-  possibility: number;
-  comment: string;
-};
-
-export type MergedgatedData = {
-  id: number;
-  dated_on: string;
-  event_id: number;
-  start_time: number;
-  end_time: number;
-  possibilities: MergedPossibility[];
-};

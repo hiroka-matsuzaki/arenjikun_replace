@@ -50,14 +50,14 @@ const MainContent: React.FC<{ children: ReactNode }> = ({ children }) => {
     return data;
   };
   useEffect(() => {
-    const fetchDecodeToken = async () => {
-      const response = await fetch('/api/getDecodeToken');
+    const fetchAccessToken = async () => {
+      const response = await fetch('/api/getAccessToken');
       const data = await response.json();
       return data.token;
     };
     const fetchData = async () => {
       try {
-        const accessToken = await fetchDecodeToken();
+        const accessToken = await fetchAccessToken();
         console.log('accessToken:', accessToken);
         const decoded = jwt.decode(accessToken);
 

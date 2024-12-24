@@ -157,9 +157,30 @@ const ResponsiveAppBar: React.FC<Props> = ({ userName }) => {
           <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center' }}>
             <Person sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
             {userName ? (
-              <Typography>{userName}</Typography> // ユーザー名があれば表示
+              <Typography
+                sx={{
+                  fontSize: {
+                    xs: '0', // 小さい画面ではフォントサイズを小さく
+                    sm: '1rem', // 中くらいの画面では標準のフォントサイズ
+                    md: '1.125rem', // 大きい画面では少し大きく
+                  },
+                  fontWeight: 'bold', // ユーザー名を強調するために太字
+                }}
+              >
+                {userName}
+              </Typography>
             ) : (
-              <Typography>login</Typography> // ユーザー名がなければログイン促し
+              <Typography
+                sx={{
+                  fontSize: {
+                    xs: '0', // 小さい画面ではフォントサイズを小さく
+                    sm: '1rem', // 中くらいの画面では標準のフォントサイズ
+                    md: '1.125rem', // 大きい画面では少し大きく
+                  },
+                }}
+              >
+                login
+              </Typography>
             )}
           </Box>
         </Toolbar>

@@ -90,6 +90,7 @@ const EventsPage = () => {
     <>
       <Box
         sx={{
+          display: 'flex',
           justifyContent: 'left',
           height: '80px', // 縦方向の中央揃え
           border: '1px solid #ccc', // 四角の枠線
@@ -98,10 +99,23 @@ const EventsPage = () => {
           mt: '2%', // 上部にマージンを追加
         }}
       >
-        <Typography variant="h4" gutterBottom>
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{
+            fontSize: {
+              xs: '1.5rem', // 小さい画面ではフォントサイズを小さく
+              sm: '2rem', // 中くらいの画面では少し大きく
+              md: '2.5rem', // 大きい画面ではさらに大きく
+              lg: '3rem', // より大きい画面ではもっと大きく
+            },
+            fontWeight: 'bold', // 太字にしたい場合
+          }}
+        >
           イベント一覧
         </Typography>
       </Box>
+
       <Box
         sx={{
           display: 'flex',
@@ -116,10 +130,14 @@ const EventsPage = () => {
           backgroundColor: 'white',
         }}
       >
-        <Box style={{ display: 'flex', flexDirection: 'column' }}>
+        <Box style={{ display: 'flex', flexDirection: 'column', overflowX: 'auto' }}>
           <DataGrid
             rows={events}
-            columns={columns}
+            columns={columns.map((column) => ({
+              ...column,
+              flex: column.flex || 1, // flexプロパティを使用して列幅を動的に設定
+              minWidth: column.minWidth || 150, // 最小幅を設定、指定がない場合は150pxをデフォルトに
+            }))}
             density="standard"
             pageSizeOptions={[5, 10, 15]}
             sx={{
@@ -133,8 +151,7 @@ const EventsPage = () => {
                 backgroundColor: 'inherit', // ホバー時の背景色を変更しない
               },
               boxShadow: 1,
-              // minWidth: 900,
-              overflowX: 'auto',
+              width: '100%', // 親コンテナの幅に合わせる
             }}
             initialState={{
               pagination: {
@@ -145,7 +162,7 @@ const EventsPage = () => {
             }}
             disableRowSelectionOnClick
             disableColumnSelector
-            getRowId={(events) => events.id}
+            getRowId={(event) => event.id}
           />
         </Box>
       </Box>

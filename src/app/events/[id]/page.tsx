@@ -228,7 +228,19 @@ const EventDetail: React.FC = () => {
           mt: '2%', // 上部に20pxのマージンを追加
         }}
       >
-        <Typography variant="h4" gutterBottom>
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{
+            fontSize: {
+              xs: '1.5rem', // 小さい画面ではフォントサイズを小さく
+              sm: '2rem', // 中くらいの画面では少し大きく
+              md: '2.5rem', // 大きい画面ではさらに大きく
+              lg: '3rem', // より大きい画面ではもっと大きく
+            },
+            fontWeight: 'bold', // 太字にしたい場合
+          }}
+        >
           {eventDetail?.events.subject}
         </Typography>
         <Tooltip title="URLをコピー">
@@ -262,7 +274,19 @@ const EventDetail: React.FC = () => {
             borderRadius: '8px', // ボックスの角を丸くする
           }}
         >
-          <Typography variant="h5" sx={{ fontWeight: 'bold' }} gutterBottom>
+          <Typography
+            variant="h5"
+            gutterBottom
+            sx={{
+              fontSize: {
+                xs: '1.25rem', // 小さい画面ではフォントサイズを小さく
+                sm: '1.5rem', // 中くらいの画面では少し大きく
+                md: '2rem', // 大きい画面ではさらに大きく
+                lg: '3rem', // より大きい画面ではもっと大きく
+              },
+              fontWeight: 'bold', // 太字にしたい場合
+            }}
+          >
             会議室・会場・備考等
           </Typography>
           <Typography variant="body1" sx={{ color: '#555' }}>
@@ -281,7 +305,19 @@ const EventDetail: React.FC = () => {
             borderRadius: '8px', // ボックスの角を丸くする
           }}
         >
-          <Typography variant="h5" sx={{ fontWeight: 'bold' }} gutterBottom>
+          <Typography
+            variant="h5"
+            gutterBottom
+            sx={{
+              fontSize: {
+                xs: '1.25rem', // 小さい画面ではフォントサイズを小さく
+                sm: '1.5rem', // 中くらいの画面では少し大きく
+                md: '2rem', // 大きい画面ではさらに大きく
+                lg: '3rem', // より大きい画面ではもっと大きく
+              },
+              fontWeight: 'bold', // 太字にしたい場合
+            }}
+          >
             イベント参加の状況
           </Typography>
           <TableContainer component={Paper} sx={{ boxShadow: 2, padding: 1, overflowX: 'auto' }}>
@@ -299,7 +335,7 @@ const EventDetail: React.FC = () => {
                     <Typography color="error">×</Typography>
                   </TableCell>
                   {respondents?.map((respondent, index) => (
-                    <TableCell key={index} sx={{ minWidth: 100 }}>
+                    <TableCell key={index} sx={{ minWidth: 150 }}>
                       {respondent.user_name}
                     </TableCell>
                   ))}
@@ -385,7 +421,19 @@ const EventDetail: React.FC = () => {
             borderRadius: '8px', // ボックスの角を丸くする
           }}
         >
-          <Typography variant="h5" sx={{ fontWeight: 'bold' }} gutterBottom>
+          <Typography
+            variant="h5"
+            gutterBottom
+            sx={{
+              fontSize: {
+                xs: '1.25rem', // 小さい画面ではフォントサイズを小さく
+                sm: '1.5rem', // 中くらいの画面では少し大きく
+                md: '2rem', // 大きい画面ではさらに大きく
+                lg: '3rem', // より大きい画面ではもっと大きく
+              },
+              fontWeight: 'bold', // 太字にしたい場合
+            }}
+          >
             参加・不参加の入力
           </Typography>
 
@@ -395,79 +443,79 @@ const EventDetail: React.FC = () => {
             onClick={() => {
               fetchEventDetail();
               setonOff(false);
-            }} // 背景クリックで閉じる
+            }}
             sx={{ zIndex: (theme) => theme.zIndex.modal - 1 }}
           />
           {onOff && (
             <Box
               sx={{
                 position: 'fixed',
-                top: '3%', // 上部に配置
+                top: '3%',
                 left: '50%',
-                transform: 'translateX(-50%)', // 横方向に中央配置
+                transform: 'translateX(-50%)',
                 bgcolor: 'background.paper',
-                p: 2, // パディングを少し小さくしてコンパクトに
+                p: 2,
                 borderRadius: 2,
                 boxShadow: 24,
-                zIndex: (theme) => theme.zIndex.modal, // Backdropより上に表示
-                width: '80%', // 幅を調整
-                maxWidth: '800px', // 最大幅を指定（任意）
-                height: 'auto', // 高さは自動調整
-                // border: '3px solid red',
-                overflowY: 'auto', // はみ出す部分はスクロール
+                zIndex: (theme) => theme.zIndex.modal,
+                width: '80%',
+                maxWidth: '800px',
+                height: 'auto',
+                overflowY: 'auto',
               }}
             >
-              <Typography variant="h5" gutterBottom>
+              <Typography
+                variant="h5"
+                gutterBottom
+                sx={{
+                  fontSize: {
+                    xs: '1.25rem',
+                    sm: '1.5rem',
+                    md: '2rem',
+                    lg: '3rem',
+                  },
+                  fontWeight: 'bold',
+                }}
+              >
                 参加・不参加の入力
               </Typography>
-
               <Box
                 sx={{
                   display: 'flex',
                   flexDirection: 'column',
-                  alignItems: 'flex-start', // 左寄せ
+                  alignItems: 'flex-start',
                   border: '1px solid #ccc',
-                  padding: 2, // 内側の余白
+                  padding: 2,
                   backgroundColor: 'white',
-                  borderRadius: 1, // 角丸を少しつける
-                  mb: 2, // 下に余白を追加
-                  // border: '3px solid green',
+                  borderRadius: 1,
+                  mb: 2,
                 }}
               >
                 <Grid container spacing={2}>
-                  {/* ログインID */}
                   <Grid size={6}>
                     <FormControl fullWidth>
                       <FormLabel>ログインID</FormLabel>
                       <OutlinedInput defaultValue={user?.login_code} disabled />
                     </FormControl>
                   </Grid>
-
-                  {/* 社員番号 */}
                   <Grid size={6}>
                     <FormControl fullWidth>
                       <FormLabel>社員番号</FormLabel>
                       <OutlinedInput defaultValue={user?.user_code} disabled />
                     </FormControl>
                   </Grid>
-
-                  {/* 会社 */}
                   <Grid size={6}>
                     <FormControl fullWidth>
                       <FormLabel>会社</FormLabel>
                       <OutlinedInput defaultValue={user?.companyts} disabled />
                     </FormControl>
                   </Grid>
-
-                  {/* 部署 */}
                   <Grid size={6}>
                     <FormControl fullWidth>
                       <FormLabel>部署</FormLabel>
                       <OutlinedInput defaultValue={user?.department} disabled />
                     </FormControl>
                   </Grid>
-
-                  {/* 名前 */}
                   <Grid size={12}>
                     <FormControl fullWidth>
                       <FormLabel>名前</FormLabel>
@@ -476,14 +524,17 @@ const EventDetail: React.FC = () => {
                   </Grid>
                 </Grid>
                 <Box mb={2} sx={{ width: '100%', pt: 2 }}>
-                  <form onSubmit={handleSubmit(onSubmit)}>
-                    <TableContainer component={Paper} sx={{ boxShadow: 2, padding: 1 }}>
-                      <Table>
+                  <Box onSubmit={handleSubmit(onSubmit)}>
+                    <TableContainer
+                      component={Paper}
+                      sx={{ boxShadow: 2, padding: 1, overflowX: 'auto' }}
+                    >
+                      <Table sx={{ minWidth: '600px' }}>
                         <TableHead>
                           <TableRow>
-                            <TableCell>イベント候補日</TableCell>
-                            <TableCell>参加可否</TableCell>
-                            <TableCell>コメント</TableCell>
+                            <TableCell sx={{ minWidth: 150 }}>イベント候補日</TableCell>
+                            <TableCell sx={{ minWidth: 150 }}>参加可否</TableCell>
+                            <TableCell sx={{ minWidth: 200 }}>コメント</TableCell>
                           </TableRow>
                         </TableHead>
                         <TableBody>
@@ -623,39 +674,67 @@ const EventDetail: React.FC = () => {
                         送信
                       </Button>
                     </Box>
-                  </form>
+                  </Box>
                 </Box>
               </Box>
-              {/* 登録ボタン */}
             </Box>
           )}
 
-          {/* トリガーボタン */}
           <Button
             onClick={() => setonOff(true)}
             variant="contained"
             color="primary"
             sx={{
-              backgroundColor: '#a0c4ff', // 薄い青の背景色
+              backgroundColor: '#a0c4ff',
               '&:hover': {
-                backgroundColor: '#7bb7f0', // ホバー時の色
+                backgroundColor: '#7bb7f0',
               },
               display: 'flex',
               alignItems: 'center',
-              gap: 2, // アイコンと文字の間のスペースを広げる
-              padding: '16px 32px', // ボタンのパディングを大きく
-              fontSize: '20px', // 文字のサイズをさらに大きく
-              borderRadius: '10px', // ボタンの角を丸く
-              minHeight: '80px', // ボタンの最小高さを設定
+              gap: 2,
+              padding: {
+                xs: '12px 24px',
+                sm: '16px 32px',
+                md: '16px 40px',
+              },
+              fontSize: {
+                xs: '16px',
+                sm: '18px',
+                md: '20px',
+              },
+              borderRadius: '10px',
+              minHeight: {
+                xs: '60px',
+                sm: '70px',
+                md: '80px',
+              },
               width: 'auto', // 幅を自動調整
-              justifyContent: 'center', // コンテンツを中央に配置
+              justifyContent: 'center',
             }}
           >
-            <Typography sx={{ fontSize: 30, textAlign: 'left', whiteSpace: 'pre-line' }}>
+            <Typography
+              sx={{
+                fontSize: {
+                  xs: '14px',
+                  sm: '16px',
+                  md: '18px',
+                },
+                textAlign: 'left',
+                whiteSpace: 'pre-line',
+              }}
+            >
               ユーザーを追加して
               <br /> 参加不参加を入力する
             </Typography>
-            <EmojiPeople sx={{ fontSize: 100 }} /> {/* アイコンのサイズを調整 */}
+            <EmojiPeople
+              sx={{
+                fontSize: {
+                  xs: '0px',
+                  sm: '60px',
+                  md: '100px',
+                },
+              }}
+            />
           </Button>
         </Box>
         <Typography

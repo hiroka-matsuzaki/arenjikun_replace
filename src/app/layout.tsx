@@ -61,31 +61,50 @@ const MainContent: React.FC<{ children: ReactNode }> = ({ children }) => {
     const fetchDecodeToken = async () => {
       const response = await fetch('/api/getDecodeToken');
       const data = await response.json();
-      return data.token; // メールアドレスを設定// UserContext にユーザー情報を設定
+      return data.token;
     };
     const fetchData = async () => {
       try {
-        const decodeToken = await fetchDecodeToken();
-        console.log('decodeToken:', decodeToken);
-        const loginEmail = decodeToken['upn'];
-        console.log('loginEmail:', loginEmail);
+        const loginEmail: string =
+          process.env.NODE_ENV === 'development'
+            ? 's.matsuzaki@hiroka.biz'
+            : await (async () => {
+                const decodeToken = await fetchDecodeToken();
+                console.log('decodeToken:', decodeToken);
+
+                if (!decodeToken || !decodeToken['upn']) {
+                  throw new Error('Invalid token or "upn" is missing');
+                }
+
+                return decodeToken['upn'];
+              })();
+
+        console.log('メールアドレス:', loginEmail);
+
         const userData = await fetchUser(loginEmail);
+
+        if (!userData) {
+          throw new Error('Failed to fetch user data');
+        }
+
         setUser(userData);
         console.log('取得したユーザー情報:', userData);
       } catch (error) {
         console.error('データ取得エラー:', error);
+
+        alert('ユーザー情報の取得中にエラーが発生しました。もう一度お試しください。');
       }
     };
 
     fetchData();
   }, [setUser]);
 
-  const { user } = useUser(); // UserContextからユーザー情報を取得
+  const { user } = useUser();
 
   return (
     <>
-      <ResponsiveAppBar userName={user ? user.user_name : null} /> {/* ユーザー名を渡す */}
-      <main>{children}</main> {/* 各ページのコンテンツ */}
+      <ResponsiveAppBar userName={user ? user.user_name : null} />
+      <main>{children}</main>
     </>
   );
 };

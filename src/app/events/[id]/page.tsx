@@ -63,9 +63,8 @@ const EventDetail: React.FC = () => {
   const { user } = useUser();
   const [eventDetail, setEventDetail] = useState<EventResponse>();
   const [respondents, setRespondent] = useState<Respondent[]>();
-
   const [myPossibilities, setMyPossibilities] = useState<UserPossibility[]>();
-
+  const [tooltipTitle, setTooltipTitle] = React.useState('URLをコピー');
   const params = useParams();
   const id = params?.id as string | undefined;
   const router = useRouter();
@@ -123,7 +122,8 @@ const EventDetail: React.FC = () => {
     navigator.clipboard
       .writeText(urlToCopy)
       .then(() => {
-        alert('URLをコピーしました: ' + urlToCopy);
+        setTooltipTitle('コピーしました！'); // クリック後にツールチップを非表示
+        setTimeout(() => setTooltipTitle('URLをコピー'), 3000); // 3秒後に再度表示
       })
       .catch((err) => {
         console.error('URLコピーに失敗しました', err);
@@ -186,7 +186,8 @@ const EventDetail: React.FC = () => {
         <Typography variant="h4" gutterBottom sx={typographyStyles.header}>
           {eventDetail?.events.subject}
         </Typography>
-        <Tooltip title="URLをコピー">
+
+        <Tooltip title={tooltipTitle}>
           <IconButton onClick={handleCopyLink} color="primary">
             <Link />
           </IconButton>

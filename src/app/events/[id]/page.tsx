@@ -234,9 +234,9 @@ const EventDetail: React.FC = () => {
           sx={{
             fontSize: {
               xs: '1.5rem', // 小さい画面ではフォントサイズを小さく
-              sm: '2rem', // 中くらいの画面では少し大きく
-              md: '2.5rem', // 大きい画面ではさらに大きく
-              lg: '3rem', // より大きい画面ではもっと大きく
+              sm: '1.75rem', // 中くらいの画面では少し大きく
+              md: '2rem', // 大きい画面ではさらに大きく
+              lg: '2.25rem', // より大きい画面ではもっと大きく
             },
             fontWeight: 'bold', // 太字にしたい場合
           }}
@@ -279,10 +279,10 @@ const EventDetail: React.FC = () => {
             gutterBottom
             sx={{
               fontSize: {
-                xs: '1.25rem', // 小さい画面ではフォントサイズを小さく
-                sm: '1.5rem', // 中くらいの画面では少し大きく
-                md: '2rem', // 大きい画面ではさらに大きく
-                lg: '3rem', // より大きい画面ではもっと大きく
+                xs: '1rem',
+                sm: '1.25rem',
+                md: '1.5rem',
+                lg: '1.75rem',
               },
               fontWeight: 'bold', // 太字にしたい場合
             }}
@@ -310,10 +310,10 @@ const EventDetail: React.FC = () => {
             gutterBottom
             sx={{
               fontSize: {
-                xs: '1.25rem', // 小さい画面ではフォントサイズを小さく
-                sm: '1.5rem', // 中くらいの画面では少し大きく
-                md: '2rem', // 大きい画面ではさらに大きく
-                lg: '3rem', // より大きい画面ではもっと大きく
+                xs: '1rem',
+                sm: '1.25rem',
+                md: '1.5rem',
+                lg: '1.75rem',
               },
               fontWeight: 'bold', // 太字にしたい場合
             }}
@@ -426,10 +426,10 @@ const EventDetail: React.FC = () => {
             gutterBottom
             sx={{
               fontSize: {
-                xs: '1.25rem', // 小さい画面ではフォントサイズを小さく
-                sm: '1.5rem', // 中くらいの画面では少し大きく
-                md: '2rem', // 大きい画面ではさらに大きく
-                lg: '3rem', // より大きい画面ではもっと大きく
+                xs: '1rem',
+                sm: '1.25rem',
+                md: '1.5rem',
+                lg: '1.75rem',
               },
               fontWeight: 'bold', // 太字にしたい場合
             }}
@@ -469,10 +469,10 @@ const EventDetail: React.FC = () => {
                 gutterBottom
                 sx={{
                   fontSize: {
-                    xs: '1.25rem',
-                    sm: '1.5rem',
-                    md: '2rem',
-                    lg: '3rem',
+                    xs: '1rem',
+                    sm: '1.25rem',
+                    md: '1.5rem',
+                    lg: '1.75rem',
                   },
                   fontWeight: 'bold',
                 }}
@@ -715,9 +715,10 @@ const EventDetail: React.FC = () => {
             <Typography
               sx={{
                 fontSize: {
-                  xs: '14px',
-                  sm: '16px',
-                  md: '25px',
+                  xs: '1rem',
+                  sm: '1.25rem',
+                  md: '1.5rem',
+                  lg: '1.75rem',
                 },
                 textAlign: 'left',
                 whiteSpace: 'pre-line',

@@ -6,6 +6,7 @@ import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { Event, EventList } from '@/types/event';
 import { useRouter } from 'next/navigation';
 import { useUser } from '../context/UserContext';
+import typographyStyles from '@/styles/typographyStyles';
 
 const EventsPage = () => {
   const router = useRouter();
@@ -99,19 +100,7 @@ const EventsPage = () => {
           mt: '2%', // 上部にマージンを追加
         }}
       >
-        <Typography
-          variant="h4"
-          gutterBottom
-          sx={{
-            fontSize: {
-              xs: '1.5rem', // 小さい画面ではフォントサイズを小さく
-              sm: '1.75rem', // 中くらいの画面では少し大きく
-              md: '2rem', // 大きい画面ではさらに大きく
-              lg: '2.25rem', // より大きい画面ではもっと大きく
-            },
-            fontWeight: 'bold', // 太字にしたい場合
-          }}
-        >
+        <Typography variant="h4" gutterBottom sx={typographyStyles.header}>
           イベント一覧
         </Typography>
       </Box>

@@ -36,6 +36,7 @@ import React, { useEffect, useState } from 'react';
 import { useUser } from '@/app/context/UserContext';
 import { EmojiPeople, Link } from '@mui/icons-material';
 import { Controller, useForm } from 'react-hook-form';
+import typographyStyles from '@/styles/typographyStyles';
 
 // フォームデータの型
 type FormData = {
@@ -228,19 +229,7 @@ const EventDetail: React.FC = () => {
           mt: '2%', // 上部に20pxのマージンを追加
         }}
       >
-        <Typography
-          variant="h4"
-          gutterBottom
-          sx={{
-            fontSize: {
-              xs: '1.5rem', // 小さい画面ではフォントサイズを小さく
-              sm: '1.75rem', // 中くらいの画面では少し大きく
-              md: '2rem', // 大きい画面ではさらに大きく
-              lg: '2.25rem', // より大きい画面ではもっと大きく
-            },
-            fontWeight: 'bold', // 太字にしたい場合
-          }}
-        >
+        <Typography variant="h4" gutterBottom sx={typographyStyles.header}>
           {eventDetail?.events.subject}
         </Typography>
         <Tooltip title="URLをコピー">
@@ -274,19 +263,7 @@ const EventDetail: React.FC = () => {
             borderRadius: '8px', // ボックスの角を丸くする
           }}
         >
-          <Typography
-            variant="h5"
-            gutterBottom
-            sx={{
-              fontSize: {
-                xs: '1rem',
-                sm: '1.25rem',
-                md: '1.5rem',
-                lg: '1.75rem',
-              },
-              fontWeight: 'bold', // 太字にしたい場合
-            }}
-          >
+          <Typography variant="h5" gutterBottom sx={typographyStyles.subHeader}>
             会議室・会場・備考等
           </Typography>
           <Typography variant="body1" sx={{ color: '#555' }}>
@@ -296,28 +273,16 @@ const EventDetail: React.FC = () => {
 
         <Box
           sx={{
-            borderLeft: '5px solid #fbc02d', // ダークイエローの縦ライン
-            boxShadow: 2, // 左端に縦ラインを追加（カラー調整可）
-            paddingLeft: '20px', // 左側の余白を広げる（縦ラインからの距離を調整）
-            paddingRight: '20px', // 右側の余白
-            paddingTop: '16px', // 上部の余白
-            paddingBottom: '16px', // 下部の余白
-            borderRadius: '8px', // ボックスの角を丸くする
+            borderLeft: '5px solid #fbc02d',
+            boxShadow: 2,
+            paddingLeft: '20px',
+            paddingRight: '20px',
+            paddingTop: '16px',
+            paddingBottom: '16px',
+            borderRadius: '8px',
           }}
         >
-          <Typography
-            variant="h5"
-            gutterBottom
-            sx={{
-              fontSize: {
-                xs: '1rem',
-                sm: '1.25rem',
-                md: '1.5rem',
-                lg: '1.75rem',
-              },
-              fontWeight: 'bold', // 太字にしたい場合
-            }}
-          >
+          <Typography variant="h5" gutterBottom sx={typographyStyles.subHeader}>
             イベント参加の状況
           </Typography>
           <TableContainer component={Paper} sx={{ boxShadow: 2, padding: 1, overflowX: 'auto' }}>
@@ -412,32 +377,19 @@ const EventDetail: React.FC = () => {
         </Box>
         <Box
           sx={{
-            borderLeft: '5px solid #f44336', // 赤色の縦ライン
-            boxShadow: 2, // 左端に縦ラインを追加（カラー調整可）
-            paddingLeft: '20px', // 左側の余白を広げる（縦ラインからの距離を調整）
-            paddingRight: '20px', // 右側の余白
-            paddingTop: '16px', // 上部の余白
-            paddingBottom: '16px', // 下部の余白
-            borderRadius: '8px', // ボックスの角を丸くする
+            borderLeft: '5px solid #f44336',
+            boxShadow: 2,
+            paddingLeft: '20px',
+            paddingRight: '20px',
+            paddingTop: '16px',
+            paddingBottom: '16px',
+            borderRadius: '8px',
           }}
         >
-          <Typography
-            variant="h5"
-            gutterBottom
-            sx={{
-              fontSize: {
-                xs: '1rem',
-                sm: '1.25rem',
-                md: '1.5rem',
-                lg: '1.75rem',
-              },
-              fontWeight: 'bold', // 太字にしたい場合
-            }}
-          >
+          <Typography variant="h5" gutterBottom sx={typographyStyles.subHeader}>
             参加・不参加の入力
           </Typography>
 
-          {/* Backdrop */}
           <Backdrop
             open={onOff}
             onClick={() => {
@@ -464,19 +416,7 @@ const EventDetail: React.FC = () => {
                 overflowY: 'auto',
               }}
             >
-              <Typography
-                variant="h5"
-                gutterBottom
-                sx={{
-                  fontSize: {
-                    xs: '1rem',
-                    sm: '1.25rem',
-                    md: '1.5rem',
-                    lg: '1.75rem',
-                  },
-                  fontWeight: 'bold',
-                }}
-              >
+              <Typography variant="h5" gutterBottom sx={typographyStyles.subHeader}>
                 参加・不参加の入力
               </Typography>
               <Box
@@ -524,6 +464,7 @@ const EventDetail: React.FC = () => {
                   </Grid>
                 </Grid>
                 <Box mb={2} sx={{ width: '100%', pt: 2 }}>
+                  {/* formじゃないと送信できない */}
                   <form onSubmit={handleSubmit(onSubmit)}>
                     <TableContainer
                       component={Paper}
@@ -555,23 +496,23 @@ const EventDetail: React.FC = () => {
                                   rules={{ required: '選択してください' }}
                                   render={({ field }) => (
                                     <ToggleButtonGroup
-                                      value={field.value} // 選択状態を管理
-                                      exclusive // 単一選択モード
+                                      value={field.value}
+                                      exclusive
                                       onChange={(event, newValue) => {
                                         if (newValue !== null) {
-                                          field.onChange(newValue); // 値を更新
+                                          field.onChange(newValue);
                                         }
                                       }}
                                       sx={{
                                         '& .MuiToggleButtonGroup-grouped': {
-                                          margin: 0, // ボタン間の隙間をなくす
-                                          border: '1px solid #ddd', // ボーダーの色
-                                          borderRadius: '4px', // 角を丸める
+                                          margin: 0,
+                                          border: '1px solid #ddd',
+                                          borderRadius: '4px',
                                           '&:not(:last-of-type)': {
-                                            borderRight: 'none', // ボタン同士をくっつける
+                                            borderRight: 'none',
                                           },
                                           '&.Mui-selected': {
-                                            color: '#fff', // 選択されたボタンの文字色
+                                            color: '#fff',
                                           },
                                         },
                                       }}
@@ -581,17 +522,17 @@ const EventDetail: React.FC = () => {
                                         value={1}
                                         aria-label="〇"
                                         sx={{
-                                          backgroundColor: 'white', // 未選択時は背景を白に
-                                          color: '#4caf50', // 枠と文字は緑色
+                                          backgroundColor: 'white',
+                                          color: '#4caf50',
                                           '&.Mui-selected': {
-                                            backgroundColor: '#4caf50', // 選択時は緑の背景
-                                            borderColor: '#4caf50', // 枠も緑
-                                            color: '#fff', // 文字は白
+                                            backgroundColor: '#4caf50',
+                                            borderColor: '#4caf50',
+                                            color: '#fff',
                                           },
                                           '&:hover': {
-                                            backgroundColor: '#e8f5e9', // ホバー時はうっすら緑色に
+                                            backgroundColor: '#e8f5e9',
                                           },
-                                          fontSize: '20px', // 文字を少し大きくする
+                                          fontSize: '20px',
                                         }}
                                       >
                                         〇
@@ -600,17 +541,17 @@ const EventDetail: React.FC = () => {
                                         value={5}
                                         aria-label="？"
                                         sx={{
-                                          backgroundColor: 'white', // 未選択時は背景を白に
-                                          color: '#9e9e9e', // 枠と文字はグレー
+                                          backgroundColor: 'white',
+                                          color: '#9e9e9e',
                                           '&.Mui-selected': {
-                                            backgroundColor: '#9e9e9e', // 選択時はグレーの背景
-                                            borderColor: '#9e9e9e', // 枠もグレー
-                                            color: '#fff', // 文字は白
+                                            backgroundColor: '#9e9e9e',
+                                            borderColor: '#9e9e9e',
+                                            color: '#fff',
                                           },
                                           '&:hover': {
-                                            backgroundColor: '#f5f5f5', // ホバー時はうっすらグレーに
+                                            backgroundColor: '#f5f5f5',
                                           },
-                                          fontSize: '20px', // 文字を少し大きくする
+                                          fontSize: '20px',
                                         }}
                                       >
                                         ？
@@ -619,17 +560,17 @@ const EventDetail: React.FC = () => {
                                         value={0}
                                         aria-label="×"
                                         sx={{
-                                          backgroundColor: 'white', // 未選択時は背景を白に
-                                          color: '#f44336', // 枠と文字は赤色
+                                          backgroundColor: 'white',
+                                          color: '#f44336',
                                           '&.Mui-selected': {
-                                            backgroundColor: '#f44336', // 選択時は赤の背景
-                                            borderColor: '#f44336', // 枠も赤
-                                            color: '#fff', // 文字は白
+                                            backgroundColor: '#f44336',
+                                            borderColor: '#f44336',
+                                            color: '#fff',
                                           },
                                           '&:hover': {
-                                            backgroundColor: '#ffebee', // ホバー時はうっすら赤色に
+                                            backgroundColor: '#ffebee',
                                           },
-                                          fontSize: '20px', // 文字を少し大きくする
+                                          fontSize: '20px',
                                         }}
                                       >
                                         ×
@@ -657,7 +598,7 @@ const EventDetail: React.FC = () => {
                                           paddingBottom: '5px',
                                         },
                                         '& .MuiInputBase-input': {
-                                          padding: '5px', // 内部の余白を微調整
+                                          padding: '5px',
                                         },
                                       }}
                                     />
@@ -708,7 +649,7 @@ const EventDetail: React.FC = () => {
                 sm: '70px',
                 md: '80px',
               },
-              width: 'auto', // 幅を自動調整
+              width: 'auto',
               justifyContent: 'center',
             }}
           >

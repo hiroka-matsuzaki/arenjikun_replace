@@ -31,6 +31,7 @@ import {
 import { LocalizationProvider, DatePicker, TimePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import { useUser } from '@/app/context/UserContext';
+import typographyStyles from '@/styles/typographyStyles';
 
 type FormData = {
   eventName: string;
@@ -143,19 +144,7 @@ const NewEventPage: React.FC = () => {
           mt: '2%', // 上部にマージンを追加
         }}
       >
-        <Typography
-          variant="h4"
-          gutterBottom
-          sx={{
-            fontSize: {
-              xs: '1.5rem', // 小さい画面ではフォントサイズを小さく
-              sm: '1.75rem', // 中くらいの画面では少し大きく
-              md: '2rem', // 大きい画面ではさらに大きく
-              lg: '2.25rem', // より大きい画面ではもっと大きく
-            },
-            fontWeight: 'bold', // 太字にしたい場合
-          }}
-        >
+        <Typography variant="h4" gutterBottom sx={typographyStyles.header}>
           新規イベント
         </Typography>
       </Box>

@@ -5,7 +5,6 @@ import ResponsiveAppBar from '@/components/ResponsiveAppBar';
 import './globals.css';
 import { ReactNode } from 'react';
 import { User, UserProvider, useUser } from './context/UserContext';
-import jwt, { JwtPayload } from 'jsonwebtoken';
 
 export default function RootLayout({
   children,
@@ -22,9 +21,6 @@ export default function RootLayout({
     </html>
   );
 }
-interface DecodedToken extends JwtPayload {
-  upn: string; // JwtPayload を拡張して 'upn' プロパティを追加
-}
 const MainContent: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { setUser } = useUser();
   const fetchUser = async (loginEmail: string): Promise<User> => {
@@ -35,7 +31,7 @@ const MainContent: React.FC<{ children: ReactNode }> = ({ children }) => {
         user_name: '松崎　祥也',
         login_code: '999999',
         department: 'テスト部署',
-        companyts: 'テスト株式会社',
+        company: 'テスト株式会社',
         user_code: '602371',
       };
     }
@@ -50,30 +46,41 @@ const MainContent: React.FC<{ children: ReactNode }> = ({ children }) => {
     return data;
   };
   useEffect(() => {
-    const fetchAccessToken = async () => {
-      const response = await fetch('/api/getAccessToken');
+    const fetchDecodeToken = async () => {
+      const response = await fetch('/api/getDecodeToken');
       const data = await response.json();
       return data.token;
     };
     const fetchData = async () => {
       try {
-        const accessToken = await fetchAccessToken();
-        console.log('accessToken:', accessToken);
-        const decoded = jwt.decode(accessToken);
+        const loginEmail: string =
+          process.env.NODE_ENV === 'development'
+            ? 's.matsuzaki@hiroka.biz'
+            : await (async () => {
+                const decodeToken = await fetchDecodeToken();
+                console.log('decodeToken:', decodeToken);
 
-        // decoded が JwtPayload 型で upn プロパティがある場合の型ガード
-        if (decoded && typeof decoded !== 'string' && 'upn' in decoded) {
-          const loginEmail = (decoded as DecodedToken).upn;
-          console.log('loginEmail:', loginEmail);
+                if (!decodeToken || !decodeToken['upn']) {
+                  throw new Error('Invalid token or "upn" is missing');
+                }
 
-          const userData = await fetchUser(loginEmail);
-          setUser(userData);
-          console.log('取得したユーザー情報:', userData);
-        } else {
-          console.error('トークンのデコードに失敗しました。無効なトークンかもしれません。');
+                return decodeToken['upn'];
+              })();
+
+        console.log('メールアドレス:', loginEmail);
+
+        const userData = await fetchUser(loginEmail);
+
+        if (!userData) {
+          throw new Error('Failed to fetch user data');
         }
+
+        setUser(userData);
+        console.log('取得したユーザー情報:', userData);
       } catch (error) {
         console.error('データ取得エラー:', error);
+
+        alert('ユーザー情報の取得中にエラーが発生しました。もう一度お試しください。');
       }
     };
 

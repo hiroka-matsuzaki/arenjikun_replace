@@ -7,7 +7,7 @@ export interface User {
   user_name: string;
   login_code: string;
   department: string;
-  companyts: string;
+  company: string;
   user_code: string;
 }
 

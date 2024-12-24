@@ -507,7 +507,7 @@ const EventDetail: React.FC = () => {
                   <Grid size={6}>
                     <FormControl fullWidth>
                       <FormLabel>会社</FormLabel>
-                      <OutlinedInput defaultValue={user?.companyts} disabled />
+                      <OutlinedInput defaultValue={user?.company} disabled />
                     </FormControl>
                   </Grid>
                   <Grid size={6}>
@@ -717,7 +717,7 @@ const EventDetail: React.FC = () => {
                 fontSize: {
                   xs: '14px',
                   sm: '16px',
-                  md: '18px',
+                  md: '25px',
                 },
                 textAlign: 'left',
                 whiteSpace: 'pre-line',

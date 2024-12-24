@@ -142,7 +142,7 @@ const EventDetail: React.FC = () => {
 
     try {
       const updateResponse = await fetch(
-        `https://azure-api-opf.azurewebsites.net/api/events/${id}/update_join?user_code=${user?.user_code}`,
+        `https://azure-api-opf.azurewebsites.net/api/events/${id}/update_join?user_code=${user?.user_code}&email=${user?.email}`,
         {
           method: 'PUT',
           headers: {

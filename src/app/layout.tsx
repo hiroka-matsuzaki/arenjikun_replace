@@ -1,19 +1,10 @@
-// app/layout.tsx
 /* eslint-disable react/react-in-jsx-scope */
-'use client'; // クライアントコンポーネント
+'use client';
 import React, { useEffect } from 'react';
 import ResponsiveAppBar from '@/components/ResponsiveAppBar';
-import './globals.css'; // 共通CSSの読み込み
+import './globals.css';
 import { ReactNode } from 'react';
 import { User, UserProvider, useUser } from './context/UserContext';
-
-// const mockUserData: User = {
-//   user_name: '松崎 祥也',
-//   login_code: 'ShoyaMatsuzaki',
-//   department: '開発チーム',
-//   companyts: 'HIROKA',
-//   email: 's.matsuzaki@hiroka.biz',
-// };
 
 export default function RootLayout({
   children,
@@ -24,18 +15,16 @@ export default function RootLayout({
     <html lang="ja">
       <body>
         <UserProvider>
-          <MainContent>{children}</MainContent> {/* 子コンポーネントを渡す */}
+          <MainContent>{children}</MainContent>
         </UserProvider>
       </body>
     </html>
   );
 }
 
-// メインコンテンツでユーザー情報を渡す
 const MainContent: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { setUser } = useUser(); // UserContextからsetUserを取得
+  const { setUser } = useUser();
   const fetchUser = async (loginEmail: string): Promise<User> => {
-    // const functionUrl = process.env.NEXT_PUBLIC_FUNCTION_URL;
     console.log('Email:', loginEmail);
     if (process.env.NODE_ENV === 'development') {
       return {
@@ -65,34 +54,15 @@ const MainContent: React.FC<{ children: ReactNode }> = ({ children }) => {
     };
     const fetchData = async () => {
       try {
-        const loginEmail: string =
-          process.env.NODE_ENV === 'development'
-            ? 's.matsuzaki@hiroka.biz'
-            : await (async () => {
-                const decodeToken = await fetchDecodeToken();
-                console.log('decodeToken:', decodeToken);
-
-                if (!decodeToken || !decodeToken['upn']) {
-                  throw new Error('Invalid token or "upn" is missing');
-                }
-
-                return decodeToken['upn'];
-              })();
-
-        console.log('メールアドレス:', loginEmail);
-
+        const decodeToken = await fetchDecodeToken();
+        console.log('decodeToken:', decodeToken);
+        const loginEmail = decodeToken['upn'];
+        console.log('loginEmail:', loginEmail);
         const userData = await fetchUser(loginEmail);
-
-        if (!userData) {
-          throw new Error('Failed to fetch user data');
-        }
-
         setUser(userData);
         console.log('取得したユーザー情報:', userData);
       } catch (error) {
         console.error('データ取得エラー:', error);
-
-        alert('ユーザー情報の取得中にエラーが発生しました。もう一度お試しください。');
       }
     };
 

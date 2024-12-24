@@ -15,7 +15,6 @@ const typographyStyles = {
       md: '1.5rem',
       lg: '1.75rem',
     },
-    fontWeight: 'bold',
   },
 };
 

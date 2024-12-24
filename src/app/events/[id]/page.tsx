@@ -243,17 +243,33 @@ const EventDetail: React.FC = () => {
               <TableHead>
                 <TableRow>
                   <TableCell sx={{ minWidth: 170 }}>イベント候補日</TableCell>
-                  <TableCell sx={{ minWidth: 50 }}>
+                  <TableCell sx={{ minWidth: 50, textAlign: 'center' }}>
                     <Typography color="success">〇</Typography>
                   </TableCell>
-                  <TableCell sx={{ minWidth: 50 }}>
+                  <TableCell sx={{ minWidth: 50, textAlign: 'center' }}>
                     <Typography color="action">？</Typography>
                   </TableCell>
-                  <TableCell sx={{ minWidth: 50 }}>
+                  <TableCell sx={{ minWidth: 50, textAlign: 'center' }}>
                     <Typography color="error">×</Typography>
                   </TableCell>
                   {respondents?.map((respondent, index) => (
-                    <TableCell key={index} sx={{ minWidth: 150 }}>
+                    <TableCell
+                      key={index}
+                      onClick={
+                        respondent.user_name === user?.user_name
+                          ? () => setonOff(true) // 特定の名前の場合のみハンドラを呼び出す
+                          : undefined
+                      }
+                      sx={{
+                        minWidth: 150,
+                        color: respondent.user_name === user?.user_name ? 'blue' : 'inherit', // 特定の名前の場合は青色
+                        cursor: respondent.user_name === user?.user_name ? 'pointer' : 'default', // ポインタを設定
+                        textDecoration:
+                          respondent.user_name === user?.user_name ? 'underline' : 'none', // 下線を付ける
+                        fontWeight: respondent.user_name === user?.user_name ? 'bold' : 'normal', // 太字にする
+                        textAlign: 'center',
+                      }}
+                    >
                       {respondent.user_name}
                     </TableCell>
                   ))}
@@ -262,11 +278,11 @@ const EventDetail: React.FC = () => {
               <TableBody>
                 {eventDetail?.event_dates.map((event_date) => (
                   <TableRow key={event_date.id}>
-                    <TableCell sx={{ padding: '10px' }}>
+                    <TableCell sx={{ padding: '10px', minWidth: 170 }}>
                       <Typography>{formattedDataAndTime(event_date)}</Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography sx={{ textAlign: 'center' }}>
+                      <Typography sx={{ minWidth: 50, textAlign: 'center' }}>
                         {
                           eventDetail?.user_possibilities.filter(
                             (possibility) =>
@@ -277,7 +293,7 @@ const EventDetail: React.FC = () => {
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography sx={{ textAlign: 'center' }}>
+                      <Typography sx={{ minWidth: 50, textAlign: 'center' }}>
                         {
                           eventDetail?.user_possibilities.filter(
                             (possibility) =>
@@ -288,7 +304,7 @@ const EventDetail: React.FC = () => {
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography sx={{ textAlign: 'center' }}>
+                      <Typography sx={{ minWidth: 50, textAlign: 'center' }}>
                         {
                           eventDetail?.user_possibilities.filter(
                             (possibility) =>
@@ -306,7 +322,7 @@ const EventDetail: React.FC = () => {
                             item.user_id === respondent.user_id
                         )
                         .map((data) => (
-                          <TableCell key={index} sx={{ minWidth: 100, textAlign: 'center' }}>
+                          <TableCell key={index} sx={{ minWidth: 150, textAlign: 'center' }}>
                             <Typography
                               sx={{
                                 color:

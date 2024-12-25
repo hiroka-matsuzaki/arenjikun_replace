@@ -8,6 +8,8 @@ import {
   Backdrop,
   Box,
   Button,
+  Card,
+  CardContent,
   FormControl,
   FormLabel,
   IconButton,
@@ -24,6 +26,7 @@ import {
   ToggleButtonGroup,
   Tooltip,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -65,6 +68,7 @@ const EventDetail: React.FC = () => {
   const [respondents, setRespondent] = useState<Respondent[]>();
   const [myPossibilities, setMyPossibilities] = useState<UserPossibility[]>();
   const [tooltipTitle, setTooltipTitle] = React.useState('URLをコピー');
+  const isSmallScreen = useMediaQuery('(max-width:600px)'); // 画面幅600px以下で切り替え
   const params = useParams();
   const id = params?.id as string | undefined;
   const router = useRouter();
@@ -246,51 +250,15 @@ const EventDetail: React.FC = () => {
           <Typography variant="h5" gutterBottom sx={typographyStyles.subHeader}>
             イベント参加の状況
           </Typography>
-          <TableContainer component={Paper} sx={{ boxShadow: 2, padding: 1, overflowX: 'auto' }}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ minWidth: 170 }}>イベント候補日</TableCell>
-                  <TableCell sx={{ minWidth: 50, textAlign: 'center' }}>
-                    <Typography color="success">〇</Typography>
-                  </TableCell>
-                  <TableCell sx={{ minWidth: 50, textAlign: 'center' }}>
-                    <Typography color="action">？</Typography>
-                  </TableCell>
-                  <TableCell sx={{ minWidth: 50, textAlign: 'center' }}>
-                    <Typography color="error">×</Typography>
-                  </TableCell>
-                  {respondents?.map((respondent, index) => (
-                    <TableCell
-                      key={index}
-                      onClick={
-                        respondent.user_name === user?.user_name
-                          ? () => setonOff(true) // 特定の名前の場合のみハンドラを呼び出す
-                          : undefined
-                      }
-                      sx={{
-                        minWidth: 150,
-                        color: respondent.user_name === user?.user_name ? 'blue' : 'inherit', // 特定の名前の場合は青色
-                        cursor: respondent.user_name === user?.user_name ? 'pointer' : 'default', // ポインタを設定
-                        textDecoration:
-                          respondent.user_name === user?.user_name ? 'underline' : 'none', // 下線を付ける
-                        fontWeight: respondent.user_name === user?.user_name ? 'bold' : 'normal', // 太字にする
-                        textAlign: 'center',
-                      }}
-                    >
-                      {respondent.user_name}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {eventDetail?.event_dates.map((event_date) => (
-                  <TableRow key={event_date.id}>
-                    <TableCell sx={{ padding: '10px', minWidth: 170 }}>
-                      <Typography>{formattedDataAndTime(event_date)}</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography sx={{ minWidth: 50, textAlign: 'center' }}>
+          {isSmallScreen ? (
+            <Box>
+              {eventDetail?.event_dates.map((event_date) => (
+                <Card key={event_date.id} sx={{ marginBottom: 2, boxShadow: 1 }}>
+                  <CardContent>
+                    <Typography variant="h6">{formattedDataAndTime(event_date)}</Typography>
+                    <Box>
+                      <Typography>
+                        〇:{' '}
                         {
                           eventDetail?.user_possibilities.filter(
                             (possibility) =>
@@ -299,9 +267,8 @@ const EventDetail: React.FC = () => {
                           ).length
                         }
                       </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography sx={{ minWidth: 50, textAlign: 'center' }}>
+                      <Typography>
+                        ？:{' '}
                         {
                           eventDetail?.user_possibilities.filter(
                             (possibility) =>
@@ -310,9 +277,8 @@ const EventDetail: React.FC = () => {
                           ).length
                         }
                       </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography sx={{ minWidth: 50, textAlign: 'center' }}>
+                      <Typography>
+                        ×:{' '}
                         {
                           eventDetail?.user_possibilities.filter(
                             (possibility) =>
@@ -321,36 +287,151 @@ const EventDetail: React.FC = () => {
                           ).length
                         }
                       </Typography>
-                    </TableCell>
-                    {respondents?.map((respondent, index) =>
-                      eventDetail.user_possibilities
-                        .filter(
+                    </Box>
+                    <Box>
+                      {respondents?.map((respondent) => {
+                        const userPossibility = eventDetail.user_possibilities.find(
                           (item) =>
                             item.event_date_id === event_date.id &&
                             item.user_id === respondent.user_id
-                        )
-                        .map((data) => (
-                          <TableCell key={index} sx={{ minWidth: 150, textAlign: 'center' }}>
-                            <Typography
-                              sx={{
-                                color:
-                                  data.possibility === 1
-                                    ? 'green'
-                                    : data.possibility === 5
-                                      ? 'gray'
-                                      : 'red',
-                              }}
-                            >
-                              {data.possibility === 1 ? '〇' : data.possibility === 5 ? '？' : '×'}
-                            </Typography>
-                          </TableCell>
-                        ))
-                    )}
+                        );
+                        return (
+                          <Typography
+                            key={respondent.user_id}
+                            sx={{
+                              color:
+                                userPossibility?.possibility === 1
+                                  ? 'green'
+                                  : userPossibility?.possibility === 5
+                                    ? 'gray'
+                                    : 'red',
+                            }}
+                          >
+                            {respondent.user_name}:{' '}
+                            {userPossibility?.possibility === 1
+                              ? '〇'
+                              : userPossibility?.possibility === 5
+                                ? '？'
+                                : '×'}
+                          </Typography>
+                        );
+                      })}
+                    </Box>
+                  </CardContent>
+                </Card>
+              ))}
+            </Box>
+          ) : (
+            <TableContainer component={Paper} sx={{ boxShadow: 2, padding: 1, overflowX: 'auto' }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ minWidth: 170 }}>イベント候補日</TableCell>
+                    <TableCell sx={{ minWidth: 50, textAlign: 'center' }}>
+                      <Typography color="success">〇</Typography>
+                    </TableCell>
+                    <TableCell sx={{ minWidth: 50, textAlign: 'center' }}>
+                      <Typography color="action">？</Typography>
+                    </TableCell>
+                    <TableCell sx={{ minWidth: 50, textAlign: 'center' }}>
+                      <Typography color="error">×</Typography>
+                    </TableCell>
+                    {respondents?.map((respondent, index) => (
+                      <TableCell
+                        key={index}
+                        onClick={
+                          respondent.user_name === user?.user_name
+                            ? () => setonOff(true) // 特定の名前の場合のみハンドラを呼び出す
+                            : undefined
+                        }
+                        sx={{
+                          minWidth: 150,
+                          color: respondent.user_name === user?.user_name ? 'blue' : 'inherit', // 特定の名前の場合は青色
+                          cursor: respondent.user_name === user?.user_name ? 'pointer' : 'default', // ポインタを設定
+                          textDecoration:
+                            respondent.user_name === user?.user_name ? 'underline' : 'none', // 下線を付ける
+                          fontWeight: respondent.user_name === user?.user_name ? 'bold' : 'normal', // 太字にする
+                          textAlign: 'center',
+                        }}
+                      >
+                        {respondent.user_name}
+                      </TableCell>
+                    ))}
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {eventDetail?.event_dates.map((event_date) => (
+                    <TableRow key={event_date.id}>
+                      <TableCell sx={{ padding: '10px', minWidth: 170 }}>
+                        <Typography>{formattedDataAndTime(event_date)}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography sx={{ minWidth: 50, textAlign: 'center' }}>
+                          {
+                            eventDetail?.user_possibilities.filter(
+                              (possibility) =>
+                                possibility.possibility === 1 &&
+                                possibility.event_date_id === event_date.id
+                            ).length
+                          }
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography sx={{ minWidth: 50, textAlign: 'center' }}>
+                          {
+                            eventDetail?.user_possibilities.filter(
+                              (possibility) =>
+                                possibility.possibility === 5 &&
+                                possibility.event_date_id === event_date.id
+                            ).length
+                          }
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography sx={{ minWidth: 50, textAlign: 'center' }}>
+                          {
+                            eventDetail?.user_possibilities.filter(
+                              (possibility) =>
+                                possibility.possibility === 0 &&
+                                possibility.event_date_id === event_date.id
+                            ).length
+                          }
+                        </Typography>
+                      </TableCell>
+                      {respondents?.map((respondent, index) =>
+                        eventDetail.user_possibilities
+                          .filter(
+                            (item) =>
+                              item.event_date_id === event_date.id &&
+                              item.user_id === respondent.user_id
+                          )
+                          .map((data) => (
+                            <TableCell key={index} sx={{ minWidth: 150, textAlign: 'center' }}>
+                              <Typography
+                                sx={{
+                                  color:
+                                    data.possibility === 1
+                                      ? 'green'
+                                      : data.possibility === 5
+                                        ? 'gray'
+                                        : 'red',
+                                }}
+                              >
+                                {data.possibility === 1
+                                  ? '〇'
+                                  : data.possibility === 5
+                                    ? '？'
+                                    : '×'}
+                              </Typography>
+                            </TableCell>
+                          ))
+                      )}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
         </Box>
         <Box
           sx={{

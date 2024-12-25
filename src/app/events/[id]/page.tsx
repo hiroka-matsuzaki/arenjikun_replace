@@ -100,12 +100,15 @@ const EventDetail: React.FC = () => {
     }
   };
 
-  const fetchMyPossibilities = async (eventDetail: EventResponse | undefined) => {
+  const fetchMyPossibilities = (eventDetail: EventResponse | undefined) => {
     if (!eventDetail) {
       throw new Error("fetchMyPossibilities: 引数 'eventDetail' が undefined です。");
     }
+    if (!user) {
+      throw new Error("fetchMyPossibilities: 引数 'user' が undefined です。");
+    }
     const myPossibilities = eventDetail.user_possibilities.filter(
-      (item) => item.user_name === user?.user_name
+      (item) => item.user_name === user.user_name
     );
     console.log('myPossibilities:', myPossibilities);
 
@@ -113,8 +116,10 @@ const EventDetail: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchEventDetail();
-  }, []);
+    if (user) {
+      fetchEventDetail();
+    }
+  }, [user]);
 
   const [onOff, setonOff] = React.useState(false);
   const { handleSubmit, control } = useForm<FormData>();

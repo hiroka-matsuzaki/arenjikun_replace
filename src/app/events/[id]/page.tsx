@@ -34,6 +34,7 @@ import { useUser } from '@/app/context/UserContext';
 import { EmojiPeople, Link } from '@mui/icons-material';
 import { Controller, useForm } from 'react-hook-form';
 import typographyStyles from '@/styles/typographyStyles';
+import dayjs from 'dayjs';
 
 type FormData = {
   [key: string]: string | number;
@@ -268,11 +269,23 @@ const EventDetail: React.FC = () => {
           {isSmallScreen ? (
             <Box>
               {eventDetail?.event_dates
-                .sort((a, b) => {
-                  // 'dated_on' が string 型であることを明示的に確認
-                  const dateA = new Date(a.dated_on as string);
-                  const dateB = new Date(b.dated_on as string);
-                  return dateA.getTime() - dateB.getTime(); // 日付順に並べ替え
+                ?.sort((a, b) => {
+                  const dateA = dayjs(a.dated_on);
+                  const dateB = dayjs(b.dated_on);
+                  if (dateA.isBefore(dateB)) return -1;
+                  if (dateA.isAfter(dateB)) return 1;
+
+                  const startA = dayjs(a.start_time);
+                  const startB = dayjs(b.start_time);
+                  if (startA.isBefore(startB)) return -1;
+                  if (startA.isAfter(startB)) return 1;
+
+                  const endA = dayjs(a.end_time);
+                  const endB = dayjs(b.end_time);
+                  if (endA.isBefore(endB)) return -1;
+                  if (endA.isAfter(endB)) return 1;
+
+                  return 0;
                 })
                 .map((event_date) => (
                   <Card key={event_date.id} sx={{ marginBottom: 2, boxShadow: 1 }}>
@@ -384,9 +397,22 @@ const EventDetail: React.FC = () => {
                 <TableBody>
                   {eventDetail?.event_dates
                     .sort((a, b) => {
-                      const dateA = new Date(a.dated_on as string);
-                      const dateB = new Date(b.dated_on as string);
-                      return dateA.getTime() - dateB.getTime(); // 日付順に並べ替え
+                      const dateA = dayjs(a.dated_on);
+                      const dateB = dayjs(b.dated_on);
+                      if (dateA.isBefore(dateB)) return -1;
+                      if (dateA.isAfter(dateB)) return 1;
+
+                      const startA = dayjs(a.start_time);
+                      const startB = dayjs(b.start_time);
+                      if (startA.isBefore(startB)) return -1;
+                      if (startA.isAfter(startB)) return 1;
+
+                      const endA = dayjs(a.end_time);
+                      const endB = dayjs(b.end_time);
+                      if (endA.isBefore(endB)) return -1;
+                      if (endA.isAfter(endB)) return 1;
+
+                      return 0;
                     })
                     .map((event_date) => (
                       <TableRow key={event_date.id}>

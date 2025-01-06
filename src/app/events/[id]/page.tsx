@@ -267,74 +267,81 @@ const EventDetail: React.FC = () => {
           </Typography>
           {isSmallScreen ? (
             <Box>
-              {eventDetail?.event_dates.map((event_date) => (
-                <Card key={event_date.id} sx={{ marginBottom: 2, boxShadow: 1 }}>
-                  <CardContent>
-                    <Typography variant="h6">{formattedDataAndTime(event_date)}</Typography>
-                    <Box>
-                      <Typography>
-                        〇:{' '}
-                        {
-                          eventDetail?.user_possibilities.filter(
-                            (possibility) =>
-                              possibility.possibility === 1 &&
-                              possibility.event_date_id === event_date.id
-                          ).length
-                        }
-                      </Typography>
-                      <Typography>
-                        ？:{' '}
-                        {
-                          eventDetail?.user_possibilities.filter(
-                            (possibility) =>
-                              possibility.possibility === 5 &&
-                              possibility.event_date_id === event_date.id
-                          ).length
-                        }
-                      </Typography>
-                      <Typography>
-                        ×:{' '}
-                        {
-                          eventDetail?.user_possibilities.filter(
-                            (possibility) =>
-                              possibility.possibility === 0 &&
-                              possibility.event_date_id === event_date.id
-                          ).length
-                        }
-                      </Typography>
-                    </Box>
-                    <Box>
-                      {respondents?.map((respondent) => {
-                        const userPossibility = eventDetail.user_possibilities.find(
-                          (item) =>
-                            item.event_date_id === event_date.id &&
-                            item.user_id === respondent.user_id
-                        );
-                        return (
-                          <Typography
-                            key={respondent.user_id}
-                            sx={{
-                              color:
-                                userPossibility?.possibility === 1
-                                  ? 'green'
-                                  : userPossibility?.possibility === 5
-                                    ? 'gray'
-                                    : 'red',
-                            }}
-                          >
-                            {respondent.user_name}:{' '}
-                            {userPossibility?.possibility === 1
-                              ? '〇'
-                              : userPossibility?.possibility === 5
-                                ? '？'
-                                : '×'}
-                          </Typography>
-                        );
-                      })}
-                    </Box>
-                  </CardContent>
-                </Card>
-              ))}
+              {eventDetail?.event_dates
+                .sort((a, b) => {
+                  // 'dated_on' が string 型であることを明示的に確認
+                  const dateA = new Date(a.dated_on as string);
+                  const dateB = new Date(b.dated_on as string);
+                  return dateA.getTime() - dateB.getTime(); // 日付順に並べ替え
+                })
+                .map((event_date) => (
+                  <Card key={event_date.id} sx={{ marginBottom: 2, boxShadow: 1 }}>
+                    <CardContent>
+                      <Typography variant="h6">{formattedDataAndTime(event_date)}</Typography>
+                      <Box>
+                        <Typography>
+                          〇:{' '}
+                          {
+                            eventDetail?.user_possibilities.filter(
+                              (possibility) =>
+                                possibility.possibility === 1 &&
+                                possibility.event_date_id === event_date.id
+                            ).length
+                          }
+                        </Typography>
+                        <Typography>
+                          ？:{' '}
+                          {
+                            eventDetail?.user_possibilities.filter(
+                              (possibility) =>
+                                possibility.possibility === 5 &&
+                                possibility.event_date_id === event_date.id
+                            ).length
+                          }
+                        </Typography>
+                        <Typography>
+                          ×:{' '}
+                          {
+                            eventDetail?.user_possibilities.filter(
+                              (possibility) =>
+                                possibility.possibility === 0 &&
+                                possibility.event_date_id === event_date.id
+                            ).length
+                          }
+                        </Typography>
+                      </Box>
+                      <Box>
+                        {respondents?.map((respondent) => {
+                          const userPossibility = eventDetail.user_possibilities.find(
+                            (item) =>
+                              item.event_date_id === event_date.id &&
+                              item.user_id === respondent.user_id
+                          );
+                          return (
+                            <Typography
+                              key={respondent.user_id}
+                              sx={{
+                                color:
+                                  userPossibility?.possibility === 1
+                                    ? 'green'
+                                    : userPossibility?.possibility === 5
+                                      ? 'gray'
+                                      : 'red',
+                              }}
+                            >
+                              {respondent.user_name}:{' '}
+                              {userPossibility?.possibility === 1
+                                ? '〇'
+                                : userPossibility?.possibility === 5
+                                  ? '？'
+                                  : '×'}
+                            </Typography>
+                          );
+                        })}
+                      </Box>
+                    </CardContent>
+                  </Card>
+                ))}
             </Box>
           ) : (
             <TableContainer component={Paper} sx={{ boxShadow: 2, padding: 1, overflowX: 'auto' }}>
@@ -375,74 +382,80 @@ const EventDetail: React.FC = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {eventDetail?.event_dates.map((event_date) => (
-                    <TableRow key={event_date.id}>
-                      <TableCell sx={{ padding: '10px', minWidth: 170 }}>
-                        <Typography>{formattedDataAndTime(event_date)}</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography sx={{ minWidth: 50, textAlign: 'center' }}>
-                          {
-                            eventDetail?.user_possibilities.filter(
-                              (possibility) =>
-                                possibility.possibility === 1 &&
-                                possibility.event_date_id === event_date.id
-                            ).length
-                          }
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography sx={{ minWidth: 50, textAlign: 'center' }}>
-                          {
-                            eventDetail?.user_possibilities.filter(
-                              (possibility) =>
-                                possibility.possibility === 5 &&
-                                possibility.event_date_id === event_date.id
-                            ).length
-                          }
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography sx={{ minWidth: 50, textAlign: 'center' }}>
-                          {
-                            eventDetail?.user_possibilities.filter(
-                              (possibility) =>
-                                possibility.possibility === 0 &&
-                                possibility.event_date_id === event_date.id
-                            ).length
-                          }
-                        </Typography>
-                      </TableCell>
-                      {respondents?.map((respondent, index) =>
-                        eventDetail.user_possibilities
-                          .filter(
-                            (item) =>
-                              item.event_date_id === event_date.id &&
-                              item.user_id === respondent.user_id
-                          )
-                          .map((data) => (
-                            <TableCell key={index} sx={{ minWidth: 150, textAlign: 'center' }}>
-                              <Typography
-                                sx={{
-                                  color:
-                                    data.possibility === 1
-                                      ? 'green'
-                                      : data.possibility === 5
-                                        ? 'gray'
-                                        : 'red',
-                                }}
-                              >
-                                {data.possibility === 1
-                                  ? '〇'
-                                  : data.possibility === 5
-                                    ? '？'
-                                    : '×'}
-                              </Typography>
-                            </TableCell>
-                          ))
-                      )}
-                    </TableRow>
-                  ))}
+                  {eventDetail?.event_dates
+                    .sort((a, b) => {
+                      const dateA = new Date(a.dated_on as string);
+                      const dateB = new Date(b.dated_on as string);
+                      return dateA.getTime() - dateB.getTime(); // 日付順に並べ替え
+                    })
+                    .map((event_date) => (
+                      <TableRow key={event_date.id}>
+                        <TableCell sx={{ padding: '10px', minWidth: 170 }}>
+                          <Typography>{formattedDataAndTime(event_date)}</Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography sx={{ minWidth: 50, textAlign: 'center' }}>
+                            {
+                              eventDetail?.user_possibilities.filter(
+                                (possibility) =>
+                                  possibility.possibility === 1 &&
+                                  possibility.event_date_id === event_date.id
+                              ).length
+                            }
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography sx={{ minWidth: 50, textAlign: 'center' }}>
+                            {
+                              eventDetail?.user_possibilities.filter(
+                                (possibility) =>
+                                  possibility.possibility === 5 &&
+                                  possibility.event_date_id === event_date.id
+                              ).length
+                            }
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography sx={{ minWidth: 50, textAlign: 'center' }}>
+                            {
+                              eventDetail?.user_possibilities.filter(
+                                (possibility) =>
+                                  possibility.possibility === 0 &&
+                                  possibility.event_date_id === event_date.id
+                              ).length
+                            }
+                          </Typography>
+                        </TableCell>
+                        {respondents?.map((respondent, index) =>
+                          eventDetail.user_possibilities
+                            .filter(
+                              (item) =>
+                                item.event_date_id === event_date.id &&
+                                item.user_id === respondent.user_id
+                            )
+                            .map((data) => (
+                              <TableCell key={index} sx={{ minWidth: 150, textAlign: 'center' }}>
+                                <Typography
+                                  sx={{
+                                    color:
+                                      data.possibility === 1
+                                        ? 'green'
+                                        : data.possibility === 5
+                                          ? 'gray'
+                                          : 'red',
+                                  }}
+                                >
+                                  {data.possibility === 1
+                                    ? '〇'
+                                    : data.possibility === 5
+                                      ? '？'
+                                      : '×'}
+                                </Typography>
+                              </TableCell>
+                            ))
+                        )}
+                      </TableRow>
+                    ))}
                 </TableBody>
               </Table>
             </TableContainer>

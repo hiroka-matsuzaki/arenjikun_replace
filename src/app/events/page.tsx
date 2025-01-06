@@ -126,7 +126,7 @@ const EventsPage = () => {
       >
         <Box style={{ display: 'flex', flexDirection: 'column', overflowX: 'auto' }}>
           <DataGrid
-            rows={events}
+            rows={[...events].sort((a, b) => b.id - a.id)}
             columns={columns.map((column) => ({
               ...column,
               flex: column.flex || 1,

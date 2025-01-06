@@ -18,8 +18,6 @@ const EventsPage = () => {
   useEffect(() => {
     const fetchEvents = async (email: string | undefined) => {
       try {
-        // const functionUrl = process.env.NEXT_PUBLIC_FUNCTION_URL;
-
         const response = await fetch(
           `https://azure-api-opf.azurewebsites.net/api/events?email=${email}` //テスト用ベタ打ち
         );
@@ -27,13 +25,12 @@ const EventsPage = () => {
           throw new Error(`HTTPエラー: ${response.status}`);
         }
         const data: EventList = await response.json();
-        // created_atの日付をフォーマットしてからセット
         const formattedData = data.map((event) => ({
           ...event,
-          created_at: formatDate(event.created_at), // created_atを変換
+          created_at: formatDate(event.created_at),
         }));
 
-        setEvents(formattedData); // フォーマットしたデータをセット
+        setEvents(formattedData);
       } catch (error) {
         console.error('データ取得エラー:', error);
       }
@@ -93,11 +90,11 @@ const EventsPage = () => {
         sx={{
           display: 'flex',
           justifyContent: 'left',
-          height: '80px', // 縦方向の中央揃え
-          border: '1px solid #ccc', // 四角の枠線
-          padding: '20px', // 内側の余白
-          mx: '10%', // 左右の余白を画面幅の設定
-          mt: '2%', // 上部にマージンを追加
+          height: '80px',
+          border: '1px solid #ccc',
+          padding: '20px',
+          mx: '10%',
+          mt: '2%',
         }}
       >
         <Typography variant="h4" gutterBottom sx={typographyStyles.header}>
@@ -111,11 +108,9 @@ const EventsPage = () => {
           flexDirection: 'column',
           alignItems: 'left',
           justifyContent: 'left',
-          // height: '70vh', // 縦方向の中央揃え
-          // minWidth: 900,
-          border: '1px solid #ccc', // 四角の枠線
-          padding: '20px', // 内側の余白
-          mx: '10%', // 左右の余白を画面幅の3%に設定
+          border: '1px solid #ccc',
+          padding: '20px',
+          mx: '10%',
           backgroundColor: 'white',
         }}
       >
@@ -124,23 +119,23 @@ const EventsPage = () => {
             rows={events}
             columns={columns.map((column) => ({
               ...column,
-              flex: column.flex || 1, // flexプロパティを使用して列幅を動的に設定
-              minWidth: column.minWidth || 150, // 最小幅を設定、指定がない場合は150pxをデフォルトに
+              flex: column.flex || 1,
+              minWidth: column.minWidth || 150,
             }))}
             density="standard"
             pageSizeOptions={[5, 10, 15]}
             sx={{
               '& .MuiDataGrid-columnHeaders': {
-                borderBottom: 'none', // ヘッダー下の線を削除
+                borderBottom: 'none',
               },
               '& .MuiDataGrid-columnSeparator': {
-                display: 'none', // 列の区切り線を非表示
+                display: 'none',
               },
               '& .MuiDataGrid-row:hover': {
-                backgroundColor: 'inherit', // ホバー時の背景色を変更しない
+                backgroundColor: 'inherit',
               },
               boxShadow: 1,
-              width: '100%', // 親コンテナの幅に合わせる
+              width: '100%',
             }}
             initialState={{
               pagination: {

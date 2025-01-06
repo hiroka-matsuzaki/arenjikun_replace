@@ -62,7 +62,10 @@ const ResponsiveAppBar: React.FC<Props> = ({ userName }) => {
   };
 
   return (
-    <AppBar position="static" sx={{ paddingY: '0px', minHeight: '0px' }}>
+    <AppBar
+      position="static"
+      sx={{ paddingY: '0px', minHeight: '0px', backgroundColor: '#333333' }}
+    >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <CalendarMonth sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, fontSize: '3rem' }} />

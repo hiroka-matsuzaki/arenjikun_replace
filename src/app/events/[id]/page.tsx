@@ -194,13 +194,28 @@ const EventDetail: React.FC = () => {
           mt: '2%',
         }}
       >
-        <Typography variant="h4" gutterBottom sx={typographyStyles.header}>
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{ ...typographyStyles.header, marginRight: '16px' }}
+        >
           {eventDetail?.events.subject}
         </Typography>
-
         <Tooltip title={tooltipTitle}>
-          <IconButton onClick={handleCopyLink} color="primary">
-            <Link />
+          <IconButton
+            onClick={handleCopyLink}
+            sx={{
+              backgroundColor: '#E3F2FD', // 青系の薄い背景色
+              color: '#1976D2', // 青系の濃い文字色
+              '&:hover': {
+                backgroundColor: '#BBDEFB', // ホバー時の背景色
+              },
+              padding: '12px', // ボタンの大きさを調整
+              borderRadius: '8px', // 少し角丸にする
+            }}
+          >
+            <Link sx={{ fontSize: '2.5rem' }} />
+            <Typography>リンクをコピー</Typography>
           </IconButton>
         </Tooltip>
       </Box>

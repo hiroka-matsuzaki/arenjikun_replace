@@ -21,12 +21,12 @@ import {
   TableContainer,
 } from '@mui/material';
 import {
-  AddSharp,
-  RemoveCircleOutlineSharp,
   CalendarMonthSharp,
   Event,
   Notes,
   AccessTime,
+  AddCircleOutline,
+  RemoveCircleOutline,
 } from '@mui/icons-material';
 import { LocalizationProvider, DatePicker, TimePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
@@ -371,7 +371,12 @@ const NewEventPage: React.FC = () => {
                     <TableCell align="center">
                       {index !== 0 && (
                         <IconButton color="secondary" onClick={() => handleRowRemove(row.id)}>
-                          <RemoveCircleOutlineSharp />
+                          <RemoveCircleOutline
+                            sx={{
+                              color: '#F44336',
+                              fontSize: '2rem',
+                            }}
+                          />
                         </IconButton>
                       )}
                     </TableCell>
@@ -382,7 +387,12 @@ const NewEventPage: React.FC = () => {
                   <TableCell colSpan={3}></TableCell>
                   <TableCell align="center">
                     <IconButton color="primary" onClick={handleRowAdd}>
-                      <AddSharp />
+                      <AddCircleOutline
+                        sx={{
+                          color: '#4CAF50',
+                          fontSize: '2rem',
+                        }}
+                      />
                     </IconButton>
                   </TableCell>
                 </TableRow>

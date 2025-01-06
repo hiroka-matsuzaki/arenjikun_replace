@@ -28,11 +28,41 @@ const HomePage: React.FC = () => {
           backgroundColor: 'white',
         }}
       >
-        <Typography variant="h6" sx={{ marginBottom: '16px' }}>
+        <Typography variant="h4" sx={{ marginBottom: '16px' }}>
           新しいイベントを作成します。
         </Typography>
-        <Button variant="contained" color="primary" onClick={goToNewEvent}>
-          <Add sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, fontSize: '2rem' }} />
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={goToNewEvent}
+          sx={{
+            backgroundColor: 'white', // 通常の背景を白に
+            color: 'primary.main', // 通常の文字とアイコンを青色に
+            border: '2px solid', // 外枠を青色に
+            borderColor: 'primary.main',
+            borderRadius: '24px', // ボタンの角を丸く
+            paddingY: '8px', // 縦の余白
+            paddingX: '16px', // 横の余白
+            textTransform: 'none', // テキストを通常のケースに
+            fontSize: '1.5rem',
+            '&:hover': {
+              backgroundColor: 'primary.main', // ホバー時の背景色を青に
+              color: 'white', // ホバー時の文字とアイコンを白に
+              borderColor: 'primary.main', // 枠線を青色に
+              '.MuiSvgIcon-root': {
+                color: 'white', // ホバー時にアイコンを白に
+              },
+            },
+          }}
+        >
+          <Add
+            sx={{
+              display: { xs: 'none', md: 'flex' },
+              mr: 1,
+              fontSize: '2rem',
+              color: 'primary.main', // アイコンを青色に
+            }}
+          />
           新規イベント
         </Button>
       </Box>

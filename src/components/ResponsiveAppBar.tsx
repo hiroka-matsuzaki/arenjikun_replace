@@ -120,7 +120,6 @@ const ResponsiveAppBar: React.FC<Props> = ({ userName }) => {
                   <Typography sx={{ textAlign: 'center', ml: 1 }} onClick={() => goTo(page.path)}>
                     {page.name}
                   </Typography>{' '}
-                  {/* アイコンとテキストの間にマージンを追加 */}
                 </MenuItem>
               ))}
             </Menu>
@@ -149,7 +148,18 @@ const ResponsiveAppBar: React.FC<Props> = ({ userName }) => {
               // eslint-disable-next-line react/jsx-key
               <Button
                 key={page.id}
-                sx={{ my: 2, color: 'white', display: 'flex', alignItems: 'center' }}
+                sx={{
+                  my: 2,
+                  color: 'white', // デフォルトの文字色は白
+                  display: 'flex',
+                  alignItems: 'center',
+                  backgroundColor: 'transparent', // 背景色なし
+                  '&:hover': {
+                    backgroundColor: '#555555', // ホバー時に暗いグレー背景
+                    color: '#f1f1f1', // ホバー時に文字色を明るいグレーに
+                  },
+                  transition: 'all 0.3s ease', // アニメーションで滑らかなホバー効果を追加
+                }}
                 onClick={() => goTo(page.path)}
               >
                 {page.icon}

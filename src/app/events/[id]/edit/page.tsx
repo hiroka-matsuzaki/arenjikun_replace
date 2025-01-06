@@ -108,18 +108,37 @@ const NewEventPage: React.FC = () => {
 
   const defaultRowAdd = (data: EventResponse) => {
     const defaultRow =
-      data?.event_dates?.map((event_date) => ({
-        id: event_date.id,
-        date: dayjs(event_date.dated_on).startOf('day').toISOString(),
-        start: dayjs(event_date.dated_on)
-          .startOf('day')
-          .add(event_date.start_time, 'minute')
-          .toISOString(),
-        end: dayjs(event_date.dated_on)
-          .startOf('day')
-          .add(event_date.end_time, 'minute')
-          .toISOString(),
-      })) || [];
+      data?.event_dates
+        ?.sort((a, b) => {
+          const dateA = dayjs(a.dated_on);
+          const dateB = dayjs(b.dated_on);
+          if (dateA.isBefore(dateB)) return -1;
+          if (dateA.isAfter(dateB)) return 1;
+
+          const startA = dayjs(a.start_time);
+          const startB = dayjs(b.start_time);
+          if (startA.isBefore(startB)) return -1;
+          if (startA.isAfter(startB)) return 1;
+
+          const endA = dayjs(a.end_time);
+          const endB = dayjs(b.end_time);
+          if (endA.isBefore(endB)) return -1;
+          if (endA.isAfter(endB)) return 1;
+
+          return 0;
+        })
+        .map((event_date) => ({
+          id: event_date.id,
+          date: dayjs(event_date.dated_on).startOf('day').toISOString(),
+          start: dayjs(event_date.dated_on)
+            .startOf('day')
+            .add(event_date.start_time, 'minute')
+            .toISOString(),
+          end: dayjs(event_date.dated_on)
+            .startOf('day')
+            .add(event_date.end_time, 'minute')
+            .toISOString(),
+        })) || [];
 
     console.log('defaultRow:', defaultRow);
 

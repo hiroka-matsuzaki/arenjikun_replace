@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { Event, EventList } from '@/types/event';
 import { useRouter } from 'next/navigation';
@@ -72,12 +72,22 @@ const EventsPage = () => {
       sortable: false,
       filterable: false,
       renderCell: (params: GridRenderCellParams) => (
-        <button
+        <Button
           onClick={() => handleButtonClick(params.row)}
-          style={{ padding: '6px 12px', cursor: 'pointer' }}
+          sx={{
+            padding: '6px 12px',
+            cursor: 'pointer',
+            color: 'white', // 文字の色を白に設定
+            backgroundColor: 'primary.main', // ボタンの背景色（例: テーマのメインカラー）
+            '&:hover': {
+              backgroundColor: 'primary.dark', // ホバー時の背景色（例: テーマのダークカラー）
+            },
+
+            pointerEvents: 'auto',
+          }}
         >
           詳細
-        </button>
+        </Button>
       ),
     },
   ];
@@ -121,6 +131,7 @@ const EventsPage = () => {
               ...column,
               flex: column.flex || 1,
               minWidth: column.minWidth || 150,
+              editable: column.editable ?? false,
             }))}
             density="standard"
             pageSizeOptions={[5, 10, 15]}
@@ -132,7 +143,17 @@ const EventsPage = () => {
                 display: 'none',
               },
               '& .MuiDataGrid-row:hover': {
-                backgroundColor: 'inherit',
+                backgroundColor: 'inherit', // ホバー時の背景色を無効化
+              },
+              '& .MuiDataGrid-cell:focus': {
+                outline: 'none', // セルのフォーカス時の枠線を削除
+              },
+              '& .MuiDataGrid-row:focus': {
+                outline: 'none', // 行のフォーカス時の枠線を削除
+              },
+              '& .MuiDataGrid-selected': {
+                backgroundColor: 'inherit', // 選択状態の背景色を変更なしにする
+                border: 'none', // 選択状態での枠線を削除
               },
               boxShadow: 1,
               width: '100%',
@@ -144,8 +165,9 @@ const EventsPage = () => {
                 },
               },
             }}
-            disableRowSelectionOnClick
-            disableColumnSelector
+            disableRowSelectionOnClick // 行選択を無効化
+            disableColumnSelector // 列選択機能を無効化
+            disableColumnMenu // 列メニューの無効化
             getRowId={(event) => event.id}
           />
         </Box>

@@ -77,7 +77,41 @@ const EventDetail: React.FC = () => {
   const handleEditClick = () => {
     goTo(`/events/${id}/edit`);
   };
+  // デバック専用削除処理
+  // const handleDeleteClick = async () => {
+  //   try {
+  //     const deleteResponse = await fetch(
+  //       `https://azure-api-opf.azurewebsites.net/api/events/${eventDetail?.events.url}/?email=s.matsuzaki@hiroka.biz`,
+  //       {
+  //         method: 'DELETE',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //         body: JSON.stringify({
+  //           event_id: eventDetail?.events.id,
+  //         }),
+  //       }
+  //     );
 
+  //     if (!deleteResponse.ok) {
+  //       throw new Error(`更新エラー: ${deleteResponse.statusText}`);
+  //     }
+
+  //     const deleteResult = await deleteResponse.text();
+  //     console.log('削除結果:', deleteResult);
+
+  //     await fetchEventDetail();
+  //     setonOff(false);
+  //   } catch (error) {
+  //     if (error instanceof Error) {
+  //       console.error('エラー:', error.message);
+  //       alert('エラーが発生しました: ' + error.message);
+  //     } else {
+  //       console.error('未知のエラー:', error);
+  //       alert('未知のエラーが発生しました。');
+  //     }
+  //   }
+  // };
   const fetchEventDetail = async () => {
     try {
       const response = await fetch(`https://azure-api-opf.azurewebsites.net/api/events/${id}`);
@@ -216,7 +250,7 @@ const EventDetail: React.FC = () => {
             }}
           >
             <Link sx={{ fontSize: '2.5rem' }} />
-            <Typography>リンクをコピー</Typography>
+            <Typography>URLをコピー</Typography>
           </IconButton>
         </Tooltip>
       </Box>
@@ -797,6 +831,14 @@ const EventDetail: React.FC = () => {
         >
           編集
         </Typography>
+
+        {/* デバック用削除ボタン */}
+        {/* <Typography
+          sx={{ cursor: 'pointer', color: 'primary.main', fontWeight: 'bold' }}
+          onClick={handleDeleteClick}
+        >
+          削除
+        </Typography> */}
       </Box>
     </>
   );

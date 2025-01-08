@@ -123,6 +123,7 @@ const NewEventPage: React.FC = () => {
       // 登録成功時の処理
       reset();
       setSuccessMessage('イベントが正常に登録されました！');
+      // goTo(`/events/${event.url}?message=イベントが正常に登録されました！`);
     } catch (error) {
       console.error('エラーが発生しました:', error);
       setErrorMessage('登録中にエラーが発生しました。');

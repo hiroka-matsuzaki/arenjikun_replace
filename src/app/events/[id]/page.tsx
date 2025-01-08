@@ -28,7 +28,7 @@ import {
   Typography,
   useMediaQuery,
 } from '@mui/material';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useUser } from '@/app/context/UserContext';
 import { EmojiPeople, Link } from '@mui/icons-material';
@@ -73,6 +73,8 @@ const EventDetail: React.FC = () => {
   const params = useParams();
   const id = params?.id as string | undefined;
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const message = searchParams?.get('message');
   const goTo = (path: string) => router.push(path);
   const handleEditClick = () => {
     goTo(`/events/${id}/edit`);
@@ -218,6 +220,7 @@ const EventDetail: React.FC = () => {
   };
   return (
     <>
+      {message && <Typography>{message}</Typography>}
       <Box
         display="flex"
         sx={{

@@ -405,27 +405,32 @@ const EventDetail: React.FC = () => {
                     <TableCell sx={{ minWidth: 50, textAlign: 'center' }}>
                       <Typography color="error">×</Typography>
                     </TableCell>
-                    {respondents?.map((respondent, index) => (
-                      <TableCell
-                        key={index}
-                        onClick={
-                          respondent.user_name === user?.user_name
-                            ? () => setonOff(true) // 特定の名前の場合のみハンドラを呼び出す
-                            : undefined
-                        }
-                        sx={{
-                          minWidth: 150,
-                          color: respondent.user_name === user?.user_name ? 'blue' : 'inherit', // 特定の名前の場合は青色
-                          cursor: respondent.user_name === user?.user_name ? 'pointer' : 'default', // ポインタを設定
-                          textDecoration:
-                            respondent.user_name === user?.user_name ? 'underline' : 'none', // 下線を付ける
-                          fontWeight: respondent.user_name === user?.user_name ? 'bold' : 'normal', // 太字にする
-                          textAlign: 'center',
-                        }}
-                      >
-                        {respondent.user_name}
-                      </TableCell>
-                    ))}
+                    {respondents?.map(
+                      (respondent, index) =>
+                        respondent.user_name ? ( // user_name が null の場合は何もレンダリングしない
+                          <TableCell
+                            key={index}
+                            onClick={
+                              respondent.user_name === user?.user_name
+                                ? () => setonOff(true) // 特定の名前の場合のみハンドラを呼び出す
+                                : undefined
+                            }
+                            sx={{
+                              minWidth: 150,
+                              color: respondent.user_name === user?.user_name ? 'blue' : 'inherit', // 特定の名前の場合は青色
+                              cursor:
+                                respondent.user_name === user?.user_name ? 'pointer' : 'default', // ポインタを設定
+                              textDecoration:
+                                respondent.user_name === user?.user_name ? 'underline' : 'none', // 下線を付ける
+                              fontWeight:
+                                respondent.user_name === user?.user_name ? 'bold' : 'normal', // 太字にする
+                              textAlign: 'center',
+                            }}
+                          >
+                            {respondent.user_name}
+                          </TableCell>
+                        ) : null // user_name が null の場合は null を返す
+                    )}
                   </TableRow>
                 </TableHead>
                 <TableBody>

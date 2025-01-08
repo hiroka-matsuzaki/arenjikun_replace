@@ -7,6 +7,7 @@ import { Event, EventList } from '@/types/event';
 import { useRouter } from 'next/navigation';
 import { useUser } from '../context/UserContext';
 import typographyStyles from '@/styles/typographyStyles';
+import { Add } from '@mui/icons-material';
 
 const EventsPage = () => {
   const router = useRouter();
@@ -94,6 +95,8 @@ const EventsPage = () => {
   const handleButtonClick = (event: Event) => {
     goTo(`/events/${event.url}`);
   };
+  const goToNewEvent = () => router.push('/events/new');
+
   return (
     <>
       <Box
@@ -171,6 +174,46 @@ const EventsPage = () => {
             getRowId={(event) => event.id}
           />
         </Box>
+      </Box>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'left',
+          border: '1px solid #ccc',
+          mx: '10%',
+        }}
+      >
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={goToNewEvent}
+          sx={{
+            backgroundColor: 'white', // 通常の背景を白に
+            color: 'primary.main', // 通常の文字とアイコンを青色に
+            border: '2px solid', // 外枠を青色に
+            borderColor: 'primary.main',
+            textTransform: 'none', // テキストを通常のケースに
+            // ボタン内のフォントサイズを調整
+            '&:hover': {
+              backgroundColor: 'primary.main', // ホバー時の背景色を青に
+              color: 'white', // ホバー時の文字とアイコンを白に
+              borderColor: 'primary.main', // 枠線を青色に
+              '.MuiSvgIcon-root': {
+                color: 'white', // ホバー時にアイコンを白に
+              },
+            },
+            width: { xs: '100%', sm: 'auto' }, // モバイルではボタン幅を100%に
+          }}
+        >
+          <Add
+            sx={{
+              display: { xs: 'none', md: 'flex' }, // モバイルではアイコンを非表示
+              mr: 1,
+              color: 'primary.main', // アイコンを青色に
+            }}
+          />
+          新規イベント
+        </Button>
       </Box>
     </>
   );

@@ -57,7 +57,7 @@ const ResponsiveAppBar: React.FC<Props> = ({ userName }) => {
   // ページ遷移の共通関数
   const goTo = (path: string) => {
     if (path === '/manual') {
-      window.open('./app/sample.pdf', '_blank');
+      window.open('/sample.pdf', '_blank');
     } else router.push(path);
   };
 

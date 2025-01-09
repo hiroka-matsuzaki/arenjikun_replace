@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, Typography, useMediaQuery } from '@mui/material';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { Event, EventList } from '@/types/event';
 import { useRouter } from 'next/navigation';
@@ -12,6 +12,7 @@ import { Add } from '@mui/icons-material';
 const EventsPage = () => {
   const router = useRouter();
   const goTo = (path: string) => router.push(path);
+  const isSmallScreen = useMediaQuery('(max-width:600px)'); // 画面幅600px以下で切り替え
 
   const { user } = useUser(); // UserContextからユーザー情報を取得
 
@@ -128,51 +129,104 @@ const EventsPage = () => {
         }}
       >
         <Box style={{ display: 'flex', flexDirection: 'column', overflowX: 'auto' }}>
-          <DataGrid
-            rows={[...events].sort((a, b) => b.id - a.id)}
-            columns={columns.map((column) => ({
-              ...column,
-              flex: column.flex || 1,
-              minWidth: column.minWidth || 150,
-              editable: column.editable ?? false,
-            }))}
-            density="standard"
-            pageSizeOptions={[5, 10, 15]}
-            sx={{
-              '& .MuiDataGrid-columnHeaders': {
-                borderBottom: 'none',
-              },
-              '& .MuiDataGrid-columnSeparator': {
-                display: 'none',
-              },
-              '& .MuiDataGrid-row:hover': {
-                backgroundColor: 'inherit', // ホバー時の背景色を無効化
-              },
-              '& .MuiDataGrid-cell:focus': {
-                outline: 'none', // セルのフォーカス時の枠線を削除
-              },
-              '& .MuiDataGrid-row:focus': {
-                outline: 'none', // 行のフォーカス時の枠線を削除
-              },
-              '& .MuiDataGrid-selected': {
-                backgroundColor: 'inherit', // 選択状態の背景色を変更なしにする
-                border: 'none', // 選択状態での枠線を削除
-              },
-              boxShadow: 1,
-              width: '100%',
-            }}
-            initialState={{
-              pagination: {
-                paginationModel: {
-                  pageSize: 15,
+          {isSmallScreen ? (
+            // モバイルビュー: カード形式で表示
+            <Box>
+              {[...events]
+                .sort((a, b) => b.id - a.id)
+                .map((event) => (
+                  <Card
+                    key={event.id}
+                    sx={{
+                      marginBottom: 2,
+                      boxShadow: 1,
+                    }}
+                  >
+                    <CardContent>
+                      {columns.map((column) =>
+                        column.field === 'action' ? (
+                          <Button
+                            onClick={() => handleButtonClick(event)}
+                            key={column.field}
+                            sx={{
+                              padding: '6px 12px',
+                              cursor: 'pointer',
+                              color: 'white', // 文字の色を白に設定
+                              backgroundColor: 'primary.main', // ボタンの背景色（例: テーマのメインカラー）
+                              '&:hover': {
+                                backgroundColor: 'primary.dark', // ホバー時の背景色（例: テーマのダークカラー）
+                              },
+
+                              pointerEvents: 'auto',
+                            }}
+                          >
+                            詳細
+                          </Button>
+                        ) : (
+                          <Typography
+                            key={column.field}
+                            variant="body2"
+                            sx={{
+                              fontWeight: column.flex ? 'bold' : 'normal',
+                              marginBottom: 1,
+                            }}
+                          >
+                            {column.headerName}: {event[column.field]}
+                          </Typography>
+                        )
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+            </Box>
+          ) : (
+            // デスクトップビュー: DataGrid形式で表示
+            <DataGrid
+              rows={[...events].sort((a, b) => b.id - a.id)}
+              columns={columns.map((column) => ({
+                ...column,
+                flex: column.flex || 1,
+                minWidth: column.minWidth || 150,
+                editable: column.editable ?? false,
+              }))}
+              density="standard"
+              pageSizeOptions={[5, 10, 15]}
+              sx={{
+                '& .MuiDataGrid-columnHeaders': {
+                  borderBottom: 'none',
                 },
-              },
-            }}
-            disableRowSelectionOnClick // 行選択を無効化
-            disableColumnSelector // 列選択機能を無効化
-            disableColumnMenu // 列メニューの無効化
-            getRowId={(event) => event.id}
-          />
+                '& .MuiDataGrid-columnSeparator': {
+                  display: 'none',
+                },
+                '& .MuiDataGrid-row:hover': {
+                  backgroundColor: 'inherit', // ホバー時の背景色を無効化
+                },
+                '& .MuiDataGrid-cell:focus': {
+                  outline: 'none', // セルのフォーカス時の枠線を削除
+                },
+                '& .MuiDataGrid-row:focus': {
+                  outline: 'none', // 行のフォーカス時の枠線を削除
+                },
+                '& .MuiDataGrid-selected': {
+                  backgroundColor: 'inherit', // 選択状態の背景色を変更なしにする
+                  border: 'none', // 選択状態での枠線を削除
+                },
+                boxShadow: 1,
+                width: '100%',
+              }}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 15,
+                  },
+                },
+              }}
+              disableRowSelectionOnClick // 行選択を無効化
+              disableColumnSelector // 列選択機能を無効化
+              disableColumnMenu // 列メニューの無効化
+              getRowId={(event) => event.id}
+            />
+          )}
         </Box>
       </Box>
       <Box

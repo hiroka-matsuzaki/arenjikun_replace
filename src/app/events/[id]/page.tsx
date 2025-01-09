@@ -312,8 +312,8 @@ const EventDetail: React.FC = () => {
           </Typography>
           {isSmallScreen ? (
             <Box>
-              {eventDetail?.event_dates
-                ?.sort((a, b) => {
+              {[...(eventDetail?.event_dates || [])]
+                .sort((a, b) => {
                   const dateA = dayjs(a.dated_on);
                   const dateB = dayjs(b.dated_on);
                   if (dateA.isBefore(dateB)) return -1;
@@ -369,7 +369,7 @@ const EventDetail: React.FC = () => {
                       </Box>
                       <Box>
                         {respondents?.map((respondent) => {
-                          const userPossibility = eventDetail.user_possibilities.find(
+                          const userPossibility = eventDetail?.user_possibilities.find(
                             (item) =>
                               item.event_date_id === event_date.id &&
                               item.user_id === respondent.user_id
@@ -451,7 +451,7 @@ const EventDetail: React.FC = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {eventDetail?.event_dates
+                  {[...(eventDetail?.event_dates || [])]
                     .sort((a, b) => {
                       const dateA = dayjs(a.dated_on);
                       const dateB = dayjs(b.dated_on);
@@ -509,7 +509,7 @@ const EventDetail: React.FC = () => {
                           </Typography>
                         </TableCell>
                         {respondents?.map((respondent, index) =>
-                          eventDetail.user_possibilities
+                          eventDetail?.user_possibilities
                             .filter(
                               (item) =>
                                 item.event_date_id === event_date.id &&

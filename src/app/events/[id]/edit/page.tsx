@@ -108,8 +108,8 @@ const NewEventPage: React.FC = () => {
 
   const defaultRowAdd = (data: EventResponse) => {
     const defaultRow =
-      data?.event_dates
-        ?.sort((a, b) => {
+      [...(data?.event_dates || [])]
+        .sort((a, b) => {
           const dateA = dayjs(a.dated_on);
           const dateB = dayjs(b.dated_on);
           if (dateA.isBefore(dateB)) return -1;

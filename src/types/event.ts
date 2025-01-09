@@ -9,6 +9,7 @@ export interface Event {
   updated_at: string; // ISO 8601形式の日時
   created_by: number;
   updated_by: number;
+  [key: string]: any; // 動的なキーアクセスを許可
 }
 
 export interface EventDate {

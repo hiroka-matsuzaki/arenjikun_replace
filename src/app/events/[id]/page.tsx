@@ -31,7 +31,7 @@ import {
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useUser } from '@/app/context/UserContext';
-import { EmojiPeople, Link } from '@mui/icons-material';
+import { EmojiPeople, Share } from '@mui/icons-material';
 import { Controller, useForm } from 'react-hook-form';
 import typographyStyles from '@/styles/typographyStyles';
 import dayjs from 'dayjs';
@@ -68,7 +68,6 @@ const EventDetail: React.FC = () => {
   const [eventDetail, setEventDetail] = useState<EventResponse>();
   const [respondents, setRespondent] = useState<Respondent[]>();
   const [myPossibilities, setMyPossibilities] = useState<UserPossibility[]>();
-  const [tooltipTitle, setTooltipTitle] = React.useState('URLをコピー');
   const isSmallScreen = useMediaQuery('(max-width:600px)'); // 画面幅600px以下で切り替え
   const params = useParams();
   const id = params?.id as string | undefined;
@@ -165,17 +164,24 @@ const EventDetail: React.FC = () => {
 
   const [onOff, setonOff] = React.useState(false);
   const { handleSubmit, control } = useForm<FormData>();
-  const handleCopyLink = () => {
-    const urlToCopy = window.location.href;
-    navigator.clipboard
-      .writeText(urlToCopy)
-      .then(() => {
-        setTooltipTitle('コピーしました！'); // クリック後にツールチップを非表示
-        setTimeout(() => setTooltipTitle('URLをコピー'), 3000); // 3秒後に再度表示
-      })
-      .catch((err) => {
-        console.error('URLコピーに失敗しました', err);
+  const tooltipTitle = '共有'; // ツールチップのタイトル
+
+  const handleShare = async () => {
+    if (!navigator.share) {
+      alert('このブラウザはWeb Share APIをサポートしていません。');
+      return;
+    }
+
+    try {
+      await navigator.share({
+        title: 'Reactアプリをシェア',
+        text: 'このアプリをチェックしてください！',
+        url: window.location.href, // 現在のページのURL
       });
+      console.log('コンテンツの共有に成功しました！');
+    } catch (error) {
+      console.error('共有中にエラーが発生しました:', error);
+    }
   };
   const onSubmit = async (data: FormData) => {
     const formattedData = eventDetail?.event_dates.map((event, index) => ({
@@ -242,7 +248,7 @@ const EventDetail: React.FC = () => {
         </Typography>
         <Tooltip title={tooltipTitle}>
           <IconButton
-            onClick={handleCopyLink}
+            onClick={handleShare}
             sx={{
               backgroundColor: '#E3F2FD', // 青系の薄い背景色
               color: '#1976D2', // 青系の濃い文字色
@@ -253,8 +259,8 @@ const EventDetail: React.FC = () => {
               borderRadius: '8px', // 少し角丸にする
             }}
           >
-            <Link sx={{ fontSize: '2.5rem' }} />
-            <Typography>URLをコピー</Typography>
+            <Share />
+            <Typography>共有</Typography>
           </IconButton>
         </Tooltip>
       </Box>

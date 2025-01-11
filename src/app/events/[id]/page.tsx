@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
-import { EventDate, EventResponse, Respondent, UserPossibility } from '@/types/event';
+import { EventDate, EventResponse, UserPossibility } from '@/types/event';
 import Grid from '@mui/material/Grid2';
 
 import {
@@ -35,6 +35,7 @@ import { EmojiPeople, Share } from '@mui/icons-material';
 import { Controller, useForm } from 'react-hook-form';
 import typographyStyles from '@/styles/typographyStyles';
 import dayjs from 'dayjs';
+import { User, Users } from '@/types/user';
 
 type FormData = {
   [key: string]: string | number;
@@ -65,8 +66,10 @@ const formattedDataAndTime = (eventDate: EventDate) => {
 
 const EventDetail: React.FC = () => {
   const { user } = useUser();
+  const [users, setUsers] = useState<Users>();
+  const [respondentUser, setRespondentUser] = useState<User>();
   const [eventDetail, setEventDetail] = useState<EventResponse>();
-  const [respondents, setRespondent] = useState<Respondent[]>();
+  const [respondents, setRespondent] = useState<Users>();
   const [myPossibilities, setMyPossibilities] = useState<UserPossibility[]>();
   const isSmallScreen = useMediaQuery('(max-width:600px)'); // 画面幅600px以下で切り替え
   const params = useParams();
@@ -124,18 +127,40 @@ const EventDetail: React.FC = () => {
       setEventDetail(data);
       fetchMyPossibilities(data);
 
-      const users = Array.from(
-        data.user_possibilities
-          .reduce((map, item) => {
-            if (!map.has(item.user_id)) {
-              map.set(item.user_id, { user_id: item.user_id, user_name: item.user_name });
-            }
-            return map;
-          }, new Map())
-          .values()
+      const answeredUsers = Array.from(
+        new Set(
+          data.user_possibilities
+            .map((user_possibilitie) =>
+              users?.find((user) => user.email === user_possibilitie.email)
+            )
+            .filter((user): user is User => !!user) // nullまたはundefinedを除外
+        )
       );
-      setRespondent(users);
-      console.log('users:', users);
+      console.log('users:', answeredUsers);
+      setRespondent(answeredUsers);
+    } catch (error) {
+      console.error('データ取得エラー:', error);
+    }
+  };
+
+  const selectRespondentUser = async (userCode: String) => {
+    const selectUser = users?.find((user) => user.user_code === userCode);
+    if (selectUser === undefined) {
+      console.log(`${userCode}が異常です。`);
+      return;
+    }
+    setRespondentUser(selectUser);
+  };
+
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch(`https://azure-api-opf.azurewebsites.net/api/users`);
+      if (!response.ok) {
+        throw new Error(`HTTPエラー: ${response.status}`);
+      }
+      const data: Users = await response.json();
+      console.log('Users:', data);
+      setUsers(data);
     } catch (error) {
       console.error('データ取得エラー:', error);
     }
@@ -160,6 +185,7 @@ const EventDetail: React.FC = () => {
     if (user) {
       fetchEventDetail();
     }
+    fetchUsers();
   }, [user]);
 
   const [onOff, setonOff] = React.useState(false);
@@ -372,11 +398,11 @@ const EventDetail: React.FC = () => {
                           const userPossibility = eventDetail?.user_possibilities.find(
                             (item) =>
                               item.event_date_id === event_date.id &&
-                              item.user_id === respondent.user_id
+                              item.email === respondent.email
                           );
                           return (
                             <Typography
-                              key={respondent.user_id}
+                              key={respondent.user_code}
                               sx={{
                                 color:
                                   userPossibility?.possibility === 1
@@ -421,21 +447,16 @@ const EventDetail: React.FC = () => {
                           respondent.user_name ? (
                             <TableCell
                               key={index}
-                              onClick={
-                                respondent.user_name === user?.user_name
-                                  ? () => setonOff(true) // 特定の名前の場合のみハンドラを呼び出す
-                                  : undefined
-                              }
+                              onClick={() => {
+                                selectRespondentUser(respondent.user_code);
+                                setonOff(true);
+                              }}
                               sx={{
                                 minWidth: 150,
-                                color:
-                                  respondent.user_name === user?.user_name ? 'blue' : 'inherit', // 特定の名前の場合は青色
-                                cursor:
-                                  respondent.user_name === user?.user_name ? 'pointer' : 'default', // ポインタを設定
-                                textDecoration:
-                                  respondent.user_name === user?.user_name ? 'underline' : 'none', // 下線を付ける
-                                fontWeight:
-                                  respondent.user_name === user?.user_name ? 'bold' : 'normal', // 太字にする
+                                color: 'blue', // 特定の名前の場合は青色
+                                cursor: 'pointer', // ポインタを設定
+                                textDecoration: 'underline', // 下線を付ける
+                                fontWeight: 'bold', // 太字にする
                                 textAlign: 'center',
                               }}
                             >
@@ -513,7 +534,7 @@ const EventDetail: React.FC = () => {
                             .filter(
                               (item) =>
                                 item.event_date_id === event_date.id &&
-                                item.user_id === respondent.user_id
+                                item.email === respondent.email
                             )
                             .map((data) => (
                               <TableCell key={index} sx={{ minWidth: 150, textAlign: 'center' }}>
@@ -603,31 +624,31 @@ const EventDetail: React.FC = () => {
                   <Grid size={6}>
                     <FormControl fullWidth>
                       <FormLabel>ログインID</FormLabel>
-                      <OutlinedInput defaultValue={user?.login_code} disabled />
+                      <OutlinedInput defaultValue={respondentUser?.login_code} disabled />
                     </FormControl>
                   </Grid>
                   <Grid size={6}>
                     <FormControl fullWidth>
                       <FormLabel>社員番号</FormLabel>
-                      <OutlinedInput defaultValue={user?.user_code} disabled />
+                      <OutlinedInput defaultValue={respondentUser?.user_code} disabled />
                     </FormControl>
                   </Grid>
                   <Grid size={6}>
                     <FormControl fullWidth>
                       <FormLabel>会社</FormLabel>
-                      <OutlinedInput defaultValue={user?.company} disabled />
+                      <OutlinedInput defaultValue={respondentUser?.company} disabled />
                     </FormControl>
                   </Grid>
                   <Grid size={6}>
                     <FormControl fullWidth>
                       <FormLabel>部署</FormLabel>
-                      <OutlinedInput defaultValue={user?.department} disabled />
+                      <OutlinedInput defaultValue={respondentUser?.department} disabled />
                     </FormControl>
                   </Grid>
                   <Grid size={12}>
                     <FormControl fullWidth>
                       <FormLabel>名前</FormLabel>
-                      <OutlinedInput defaultValue={user?.user_name} disabled />
+                      <OutlinedInput defaultValue={respondentUser?.user_name} disabled />
                     </FormControl>
                   </Grid>
                 </Grid>
@@ -790,7 +811,10 @@ const EventDetail: React.FC = () => {
           )}
 
           <Button
-            onClick={() => setonOff(true)}
+            onClick={() => {
+              selectRespondentUser(user!.user_code);
+              setonOff(true);
+            }}
             variant="contained"
             color="primary"
             sx={{

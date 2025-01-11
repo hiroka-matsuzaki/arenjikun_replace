@@ -28,6 +28,7 @@ export interface UserPossibility {
   possibility: number; // 0: 不可能, 1: 可能
   comment: string;
   user_name: string;
+  email: string;
 }
 
 export interface EventResponse {

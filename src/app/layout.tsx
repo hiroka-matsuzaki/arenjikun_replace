@@ -36,7 +36,7 @@ const MainContent: React.FC<{ children: ReactNode }> = ({ children }) => {
       };
     }
     const response = await fetch(
-      `https://azure-api-opf.azurewebsites.net/api/users?email=${loginEmail}` //テスト用ベタ打ち
+      `https://azure-api-opf.azurewebsites.net/api/user?email=${loginEmail}` //テスト用ベタ打ち
     );
     if (!response.ok) {
       throw new Error(`HTTPエラー: ${response.status}`);

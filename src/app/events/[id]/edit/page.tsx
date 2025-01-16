@@ -19,6 +19,8 @@ import {
   CircularProgress,
   TableHead,
   Table,
+  Autocomplete,
+  Chip,
 } from '@mui/material';
 import {
   CalendarMonthSharp,
@@ -33,6 +35,7 @@ import dayjs from 'dayjs';
 import { useUser } from '@/app/context/UserContext';
 import { EventResponse } from '@/types/event';
 import { useParams } from 'next/navigation';
+import { Users } from '@/types/user';
 // import { EventResponse } from '@/types/event';
 
 type FormData = {
@@ -43,6 +46,8 @@ type FormData = {
 
 const NewEventPage: React.FC = () => {
   const { user } = useUser(); // UserContextからユーザー情報を取得
+  const [users, setUsers] = useState<Users>();
+  const [respondents, setRespondent] = useState<Users>();
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -77,6 +82,28 @@ const NewEventPage: React.FC = () => {
 
       setEventDetail(data);
       defaultRowAdd(data);
+      const users = Array.from(
+        data.user_possibilities
+          .reduce((map, item) => {
+            if (!map.has(item.user_id)) {
+              map.set(item.user_id, {
+                user_id: item.user_id,
+                user_name: item.user_name,
+                email: item.email,
+              });
+            }
+            return map;
+          }, new Map())
+          .values()
+      );
+      setRespondent(users);
+      const usersResponse = await fetch(`https://azure-api-opf.azurewebsites.net/api/users`);
+      if (!response.ok) {
+        throw new Error(`HTTPエラー: ${usersResponse.status}`);
+      }
+      const usersData: Users = await usersResponse.json();
+      console.log('Users:', usersData);
+      setUsers(usersData);
     } catch (error) {
       console.error('データ取得エラー:', error);
     }
@@ -101,6 +128,11 @@ const NewEventPage: React.FC = () => {
       dateOptions.filter((row) => row.id !== id)
     );
   };
+  const initialSelectedUsers = users?.filter((user) =>
+    respondents?.some((resUser) => resUser.email === user.email)
+  );
+
+  const [selectedUsers, setSelectedUsers] = useState<Users>(initialSelectedUsers || []);
 
   const formatDateTime = (date: string, time: string) => {
     return `${dayjs(date).format('YYYY-MM-DD')} ${dayjs(time).format('HH:mm:ss')}`;
@@ -453,7 +485,36 @@ const NewEventPage: React.FC = () => {
             </TableBody>
           </Table>
         </FormControl>
-
+        <Box sx={{ display: 'flex' }} gap={1}>
+          <Event />
+          <FormLabel>イベント名</FormLabel>
+        </Box>
+        <Autocomplete
+          multiple
+          options={users || []}
+          getOptionLabel={(option) => option.email}
+          filterSelectedOptions
+          value={selectedUsers}
+          onChange={(event, newValue) => setSelectedUsers(newValue)}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              variant="outlined"
+              label="Select Users"
+              placeholder="Search by email"
+            />
+          )}
+          renderTags={(value, getTagProps) =>
+            value.map((option, index) => (
+              <Chip label={option.user_name} {...getTagProps({ index })} key={option.user_code} />
+            ))
+          }
+          renderOption={(props, option) => (
+            <li {...props} key={option.user_code}>
+              {option.email} ({option.user_name})
+            </li>
+          )}
+        />
         <Button variant="contained" color="primary" type="submit" disabled={isLoading}>
           {isLoading ? <CircularProgress size={24} /> : '登録'}
         </Button>

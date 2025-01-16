@@ -79,7 +79,7 @@ const EventDetail: React.FC = () => {
   const searchParams = useSearchParams();
   const message = searchParams?.get('message');
   const goTo = (path: string) => router.push(path);
-  const handleEditClick = () => {
+  const handleEditClick = async () => {
     goTo(`/events/${id}/edit`);
   };
   // デバック専用削除処理

@@ -118,6 +118,8 @@ const EventDetail: React.FC = () => {
   // };
   const fetchEventDetail = async () => {
     try {
+      console.log(`https://azure-api-opf.azurewebsites.net/api/events/${id}`);
+
       const response = await fetch(`https://azure-api-opf.azurewebsites.net/api/events/${id}`);
       if (!response.ok) {
         throw new Error(`HTTPエラー: ${response.status}`);
@@ -127,26 +129,30 @@ const EventDetail: React.FC = () => {
       setEventDetail(data);
       fetchMyPossibilities(data);
 
-      const answeredUsers = Array.from(
-        new Set(
-          data.user_possibilities
-            .map((user_possibilitie) =>
-              users?.find((user) => user.email === user_possibilitie.email)
-            )
-            .filter((user): user is User => !!user) // nullまたはundefinedを除外
-        )
+      const users = Array.from(
+        data.user_possibilities
+          .reduce((map, item) => {
+            if (!map.has(item.user_id)) {
+              map.set(item.user_id, {
+                user_id: item.user_id,
+                user_name: item.user_name,
+                email: item.email,
+              });
+            }
+            return map;
+          }, new Map())
+          .values()
       );
-      console.log('users:', answeredUsers);
-      setRespondent(answeredUsers);
+      setRespondent(users);
     } catch (error) {
       console.error('データ取得エラー:', error);
     }
   };
 
-  const selectRespondentUser = async (userCode: String) => {
-    const selectUser = users?.find((user) => user.user_code === userCode);
+  const selectRespondentUser = async (userEmail: String) => {
+    const selectUser = users?.find((user) => user.email === userEmail);
     if (selectUser === undefined) {
-      console.log(`${userCode}が異常です。`);
+      console.log(`${userEmail}が異常です。`);
       return;
     }
     setRespondentUser(selectUser);
@@ -170,11 +176,11 @@ const EventDetail: React.FC = () => {
     if (!eventDetail) {
       throw new Error("fetchMyPossibilities: 引数 'eventDetail' が undefined です。");
     }
-    if (!user) {
-      throw new Error("fetchMyPossibilities: 引数 'user' が undefined です。");
+    if (!respondentUser) {
+      throw new Error("fetchMyPossibilities: 引数 'respondentUser' が undefined です。");
     }
     const myPossibilities = eventDetail.user_possibilities.filter(
-      (item) => item.user_name === user.user_name
+      (item) => item.user_name === respondentUser.user_name
     );
     console.log('myPossibilities:', myPossibilities);
 
@@ -441,14 +447,14 @@ const EventDetail: React.FC = () => {
                     <TableCell sx={{ minWidth: 50, textAlign: 'center' }}>
                       <Typography color="error">×</Typography>
                     </TableCell>
-                    {respondents ? (
+                    {respondents && respondents.length > 0 ? (
                       respondents.map(
                         (respondent, index) =>
                           respondent.user_name ? (
                             <TableCell
                               key={index}
                               onClick={() => {
-                                selectRespondentUser(respondent.user_code);
+                                selectRespondentUser(respondent.email);
                                 setonOff(true);
                               }}
                               sx={{
@@ -624,7 +630,7 @@ const EventDetail: React.FC = () => {
                   <Grid size={6}>
                     <FormControl fullWidth>
                       <FormLabel>ログインID</FormLabel>
-                      <OutlinedInput defaultValue={respondentUser?.login_code} disabled />
+                      <OutlinedInput defaultValue={respondentUser?.email} disabled />
                     </FormControl>
                   </Grid>
                   <Grid size={6}>

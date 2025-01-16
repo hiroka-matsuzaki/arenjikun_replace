@@ -25,16 +25,7 @@ const MainContent: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { setUser } = useUser();
   const fetchUser = async (loginEmail: string): Promise<User> => {
     console.log('Email:', loginEmail);
-    if (process.env.NODE_ENV === 'development') {
-      return {
-        email: 's.matsuzaki@hiroka.biz',
-        user_name: '松崎　祥也',
-        login_code: '999999',
-        department: 'テスト部署',
-        company: 'テスト株式会社',
-        user_code: '602371',
-      };
-    }
+
     const response = await fetch(
       `https://azure-api-opf.azurewebsites.net/api/user?email=${loginEmail}` //テスト用ベタ打ち
     );

@@ -66,6 +66,7 @@ const formattedDataAndTime = (eventDate: EventDate) => {
 
 const EventDetail: React.FC = () => {
   const { user } = useUser();
+  // eslint-disable-next-line no-unused-vars
   const [users, setUsers] = useState<Users>();
   const [respondentUser, setRespondentUser] = useState<User>();
   const [eventDetail, setEventDetail] = useState<EventResponse>();
@@ -118,69 +119,73 @@ const EventDetail: React.FC = () => {
   // };
   const fetchEventDetail = async () => {
     try {
-      console.log(`https://azure-api-opf.azurewebsites.net/api/events/${id}`);
+      const reqURL = `https://azure-api-opf.azurewebsites.net/api/events/${id}`;
+      console.log('リクエストURL:', reqURL);
 
-      const response = await fetch(`https://azure-api-opf.azurewebsites.net/api/events/${id}`);
+      const response = await fetch(reqURL);
+      const contentType = response.headers.get('Content-Type');
+
       if (!response.ok) {
-        throw new Error(`HTTPエラー: ${response.status}`);
+        const errorText = await response.text(); // JSON以外の形式も取得可能
+        console.error(`HTTPエラー: ${response.status}: ${errorText}`);
+        throw new Error(`HTTPエラー: ${response.status}: ${errorText}`);
       }
-      const data: EventResponse = await response.json();
-      console.log('データ:', data);
-      setEventDetail(data);
-      fetchMyPossibilities(data);
 
-      const users = Array.from(
-        data.user_possibilities
-          .reduce((map, item) => {
-            if (!map.has(item.user_id)) {
-              map.set(item.user_id, {
-                user_id: item.user_id,
-                user_name: item.user_name,
-                email: item.email,
-              });
-            }
-            return map;
-          }, new Map())
-          .values()
-      );
-      setRespondent(users);
+      // JSONの場合のみ解析
+      if (contentType && contentType.includes('application/json')) {
+        const data: EventResponse = await response.json();
+        console.log('データ:', data);
+        setEventDetail(data);
+        const users = Array.from(
+          data.user_possibilities
+            .reduce((map, item) => {
+              if (!map.has(item.user_id)) {
+                map.set(item.user_id, {
+                  user_id: item.user_id,
+                  user_name: item.user_name,
+                  email: item.email,
+                });
+              }
+              return map;
+            }, new Map())
+            .values()
+        );
+        setRespondent(users);
+      } else {
+        const textData = await response.text();
+        console.error('JSONではないレスポンス:', textData);
+      }
     } catch (error) {
       console.error('データ取得エラー:', error);
     }
   };
 
   const selectRespondentUser = async (userEmail: String) => {
-    const selectUser = users?.find((user) => user.email === userEmail);
+    const response = await fetch(`https://azure-api-opf.azurewebsites.net/api/users`);
+    if (!response.ok) {
+      throw new Error(`HTTPエラー: ${response.status}`);
+    }
+    const data: Users = await response.json();
+    console.log('Users:', data);
+    setUsers(data);
+    const selectUser = data?.find((user) => user.email === userEmail);
     if (selectUser === undefined) {
       console.log(`${userEmail}が異常です。`);
       return;
     }
     setRespondentUser(selectUser);
+    fetchMyPossibilities(selectUser);
   };
 
-  const fetchUsers = async () => {
-    try {
-      const response = await fetch(`https://azure-api-opf.azurewebsites.net/api/users`);
-      if (!response.ok) {
-        throw new Error(`HTTPエラー: ${response.status}`);
-      }
-      const data: Users = await response.json();
-      console.log('Users:', data);
-      setUsers(data);
-    } catch (error) {
-      console.error('データ取得エラー:', error);
-    }
-  };
-
-  const fetchMyPossibilities = (eventDetail: EventResponse | undefined) => {
+  const fetchMyPossibilities = (selectUser: User) => {
     if (!eventDetail) {
       throw new Error("fetchMyPossibilities: 引数 'eventDetail' が undefined です。");
     }
-    if (!respondentUser) {
-      throw new Error("fetchMyPossibilities: 引数 'respondentUser' が undefined です。");
+    if (!selectUser) {
+      throw new Error("fetchMyPossibilities: 引数 'selectUser' が undefined です。");
     }
     const myPossibilities = eventDetail.user_possibilities.filter(
-      (item) => item.user_name === respondentUser.user_name
+      (item) => item.user_name === selectUser.user_name
     );
     console.log('myPossibilities:', myPossibilities);
 
@@ -188,11 +193,9 @@ const EventDetail: React.FC = () => {
   };
 
   useEffect(() => {
-    if (user) {
-      fetchEventDetail();
-    }
-    fetchUsers();
-  }, [user]);
+    fetchEventDetail();
+    // fetchUsers();
+  }, []); // 空の依存配列にすることで、初回レンダリング時のみ実行
 
   const [onOff, setonOff] = React.useState(false);
   const { handleSubmit, control } = useForm<FormData>();
@@ -453,8 +456,8 @@ const EventDetail: React.FC = () => {
                           respondent.user_name ? (
                             <TableCell
                               key={index}
-                              onClick={() => {
-                                selectRespondentUser(respondent.email);
+                              onClick={async () => {
+                                await selectRespondentUser(respondent.email);
                                 setonOff(true);
                               }}
                               sx={{
@@ -817,8 +820,8 @@ const EventDetail: React.FC = () => {
           )}
 
           <Button
-            onClick={() => {
-              selectRespondentUser(user!.user_code);
+            onClick={async () => {
+              await selectRespondentUser(user!.email);
               setonOff(true);
             }}
             variant="contained"

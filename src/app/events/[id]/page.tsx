@@ -31,7 +31,16 @@ import {
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useUser } from '@/app/context/UserContext';
-import { CheckCircle, EmojiPeople, Share } from '@mui/icons-material';
+import {
+  ChatBubble,
+  ChatBubbleOutline,
+  CheckCircle,
+  EmojiPeople,
+  MarkChatUnreadOutlined,
+  MarkUnreadChatAlt,
+  MarkUnreadChatAltOutlined,
+  Share,
+} from '@mui/icons-material';
 import { Controller, useForm } from 'react-hook-form';
 import typographyStyles from '@/styles/typographyStyles';
 import dayjs from 'dayjs';
@@ -558,31 +567,51 @@ const EventDetail: React.FC = () => {
                             }
                           </Typography>
                         </TableCell>
-                        {respondents?.map((respondent, index) =>
+                        {respondents?.map((respondent) =>
                           eventDetail?.user_possibilities
                             .filter(
                               (item) =>
                                 item.event_date_id === event_date.id &&
                                 item.email === respondent.email
                             )
-                            .map((data) => (
+                            .map((data, index) => (
                               <TableCell key={index} sx={{ minWidth: 150, textAlign: 'center' }}>
-                                <Typography
-                                  sx={{
-                                    color:
-                                      data.possibility === 1
-                                        ? 'green'
+                                <Tooltip title={data.comment || ''} arrow>
+                                  <Box sx={{ position: 'relative', display: 'inline-block' }}>
+                                    {/* 〇や×の文字にも Tooltip を適用 */}
+                                    <Typography
+                                      sx={{
+                                        color:
+                                          data.possibility === 1
+                                            ? 'green'
+                                            : data.possibility === 5
+                                              ? 'gray'
+                                              : 'red',
+                                        fontSize: 25,
+                                        fontWeight: 'bold',
+                                      }}
+                                    >
+                                      {data.possibility === 1
+                                        ? '〇'
                                         : data.possibility === 5
-                                          ? 'gray'
-                                          : 'red',
-                                  }}
-                                >
-                                  {data.possibility === 1
-                                    ? '〇'
-                                    : data.possibility === 5
-                                      ? '？'
-                                      : '×'}
-                                </Typography>
+                                          ? '？'
+                                          : '×'}
+                                    </Typography>
+
+                                    {/* MarkUnreadChatAlt アイコンを data.comment がある場合にのみ表示 */}
+                                    {data.comment && ( // data.comment が存在する場合に表示
+                                      <MarkChatUnreadOutlined
+                                        sx={{
+                                          position: 'absolute',
+                                          top: 0,
+                                          left: 25,
+                                          fontSize: 15, // アイコンのサイズ
+                                          color: 'grey', // アイコンの色
+                                        }}
+                                      />
+                                    )}
+                                  </Box>
+                                </Tooltip>
                               </TableCell>
                             ))
                         )}

@@ -41,7 +41,7 @@ import { User, Users } from '@/types/user';
 type FormData = {
   eventName: string;
   venue: string;
-  dateOptions: { id: number; date: string; start: string; end: string }[];
+  dateOptions: { u: number; id: number | null; date: string; start: string; end: string }[];
 };
 
 const NewEventPage: React.FC = () => {
@@ -177,23 +177,30 @@ const NewEventPage: React.FC = () => {
     const latestDateOption = dateOptions.reduce((latest, current) => {
       return new Date(current.date) > new Date(latest.date) ? current : latest;
     });
-    console.log('latestDateOption:', latestDateOption);
     const newRow = {
-      id: dateOptions.length + 1,
+      u: dateOptions.length + 1,
+      id: null,
       date: latestDateOption.date
         ? dayjs(latestDateOption.date).add(1, 'day').toISOString() // 次の日を設定
         : dayjs().startOf('day').add(1, 'day').toISOString(),
       start: dayjs().startOf('day').hour(9).toISOString(),
       end: dayjs().startOf('day').hour(11).toISOString(),
     };
+    console.log('addRow:', newRow);
+
     setValue('dateOptions', [...dateOptions, newRow]);
+
+    console.log('addedDateOptions:', dateOptions);
   };
 
-  const handleRowRemove = (id: number) => {
-    setValue(
-      'dateOptions',
-      dateOptions.filter((row) => row.id !== id)
-    );
+  const handleRowRemove = (u: number) => {
+    console.log('Remove:', dateOptions);
+
+    const updatedDateOptions = dateOptions.filter((row) => row.u !== u);
+
+    setValue('dateOptions', updatedDateOptions);
+
+    console.log('Removed:', updatedDateOptions);
   };
   // const initialSelectedUsers = users?.filter((user) =>
   //   respondents?.some((resUser) => resUser.email === user.email)
@@ -226,7 +233,8 @@ const NewEventPage: React.FC = () => {
 
           return 0;
         })
-        .map((event_date) => ({
+        .map((event_date, index) => ({
+          u: index + 1,
           id: event_date.id,
           date: dayjs(event_date.dated_on).startOf('day').toISOString(),
           start: dayjs(event_date.dated_on)
@@ -271,7 +279,7 @@ const NewEventPage: React.FC = () => {
       description: data.venue,
       date_from: data.dateOptions.map((opt) => formatDateTime(opt.date, opt.start)),
       date_to: data.dateOptions.map((opt) => formatDateTime(opt.date, opt.end)),
-      event_dates_id: eventDetail?.event_dates.map((opt) => opt.id),
+      event_dates_id: data.dateOptions.map((opt) => opt.id),
     };
     console.log('payload:', await payload);
 
@@ -534,7 +542,7 @@ const NewEventPage: React.FC = () => {
 
                   <TableCell align="center">
                     {index !== 0 && (
-                      <IconButton color="secondary" onClick={() => handleRowRemove(row.id)}>
+                      <IconButton color="secondary" onClick={() => handleRowRemove(row.u)}>
                         <RemoveCircleOutline
                           sx={{
                             color: '#F44336',

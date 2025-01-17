@@ -255,9 +255,9 @@ const NewEventPage: React.FC = () => {
 
     if (uniqueToSelectedUsers.length > 0) {
       console.log('uniqueToSelected:', uniqueToSelectedUsers);
-      uniqueToSelectedUsers.map(
-        async (uniqueToSelectedUser) => await postDefaultPossibility(uniqueToSelectedUser)
-      );
+      for (const uniqueToSelectedUser of uniqueToSelectedUsers) {
+        await postDefaultPossibility(uniqueToSelectedUser);
+      }
     } else {
       console.log('No unique users found in A.');
     }

@@ -35,7 +35,7 @@ import dayjs from 'dayjs';
 import { useUser } from '@/app/context/UserContext';
 import { EventResponse } from '@/types/event';
 import { useParams, useRouter } from 'next/navigation';
-import { Users } from '@/types/user';
+import { User, Users } from '@/types/user';
 // import { EventResponse } from '@/types/event';
 
 type FormData = {
@@ -47,11 +47,14 @@ type FormData = {
 const NewEventPage: React.FC = () => {
   const { user } = useUser(); // UserContextからユーザー情報を取得
   const [users, setUsers] = useState<Users>();
-  const [respondents, setRespondent] = useState<Users>();
+  // const [respondents, setRespondent] = useState<Users>();
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [eventDetail, setEventDetail] = useState<EventResponse>();
+  const [selectedUsers, setSelectedUsers] = useState<Users>([]);
+  const [selectedDefaultUsers, setSelectedDefaultUsers] = useState<Users>([]);
+
   const params = useParams();
   const router = useRouter();
   const goTo = (path: string) => router.push(path);
@@ -71,6 +74,50 @@ const NewEventPage: React.FC = () => {
       dateOptions: [],
     },
   });
+  function getUniqueUsers(usersA: Users, usersB: Users): Users {
+    return usersA.filter(
+      (userA) => !usersB.some((userB) => userA.user_code === userB.user_code) // 比較条件: user_codeが一致するか
+    );
+  }
+  async function postDefaultPossibility(sendUser: User) {
+    const formattedData = eventDetail?.event_dates.map((event) => ({
+      dated_on: event.dated_on,
+      start_time: event.start_time,
+      end_time: event.end_time,
+      possibility: 5,
+      comment: '',
+    }));
+
+    console.log('送信データ:', formattedData);
+    try {
+      const updateResponse = await fetch(
+        `https://azure-api-opf.azurewebsites.net/api/events/${id}/update_join?user_code=${sendUser?.user_code}&email=${sendUser.email}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formattedData),
+        }
+      );
+
+      if (!updateResponse.ok) {
+        throw new Error(`更新エラー: ${updateResponse.statusText}`);
+      }
+
+      const updateResult = await updateResponse.text();
+      console.log('更新結果:', updateResult);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error('エラー:', error.message);
+        alert('エラーが発生しました: ' + error.message);
+      } else {
+        console.error('未知のエラー:', error);
+        alert('未知のエラーが発生しました。');
+      }
+    }
+  }
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchEventDetail = async () => {
     try {
@@ -78,9 +125,14 @@ const NewEventPage: React.FC = () => {
       if (!response.ok) {
         throw new Error(`HTTPエラー: ${response.status}`);
       }
+
+      console.log('response:', response);
       const data: EventResponse = await response.json();
       console.log('データ:', data);
-
+      if (!data.event_dates) {
+        console.error('responseが異常です');
+        return;
+      }
       defaultRowAdd(data);
       const users = Array.from(
         data.user_possibilities
@@ -103,14 +155,21 @@ const NewEventPage: React.FC = () => {
       }
       const usersData: Users = await usersResponse.json();
       console.log('Users:', usersData);
+
+      const initialSelectedUsers = usersData?.filter((user) =>
+        users?.some((resUser) => resUser.email === user.email)
+      );
+      setSelectedUsers(initialSelectedUsers);
+      setSelectedDefaultUsers(initialSelectedUsers);
       setEventDetail(data);
-      setRespondent(users);
+      // setRespondent(users);
       setUsers(usersData);
     } catch (error) {
       console.error('データ取得エラー:', error);
     }
   };
   useEffect(() => {
+    console.log('Effect triggered');
     fetchEventDetail();
   }, []); // 空の依存配列
 
@@ -136,11 +195,11 @@ const NewEventPage: React.FC = () => {
       dateOptions.filter((row) => row.id !== id)
     );
   };
-  const initialSelectedUsers = users?.filter((user) =>
-    respondents?.some((resUser) => resUser.email === user.email)
-  );
+  // const initialSelectedUsers = users?.filter((user) =>
+  //   respondents?.some((resUser) => resUser.email === user.email)
+  // );
 
-  const [selectedUsers, setSelectedUsers] = useState<Users>(initialSelectedUsers || []);
+  // const [selectedUsers, setSelectedUsers] = useState<Users>(initialSelectedUsers || []);
 
   const formatDateTime = (date: string, time: string) => {
     return `${dayjs(date).format('YYYY-MM-DD')} ${dayjs(time).format('HH:mm:ss')}`;
@@ -192,6 +251,17 @@ const NewEventPage: React.FC = () => {
   const dateOptions = watch('dateOptions');
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
+    const uniqueToSelectedUsers = getUniqueUsers(selectedUsers, selectedDefaultUsers);
+
+    if (uniqueToSelectedUsers.length > 0) {
+      console.log('uniqueToSelected:', uniqueToSelectedUsers);
+      uniqueToSelectedUsers.map(
+        async (uniqueToSelectedUser) => await postDefaultPossibility(uniqueToSelectedUser)
+      );
+    } else {
+      console.log('No unique users found in A.');
+    }
+
     setIsLoading(true);
     setSuccessMessage('');
     setErrorMessage('');

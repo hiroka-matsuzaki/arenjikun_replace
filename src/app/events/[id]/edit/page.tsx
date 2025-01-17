@@ -495,7 +495,7 @@ const NewEventPage: React.FC = () => {
         </FormControl>
         <Box sx={{ display: 'flex' }} gap={1}>
           <Event />
-          <FormLabel>イベント名</FormLabel>
+          <FormLabel>参加者</FormLabel>
         </Box>
         <Autocomplete
           multiple

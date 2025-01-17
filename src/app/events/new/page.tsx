@@ -32,6 +32,7 @@ import { LocalizationProvider, DatePicker, TimePicker } from '@mui/x-date-picker
 import dayjs from 'dayjs';
 import { useUser } from '@/app/context/UserContext';
 import typographyStyles from '@/styles/typographyStyles';
+import { useRouter } from 'next/navigation';
 
 type FormData = {
   eventName: string;
@@ -45,7 +46,6 @@ const NewEventPage: React.FC = () => {
     register,
     watch,
     setValue,
-    reset,
     formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
@@ -66,13 +66,21 @@ const NewEventPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-
   const dateOptions = watch('dateOptions'); // 日時候補のリアルタイム監視
+  const router = useRouter();
+  const goTo = (path: string) => router.push(path);
 
   const handleRowAdd = () => {
+    const latestDateOption = dateOptions.reduce((latest, current) => {
+      return new Date(current.date) > new Date(latest.date) ? current : latest;
+    });
+    console.log('latestDateOption:', latestDateOption);
+
     const newRow = {
       id: dateOptions.length + 1,
-      date: dayjs().startOf('day').toISOString(),
+      date: latestDateOption.date
+        ? dayjs(latestDateOption.date).add(1, 'day').toISOString() // 次の日を設定
+        : dayjs().startOf('day').add(1, 'day').toISOString(),
       start: dayjs().startOf('day').hour(9).toISOString(),
       end: dayjs().startOf('day').hour(11).toISOString(),
     };
@@ -119,11 +127,9 @@ const NewEventPage: React.FC = () => {
       }
 
       console.log('APIからのレスポンス:', await response);
-
-      // 登録成功時の処理
-      reset();
-      setSuccessMessage('イベントが正常に登録されました！');
-      // goTo(`/events/${event.url}?message=イベントが正常に登録されました！`);
+      const textResponse = await response.text();
+      console.log(textResponse);
+      goTo(`/events/${textResponse}?message=イベントが正常に登録されました！`);
     } catch (error) {
       console.error('エラーが発生しました:', error);
       setErrorMessage('登録中にエラーが発生しました。');

@@ -78,7 +78,13 @@ const MainContent: React.FC<{ children: ReactNode }> = ({ children }) => {
       }
     };
 
-    fetchData();
+    fetchData()
+      .then(() => {
+        console.log('fetchData完了');
+      })
+      .catch((error) => {
+        console.error('fetchDataエラー:', error);
+      });
   }, [setUser]);
 
   const { user } = useUser();

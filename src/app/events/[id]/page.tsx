@@ -31,7 +31,7 @@ import {
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useUser } from '@/app/context/UserContext';
-import { EmojiPeople, Share } from '@mui/icons-material';
+import { CheckCircle, EmojiPeople, Share } from '@mui/icons-material';
 import { Controller, useForm } from 'react-hook-form';
 import typographyStyles from '@/styles/typographyStyles';
 import dayjs from 'dayjs';
@@ -75,9 +75,9 @@ const EventDetail: React.FC = () => {
   const isSmallScreen = useMediaQuery('(max-width:600px)'); // 画面幅600px以下で切り替え
   const params = useParams();
   const id = params?.id as string | undefined;
-  const router = useRouter();
   const searchParams = useSearchParams();
   const message = searchParams?.get('message');
+  const router = useRouter();
   const goTo = (path: string) => router.push(path);
   const handleEditClick = async () => {
     goTo(`/events/${id}/edit`);
@@ -262,7 +262,27 @@ const EventDetail: React.FC = () => {
   };
   return (
     <>
-      {message && <Typography>{message}</Typography>}
+      {message && (
+        <Box
+          display="flex"
+          alignItems="center"
+          sx={{
+            justifyContent: 'flex-start',
+            height: '80px',
+            border: '1px solid #ccc',
+            padding: '20px',
+            mx: '10%',
+            mt: '2%',
+            borderRadius: '8px', // 角を丸く
+            boxShadow: 3, // 影を付けて浮き上がらせる
+          }}
+        >
+          <CheckCircle sx={{ color: '#00796b', marginRight: '10px' }} />
+          <Typography variant="h5" sx={{ color: '#00796b', fontWeight: 'bold' }}>
+            {message}
+          </Typography>
+        </Box>
+      )}
       <Box
         display="flex"
         sx={{

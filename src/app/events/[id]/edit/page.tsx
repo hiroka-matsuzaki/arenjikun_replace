@@ -34,7 +34,7 @@ import { LocalizationProvider, DatePicker, TimePicker } from '@mui/x-date-picker
 import dayjs from 'dayjs';
 import { useUser } from '@/app/context/UserContext';
 import { EventResponse } from '@/types/event';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { Users } from '@/types/user';
 // import { EventResponse } from '@/types/event';
 
@@ -53,7 +53,8 @@ const NewEventPage: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [eventDetail, setEventDetail] = useState<EventResponse>();
   const params = useParams();
-
+  const router = useRouter();
+  const goTo = (path: string) => router.push(path);
   const id = params?.id as string | undefined;
   const {
     control,
@@ -80,7 +81,6 @@ const NewEventPage: React.FC = () => {
       const data: EventResponse = await response.json();
       console.log('データ:', data);
 
-      setEventDetail(data);
       defaultRowAdd(data);
       const users = Array.from(
         data.user_possibilities
@@ -96,13 +96,15 @@ const NewEventPage: React.FC = () => {
           }, new Map())
           .values()
       );
-      setRespondent(users);
+
       const usersResponse = await fetch(`https://azure-api-opf.azurewebsites.net/api/users`);
       if (!response.ok) {
         throw new Error(`HTTPエラー: ${usersResponse.status}`);
       }
       const usersData: Users = await usersResponse.json();
       console.log('Users:', usersData);
+      setEventDetail(data);
+      setRespondent(users);
       setUsers(usersData);
     } catch (error) {
       console.error('データ取得エラー:', error);
@@ -113,9 +115,15 @@ const NewEventPage: React.FC = () => {
   }, []); // 空の依存配列
 
   const handleRowAdd = () => {
+    const latestDateOption = dateOptions.reduce((latest, current) => {
+      return new Date(current.date) > new Date(latest.date) ? current : latest;
+    });
+    console.log('latestDateOption:', latestDateOption);
     const newRow = {
       id: dateOptions.length + 1,
-      date: dayjs().startOf('day').toISOString(),
+      date: latestDateOption.date
+        ? dayjs(latestDateOption.date).add(1, 'day').toISOString() // 次の日を設定
+        : dayjs().startOf('day').add(1, 'day').toISOString(),
       start: dayjs().startOf('day').hour(9).toISOString(),
       end: dayjs().startOf('day').hour(11).toISOString(),
     };
@@ -181,7 +189,7 @@ const NewEventPage: React.FC = () => {
     setValue('venue', data?.events.description);
   };
 
-  const dateOptions = watch('dateOptions'); // 日時候補のリアルタイム監視
+  const dateOptions = watch('dateOptions');
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     setIsLoading(true);
@@ -217,7 +225,7 @@ const NewEventPage: React.FC = () => {
 
       // 登録成功時の処理
       reset();
-      setSuccessMessage('イベントが正常に登録されました！');
+      goTo(`/events/${id}?message=イベントの編集に成功しました！`);
     } catch (error) {
       console.error('エラーが発生しました:', error);
       setErrorMessage('登録中にエラーが発生しました。');

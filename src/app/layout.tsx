@@ -1,10 +1,11 @@
 /* eslint-disable react/react-in-jsx-scope */
 'use client';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import ResponsiveAppBar from '@/components/ResponsiveAppBar';
 import './globals.css';
 import { ReactNode } from 'react';
 import { User, UserProvider, useUser } from './context/UserContext';
+import { Box, CircularProgress } from '@mui/material';
 
 export default function RootLayout({
   children,
@@ -22,6 +23,7 @@ export default function RootLayout({
   );
 }
 const MainContent: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [isLoading, setIsLoading] = useState(true);
   const { setUser } = useUser();
   const fetchUser = async (loginEmail: string): Promise<User> => {
     console.log('Email:', loginEmail);
@@ -68,6 +70,7 @@ const MainContent: React.FC<{ children: ReactNode }> = ({ children }) => {
 
         setUser(userData);
         console.log('取得したユーザー情報:', userData);
+        setIsLoading(false);
       } catch (error) {
         console.error('データ取得エラー:', error);
 
@@ -79,6 +82,21 @@ const MainContent: React.FC<{ children: ReactNode }> = ({ children }) => {
   }, [setUser]);
 
   const { user } = useUser();
+  if (isLoading) {
+    // ローディング中の画面
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+        }}
+      >
+        <CircularProgress /> {/* ローディングスピナー */}
+      </Box>
+    );
+  }
 
   return (
     <>

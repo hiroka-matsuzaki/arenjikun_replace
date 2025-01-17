@@ -31,16 +31,7 @@ import {
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useUser } from '@/app/context/UserContext';
-import {
-  ChatBubble,
-  ChatBubbleOutline,
-  CheckCircle,
-  EmojiPeople,
-  MarkChatUnreadOutlined,
-  MarkUnreadChatAlt,
-  MarkUnreadChatAltOutlined,
-  Share,
-} from '@mui/icons-material';
+import { CheckCircle, EmojiPeople, MarkChatUnreadOutlined, Share } from '@mui/icons-material';
 import { Controller, useForm } from 'react-hook-form';
 import typographyStyles from '@/styles/typographyStyles';
 import dayjs from 'dayjs';

@@ -149,7 +149,10 @@ const EventDetail: React.FC = () => {
               return map;
             }, new Map())
             .values()
-        );
+        ).filter((user) => user.email !== null); // email が null のものを削除
+
+        console.log('users:', users);
+
         setRespondent(users);
       } else {
         const textData = await response.text();
@@ -822,7 +825,11 @@ const EventDetail: React.FC = () => {
                                 <Controller
                                   name={`comment_${index}`}
                                   control={control}
-                                  defaultValue=""
+                                  defaultValue={
+                                    myPossibilities?.find(
+                                      (item) => item.event_date_id === event_date.id
+                                    )?.comment
+                                  }
                                   render={({ field }) => (
                                     <TextField
                                       {...field}

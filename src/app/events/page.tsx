@@ -1,7 +1,15 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Card, CardContent, Typography, useMediaQuery } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Pagination,
+  Typography,
+  useMediaQuery,
+} from '@mui/material';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { Event, EventList } from '@/types/event';
 import { useRouter } from 'next/navigation';
@@ -12,11 +20,11 @@ import { Add } from '@mui/icons-material';
 const EventsPage = () => {
   const router = useRouter();
   const goTo = (path: string) => router.push(path);
-  const isSmallScreen = useMediaQuery('(max-width:600px)'); // 画面幅600px以下で切り替え
+  const isSmallScreen = useMediaQuery('(max-width:600px)');
 
-  const { user } = useUser(); // UserContextからユーザー情報を取得
+  const { user } = useUser();
 
-  const [events, setEvents] = useState<EventList>([]); //
+  const [events, setEvents] = useState<EventList>([]);
   useEffect(() => {
     const fetchEvents = async (email: string | undefined) => {
       try {
@@ -38,7 +46,7 @@ const EventsPage = () => {
       }
     };
     fetchEvents(user?.email);
-  }, [user?.email]); // 空の依存配列
+  }, [user?.email]);
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
     const year = date.getFullYear();
@@ -79,10 +87,10 @@ const EventsPage = () => {
           sx={{
             padding: '6px 12px',
             cursor: 'pointer',
-            color: 'white', // 文字の色を白に設定
-            backgroundColor: 'primary.main', // ボタンの背景色（例: テーマのメインカラー）
+            color: 'white',
+            backgroundColor: 'primary.main',
             '&:hover': {
-              backgroundColor: 'primary.dark', // ホバー時の背景色（例: テーマのダークカラー）
+              backgroundColor: 'primary.dark',
             },
 
             pointerEvents: 'auto',
@@ -97,6 +105,32 @@ const EventsPage = () => {
     goTo(`/events/${event.url}`);
   };
   const goToNewEvent = () => router.push('/events/new');
+  const ITEMS_PER_PAGE = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const handlePageChange = (newPage: React.SetStateAction<number>) => {
+    setCurrentPage(newPage);
+
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
+
+  const normalizeDate = (dateStr: string) => {
+    return dateStr.replace(/年|月/g, '-').replace(/日/g, '');
+  };
+
+  const sortedEvents = events.slice().sort((a, b) => {
+    const dateA = new Date(normalizeDate(a.created_at)).getTime();
+    const dateB = new Date(normalizeDate(b.created_at)).getTime();
+    return dateB - dateA;
+  });
+
+  const paginatedEvents = sortedEvents.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   return (
     <>
@@ -107,7 +141,7 @@ const EventsPage = () => {
           height: '80px',
           border: '1px solid #ccc',
           padding: '20px',
-          mx: '10%',
+          mx: { xs: '5%', sm: '10%' },
           mt: '2%',
         }}
       >
@@ -124,60 +158,55 @@ const EventsPage = () => {
           justifyContent: 'left',
           border: '1px solid #ccc',
           padding: '20px',
-          mx: '10%',
+          mx: { xs: '5%', sm: '10%' },
           backgroundColor: 'white',
         }}
       >
-        <Box style={{ display: 'flex', flexDirection: 'column', overflowX: 'auto' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', overflowX: 'auto' }}>
           {isSmallScreen ? (
             // モバイルビュー: カード形式で表示
             <Box>
-              {[...events]
-                .sort((a, b) => b.id - a.id)
-                .map((event) => (
-                  <Card
-                    key={event.id}
-                    sx={{
-                      marginBottom: 2,
-                      boxShadow: 1,
-                    }}
-                  >
-                    <CardContent>
-                      {columns.map((column) =>
-                        column.field === 'action' ? (
-                          <Button
-                            onClick={() => handleButtonClick(event)}
-                            key={column.field}
-                            sx={{
-                              padding: '6px 12px',
-                              cursor: 'pointer',
-                              color: 'white', // 文字の色を白に設定
-                              backgroundColor: 'primary.main', // ボタンの背景色（例: テーマのメインカラー）
-                              '&:hover': {
-                                backgroundColor: 'primary.dark', // ホバー時の背景色（例: テーマのダークカラー）
-                              },
+              {paginatedEvents.map((event) => (
+                <Card key={event.id} sx={{ marginBottom: 2, boxShadow: 1 }}>
+                  <CardContent>
+                    {columns.map((column) =>
+                      column.field === 'action' ? (
+                        <Button
+                          onClick={() => handleButtonClick(event)}
+                          key={column.field}
+                          sx={{
+                            padding: '6px 12px',
+                            cursor: 'pointer',
+                            color: 'white',
+                            backgroundColor: 'primary.main',
+                            '&:hover': { backgroundColor: 'primary.dark' },
+                            pointerEvents: 'auto',
+                          }}
+                        >
+                          詳細
+                        </Button>
+                      ) : (
+                        <Typography
+                          key={column.field}
+                          variant="body2"
+                          sx={{
+                            fontWeight: column.flex ? 'bold' : 'normal',
+                            marginBottom: 1,
+                          }}
+                        >
+                          {column.headerName}: {event[column.field]}
+                        </Typography>
+                      )
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
 
-                              pointerEvents: 'auto',
-                            }}
-                          >
-                            詳細
-                          </Button>
-                        ) : (
-                          <Typography
-                            key={column.field}
-                            variant="body2"
-                            sx={{
-                              fontWeight: column.flex ? 'bold' : 'normal',
-                              marginBottom: 1,
-                            }}
-                          >
-                            {column.headerName}: {event[column.field]}
-                          </Typography>
-                        )
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
+              <Pagination
+                count={Math.ceil(events.length / ITEMS_PER_PAGE)}
+                page={currentPage}
+                onChange={(e, page) => handlePageChange(page)}
+              />
             </Box>
           ) : (
             // デスクトップビュー: DataGrid形式で表示
@@ -234,7 +263,8 @@ const EventsPage = () => {
           display: 'flex',
           justifyContent: 'left',
           border: '1px solid #ccc',
-          mx: '10%',
+          mx: { xs: '5%', sm: '10%' }, // 小さい画面ではより狭く、大きい画面では広く
+          mt: '2%', // マージン追加（必要に応じて調整）
         }}
       >
         <Button
@@ -242,28 +272,29 @@ const EventsPage = () => {
           color="primary"
           onClick={goToNewEvent}
           sx={{
-            backgroundColor: 'white', // 通常の背景を白に
-            color: 'primary.main', // 通常の文字とアイコンを青色に
-            border: '2px solid', // 外枠を青色に
+            backgroundColor: 'white',
+            color: 'primary.main',
+            border: '2px solid',
             borderColor: 'primary.main',
-            textTransform: 'none', // テキストを通常のケースに
-            // ボタン内のフォントサイズを調整
+            textTransform: 'none',
+            padding: { xs: '10px', sm: '12px 24px' }, // 小さい画面でパディングを調整
+            width: { xs: '100%', sm: 'auto' }, // モバイルではボタン幅を100%に
+            fontSize: { xs: '0.875rem', sm: '1rem' }, // モバイル向けにフォントサイズを小さく
             '&:hover': {
-              backgroundColor: 'primary.main', // ホバー時の背景色を青に
-              color: 'white', // ホバー時の文字とアイコンを白に
-              borderColor: 'primary.main', // 枠線を青色に
+              backgroundColor: 'primary.main',
+              color: 'white',
+              borderColor: 'primary.main',
               '.MuiSvgIcon-root': {
-                color: 'white', // ホバー時にアイコンを白に
+                color: 'white',
               },
             },
-            width: { xs: '100%', sm: 'auto' }, // モバイルではボタン幅を100%に
           }}
         >
           <Add
             sx={{
-              display: { xs: 'none', md: 'flex' }, // モバイルではアイコンを非表示
+              display: { xs: 'none', sm: 'flex' }, // モバイルではアイコンを非表示
               mr: 1,
-              color: 'primary.main', // アイコンを青色に
+              color: 'primary.main',
             }}
           />
           新規イベント

@@ -325,11 +325,7 @@ const EventDetail: React.FC = () => {
           mt: '2%',
         }}
       >
-        <Typography
-          variant="h4"
-          gutterBottom
-          sx={{ ...typographyStyles.header, marginRight: '16px' }}
-        >
+        <Typography gutterBottom sx={{ ...typographyStyles.header, marginRight: '16px' }}>
           {eventDetail?.events.subject}
         </Typography>
         <Tooltip title={tooltipTitle}>
@@ -360,18 +356,19 @@ const EventDetail: React.FC = () => {
           padding: { xs: '5px', sm: '20px' },
           mx: { xs: '2%', sm: '10%' },
           backgroundColor: 'white',
-          gap: 4,
+          gap: { xs: 1, sm: 3 },
         }}
       >
         <Box
           sx={{
-            borderLeft: '5px solid #4caf50',
-            boxShadow: 2,
+            borderLeft: '5px solid grey',
+            boxShadow: 3,
             paddingLeft: '20px',
             paddingRight: '20px',
             paddingTop: '16px',
             paddingBottom: '16px',
             borderRadius: '8px',
+            marginBottom: '16px',
           }}
         >
           <Typography variant="h5" gutterBottom sx={typographyStyles.subHeader}>
@@ -384,13 +381,14 @@ const EventDetail: React.FC = () => {
 
         <Box
           sx={{
-            borderLeft: '5px solid #fbc02d',
-            boxShadow: 2,
+            borderLeft: '5px solid grey',
+            boxShadow: 3,
             paddingLeft: '20px',
             paddingRight: '20px',
             paddingTop: '16px',
             paddingBottom: '16px',
             borderRadius: '8px',
+            marginBottom: '16px',
           }}
         >
           <Typography variant="h5" gutterBottom sx={typographyStyles.subHeader}>
@@ -565,15 +563,51 @@ const EventDetail: React.FC = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ minWidth: 170 }}>イベント候補日</TableCell>
-                    <TableCell sx={{ minWidth: 50, textAlign: 'center' }}>
-                      <Typography color="success">〇</Typography>
+                    <TableCell
+                      sx={{
+                        minWidth: 170,
+                        fontWeight: 'bold',
+                        textAlign: 'left',
+                        padding: '8px',
+                      }}
+                    >
+                      イベント候補日
                     </TableCell>
-                    <TableCell sx={{ minWidth: 50, textAlign: 'center' }}>
-                      <Typography color="action">？</Typography>
+                    <TableCell
+                      sx={{
+                        minWidth: 50,
+                        textAlign: 'center',
+                        fontWeight: 'bold',
+                        padding: '8px',
+                      }}
+                    >
+                      <Typography color="success" sx={{ fontWeight: 'bold' }}>
+                        〇
+                      </Typography>
                     </TableCell>
-                    <TableCell sx={{ minWidth: 50, textAlign: 'center' }}>
-                      <Typography color="error">×</Typography>
+                    <TableCell
+                      sx={{
+                        minWidth: 50,
+                        textAlign: 'center',
+                        fontWeight: 'bold',
+                        padding: '8px',
+                      }}
+                    >
+                      <Typography color="action" sx={{ fontWeight: 'bold' }}>
+                        ？
+                      </Typography>
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        minWidth: 50,
+                        textAlign: 'center',
+                        fontWeight: 'bold',
+                        padding: '8px',
+                      }}
+                    >
+                      <Typography color="error" sx={{ fontWeight: 'bold' }}>
+                        ×
+                      </Typography>
                     </TableCell>
                     {respondents && respondents.length > 0 ? (
                       respondents.map(
@@ -587,10 +621,10 @@ const EventDetail: React.FC = () => {
                               }}
                               sx={{
                                 minWidth: 150,
-                                color: 'blue', // 特定の名前の場合は青色
-                                cursor: 'pointer', // ポインタを設定
-                                textDecoration: 'underline', // 下線を付ける
-                                fontWeight: 'bold', // 太字にする
+                                color: 'blue',
+                                cursor: 'pointer',
+                                textDecoration: 'underline',
+                                fontWeight: 'bold',
                                 textAlign: 'center',
                               }}
                             >
@@ -720,13 +754,14 @@ const EventDetail: React.FC = () => {
         </Box>
         <Box
           sx={{
-            borderLeft: '5px solid #f44336',
-            boxShadow: 2,
+            borderLeft: '5px solid grey',
+            boxShadow: 3,
             paddingLeft: '20px',
             paddingRight: '20px',
             paddingTop: '16px',
             paddingBottom: '16px',
             borderRadius: '8px',
+            marginBottom: '16px',
           }}
         >
           <Typography variant="h5" gutterBottom sx={typographyStyles.subHeader}>
@@ -749,12 +784,12 @@ const EventDetail: React.FC = () => {
                 left: '50%',
                 transform: 'translateX(-50%)',
                 bgcolor: 'background.paper',
-                p: 2,
+                p: { xs: 1, sm: 2 }, // 小さな画面ではパディングを1に、大きな画面では2に
                 borderRadius: 2,
                 boxShadow: 24,
                 zIndex: (theme) => theme.zIndex.modal,
-                width: '80%',
-                maxWidth: '800px',
+                width: '90%', // 画面が小さいときは90%に
+                maxWidth: '800px', // 最大幅は800pxに制限
                 height: 'auto',
                 overflowY: 'auto',
               }}
@@ -976,7 +1011,6 @@ const EventDetail: React.FC = () => {
             variant="contained"
             color="primary"
             sx={{
-              backgroundColor: '#a0c4ff',
               '&:hover': {
                 backgroundColor: '#7bb7f0',
               },
@@ -1021,7 +1055,7 @@ const EventDetail: React.FC = () => {
             <EmojiPeople
               sx={{
                 fontSize: {
-                  xs: '0px',
+                  xs: '50px',
                   sm: '60px',
                   md: '100px',
                 },

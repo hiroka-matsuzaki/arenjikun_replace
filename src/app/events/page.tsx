@@ -181,8 +181,8 @@ const EventsPage = () => {
 
                     {/* イベントの内容 */}
                     <Typography variant="body2" sx={{ marginBottom: 2 }}>
-                      {event.description.length > 100
-                        ? `${event.description.substring(0, 100)}...`
+                      {event.description.length > 20
+                        ? `${event.description.substring(0, 20)}...`
                         : event.description}
                     </Typography>
 

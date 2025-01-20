@@ -1,7 +1,7 @@
 const typographyStyles = {
   header: {
     fontSize: {
-      xs: '1.5rem',
+      xs: '1.25rem',
       sm: '1.75rem',
       md: '2rem',
       lg: '2.25rem',
@@ -15,6 +15,7 @@ const typographyStyles = {
       md: '1.5rem',
       lg: '1.75rem',
     },
+    fontWeight: 'bold',
   },
 };
 

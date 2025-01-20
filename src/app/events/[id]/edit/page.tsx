@@ -582,8 +582,8 @@ const NewEventPage: React.FC = () => {
             <TextField
               {...params}
               variant="outlined"
-              label="Select Users"
-              placeholder="Search by email"
+              label="参加者"
+              placeholder="アプリを使ったことのあるユーザーからEmailで検索可能です"
             />
           )}
           renderTags={(value, getTagProps) =>

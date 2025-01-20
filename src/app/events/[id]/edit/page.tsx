@@ -35,7 +35,7 @@ import dayjs from 'dayjs';
 import { useUser } from '@/app/context/UserContext';
 import { EventResponse } from '@/types/event';
 import { useParams, useRouter } from 'next/navigation';
-import { User, Users } from '@/types/user';
+import { Users } from '@/types/user';
 // import { EventResponse } from '@/types/event';
 
 type FormData = {
@@ -74,30 +74,28 @@ const NewEventPage: React.FC = () => {
       dateOptions: [],
     },
   });
+
   function getUniqueUsers(usersA: Users, usersB: Users): Users {
     return usersA.filter(
       (userA) => !usersB.some((userB) => userA.user_code === userB.user_code) // 比較条件: user_codeが一致するか
     );
   }
-  async function postDefaultPossibility(sendUser: User) {
-    const formattedData = eventDetail?.event_dates.map((event) => ({
-      dated_on: event.dated_on,
-      start_time: event.start_time,
-      end_time: event.end_time,
-      possibility: 5,
-      comment: '',
-    }));
 
-    console.log('送信データ:', formattedData);
+  async function postNewUsers(newUsers: Users) {
+    const sendData = newUsers.map((user) => user.user_code);
+    const dataToSend = {
+      new_users: sendData,
+    };
+    console.log('送信データ:', sendData);
     try {
       const updateResponse = await fetch(
-        `https://azure-api-opf.azurewebsites.net/api/events/${id}/update_join?user_code=${sendUser?.user_code}&email=${sendUser.email}`,
+        `https://azure-api-opf.azurewebsites.net/api/events/${id}/update_join`,
         {
-          method: 'PUT',
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(formattedData),
+          body: JSON.stringify(dataToSend),
         }
       );
 
@@ -263,9 +261,7 @@ const NewEventPage: React.FC = () => {
 
     if (uniqueToSelectedUsers.length > 0) {
       console.log('uniqueToSelected:', uniqueToSelectedUsers);
-      for (const uniqueToSelectedUser of uniqueToSelectedUsers) {
-        await postDefaultPossibility(uniqueToSelectedUser);
-      }
+      await postNewUsers(uniqueToSelectedUsers);
     } else {
       console.log('No unique users found in A.');
     }

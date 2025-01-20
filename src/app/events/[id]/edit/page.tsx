@@ -75,9 +75,16 @@ const NewEventPage: React.FC = () => {
     },
   });
 
-  function getUniqueUsers(usersA: Users, usersB: Users): Users {
-    return usersA.filter(
-      (userA) => !usersB.some((userB) => userA.user_code === userB.user_code) // 比較条件: user_codeが一致するか
+  function getAddedUsers(originalUsers: Users, updatedUsers: Users): Users {
+    return updatedUsers.filter(
+      (updatedUser) =>
+        !originalUsers.some((originalUser) => updatedUser.user_code === originalUser.user_code)
+    );
+  }
+  function getRemovedUsers(originalUsers: Users, updatedUsers: Users): Users {
+    return originalUsers.filter(
+      (originalUser) =>
+        !updatedUsers.some((updatedUser) => updatedUser.user_code === originalUser.user_code)
     );
   }
 
@@ -86,12 +93,47 @@ const NewEventPage: React.FC = () => {
     const dataToSend = {
       new_users: sendData,
     };
-    console.log('送信データ:', sendData);
+    console.log('追加されたUser:', sendData);
     try {
       const updateResponse = await fetch(
         `https://azure-api-opf.azurewebsites.net/api/events/${id}/update_join`,
         {
           method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(dataToSend),
+        }
+      );
+
+      if (!updateResponse.ok) {
+        throw new Error(`更新エラー: ${updateResponse.statusText}`);
+      }
+
+      const updateResult = await updateResponse.text();
+      console.log('更新結果:', updateResult);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error('エラー:', error.message);
+        alert('エラーが発生しました: ' + error.message);
+      } else {
+        console.error('未知のエラー:', error);
+        alert('未知のエラーが発生しました。');
+      }
+    }
+  }
+
+  async function deleteAnsweredUsers(deletedUsers: Users) {
+    const sendData = deletedUsers.map((user) => user.user_code);
+    const dataToSend = {
+      delete_users: sendData,
+    };
+    console.log('削除されたUser:', sendData);
+    try {
+      const updateResponse = await fetch(
+        `https://azure-api-opf.azurewebsites.net/api/events/${id}/update_join`,
+        {
+          method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
           },
@@ -257,13 +299,20 @@ const NewEventPage: React.FC = () => {
   const dateOptions = watch('dateOptions');
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    const uniqueToSelectedUsers = getUniqueUsers(selectedUsers, selectedDefaultUsers);
+    const addedUsers = getAddedUsers(selectedDefaultUsers, selectedUsers);
+    const removedUsers = getRemovedUsers(selectedDefaultUsers, selectedUsers);
 
-    if (uniqueToSelectedUsers.length > 0) {
-      console.log('uniqueToSelected:', uniqueToSelectedUsers);
-      await postNewUsers(uniqueToSelectedUsers);
+    if (addedUsers.length > 0) {
+      console.log('addedUsers:', addedUsers);
+      await postNewUsers(addedUsers);
     } else {
-      console.log('No unique users found in A.');
+      console.log('追加されたユーザーはいません。');
+    }
+    if (removedUsers.length > 0) {
+      console.log('removedUsers:', removedUsers);
+      await deleteAnsweredUsers(removedUsers);
+    } else {
+      console.log('削除されたユーザーはいません。');
     }
 
     setIsLoading(true);

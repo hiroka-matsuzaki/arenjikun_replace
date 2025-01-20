@@ -10,6 +10,7 @@ import {
   Button,
   Card,
   CardContent,
+  Collapse,
   FormControl,
   FormLabel,
   IconButton,
@@ -31,7 +32,14 @@ import {
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useUser } from '@/app/context/UserContext';
-import { CheckCircle, EmojiPeople, MarkChatUnreadOutlined, Share } from '@mui/icons-material';
+import {
+  CheckCircle,
+  EmojiPeople,
+  ExpandLess,
+  ExpandMore,
+  MarkChatUnreadOutlined,
+  Share,
+} from '@mui/icons-material';
 import { Controller, useForm } from 'react-hook-form';
 import typographyStyles from '@/styles/typographyStyles';
 import dayjs from 'dayjs';
@@ -71,6 +79,14 @@ const EventDetail: React.FC = () => {
   const [respondentUser, setRespondentUser] = useState<User>();
   const [eventDetail, setEventDetail] = useState<EventResponse>();
   const [respondents, setRespondent] = useState<Users>();
+  const [expandedState, setExpandedState] = useState<{ [key: number]: boolean }>({});
+
+  const handleToggleExpanded = (eventDateId: number) => {
+    setExpandedState((prevState) => ({
+      ...prevState,
+      [eventDateId]: !prevState[eventDateId],
+    }));
+  };
   const [myPossibilities, setMyPossibilities] = useState<UserPossibility[]>();
   const isSmallScreen = useMediaQuery('(max-width:600px)'); // 画面幅600px以下で切り替え
   const params = useParams();
@@ -274,14 +290,26 @@ const EventDetail: React.FC = () => {
             height: '80px',
             border: '1px solid #ccc',
             padding: '20px',
-            mx: '10%',
+            mx: { xs: '2%', sm: '10%' },
             mt: '2%',
             borderRadius: '8px', // 角を丸く
             boxShadow: 3, // 影を付けて浮き上がらせる
           }}
         >
           <CheckCircle sx={{ color: '#00796b', marginRight: '10px' }} />
-          <Typography variant="h5" sx={{ color: '#00796b', fontWeight: 'bold' }}>
+          <Typography
+            variant="h5"
+            sx={{
+              color: '#00796b',
+              fontWeight: 'bold',
+              fontSize: {
+                xs: '0.8rem', // 小さい画面ではフォントサイズを小さく
+                sm: '1rem', // 中くらいの画面では少し大きく
+                md: '1.25rem', // 大きい画面ではさらに大きく
+                lg: '1.5rem', // より大きい画面ではもっと大きく
+              },
+            }}
+          >
             {message}
           </Typography>
         </Box>
@@ -293,7 +321,7 @@ const EventDetail: React.FC = () => {
           height: '80px',
           border: '1px solid #ccc',
           padding: '20px',
-          mx: '10%',
+          mx: { xs: '2%', sm: '10%' },
           mt: '2%',
         }}
       >
@@ -329,8 +357,8 @@ const EventDetail: React.FC = () => {
           alignItems: 'left',
           justifyContent: 'left',
           border: '1px solid #ccc',
-          padding: '20px',
-          mx: '10%',
+          padding: { xs: '5px', sm: '20px' },
+          mx: { xs: '2%', sm: '10%' },
           backgroundColor: 'white',
           gap: 4,
         }}
@@ -393,8 +421,19 @@ const EventDetail: React.FC = () => {
                   <Card key={event_date.id} sx={{ marginBottom: 2, boxShadow: 1 }}>
                     <CardContent>
                       <Typography variant="h6">{formattedDataAndTime(event_date)}</Typography>
-                      <Box>
-                        <Typography>
+                      <Box
+                        sx={{
+                          display: 'flex', // 横並びにする
+                          alignItems: 'center', // 縦方向の位置を中央揃え
+                          gap: 2, // 子要素間の間隔を調整（必要に応じて変更可能）
+                        }}
+                      >
+                        <Typography
+                          variant="h6"
+                          sx={{
+                            color: 'green',
+                          }}
+                        >
                           〇:{' '}
                           {
                             eventDetail?.user_possibilities.filter(
@@ -404,7 +443,12 @@ const EventDetail: React.FC = () => {
                             ).length
                           }
                         </Typography>
-                        <Typography>
+                        <Typography
+                          variant="h6"
+                          sx={{
+                            color: 'grey',
+                          }}
+                        >
                           ？:{' '}
                           {
                             eventDetail?.user_possibilities.filter(
@@ -414,7 +458,12 @@ const EventDetail: React.FC = () => {
                             ).length
                           }
                         </Typography>
-                        <Typography>
+                        <Typography
+                          variant="h6"
+                          sx={{
+                            color: 'red',
+                          }}
+                        >
                           ×:{' '}
                           {
                             eventDetail?.user_possibilities.filter(
@@ -426,33 +475,86 @@ const EventDetail: React.FC = () => {
                         </Typography>
                       </Box>
                       <Box>
-                        {respondents?.map((respondent) => {
-                          const userPossibility = eventDetail?.user_possibilities.find(
-                            (item) =>
-                              item.event_date_id === event_date.id &&
-                              item.email === respondent.email
-                          );
-                          return (
-                            <Typography
-                              key={respondent.user_code}
+                        {eventDetail && respondents && respondents.length > 0 && (
+                          <Box>
+                            {/* ボタンで開閉を切り替える */}
+                            <Button
+                              onClick={() => handleToggleExpanded(event_date.id)} // 各カードのidで開閉を切り替える
+                              variant="text"
+                              size="small"
                               sx={{
-                                color:
-                                  userPossibility?.possibility === 1
-                                    ? 'green'
-                                    : userPossibility?.possibility === 5
-                                      ? 'gray'
-                                      : 'red',
+                                color: 'gray',
+                                fontSize: '0.875rem',
+                                padding: '4px 8px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1, // アイコンとテキストの間隔を調整
+                                '&:hover': {
+                                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                                },
                               }}
                             >
-                              {respondent.user_name}:{' '}
-                              {userPossibility?.possibility === 1
-                                ? '〇'
-                                : userPossibility?.possibility === 5
-                                  ? '？'
-                                  : '×'}
-                            </Typography>
-                          );
-                        })}
+                              {/* アイコンとテキストの切り替え */}
+                              {expandedState[event_date.id] ? (
+                                <>
+                                  <ExpandLess sx={{ fontSize: 18 }} /> {/* 上向き矢印 */}
+                                  閉じる
+                                </>
+                              ) : (
+                                <>
+                                  <ExpandMore sx={{ fontSize: 18 }} /> {/* 下向き矢印 */}
+                                  参加者の回答を表示 ({respondents.length}人)
+                                </>
+                              )}
+                            </Button>
+
+                            {/* 折りたたみ部分 */}
+                            <Collapse in={expandedState[event_date.id]}>
+                              {respondents.map((respondent) => {
+                                const userPossibility = eventDetail?.user_possibilities.find(
+                                  (item) =>
+                                    item.event_date_id === event_date.id &&
+                                    item.email === respondent.email
+                                );
+
+                                return (
+                                  <Box key={respondent.user_code}>
+                                    <Typography
+                                      sx={{
+                                        color:
+                                          userPossibility?.possibility === 1
+                                            ? 'green'
+                                            : userPossibility?.possibility === 5
+                                              ? 'gray'
+                                              : 'red',
+                                      }}
+                                    >
+                                      <Typography
+                                        component="span"
+                                        onClick={async () => {
+                                          await selectRespondentUser(respondent.email);
+                                          setonOff(true);
+                                        }}
+                                        sx={{
+                                          cursor: 'pointer',
+                                          textDecoration: 'underline',
+                                        }}
+                                      >
+                                        {respondent.user_name}
+                                      </Typography>
+                                      :{' '}
+                                      {userPossibility?.possibility === 1
+                                        ? '〇'
+                                        : userPossibility?.possibility === 5
+                                          ? '？'
+                                          : '×'}
+                                    </Typography>
+                                  </Box>
+                                );
+                              })}
+                            </Collapse>
+                          </Box>
+                        )}
                       </Box>
                     </CardContent>
                   </Card>

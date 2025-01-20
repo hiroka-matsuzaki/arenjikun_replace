@@ -15,7 +15,7 @@ import { Event, EventList } from '@/types/event';
 import { useRouter } from 'next/navigation';
 import { useUser } from '../context/UserContext';
 import typographyStyles from '@/styles/typographyStyles';
-import { Add } from '@mui/icons-material';
+import { Add, ArrowForward } from '@mui/icons-material';
 
 const EventsPage = () => {
   const router = useRouter();
@@ -166,46 +166,47 @@ const EventsPage = () => {
           {isSmallScreen ? (
             // モバイルビュー: カード形式で表示
             <Box>
-              {paginatedEvents.map((event) => (
+              {paginatedEvents?.map((event) => (
                 <Card key={event.id} sx={{ marginBottom: 2, boxShadow: 1 }}>
                   <CardContent>
-                    {columns.map((column) =>
-                      column.field === 'action' ? (
-                        <Button
-                          onClick={() => handleButtonClick(event)}
-                          key={column.field}
-                          sx={{
-                            padding: '6px 12px',
-                            cursor: 'pointer',
-                            color: 'white',
-                            backgroundColor: 'primary.main',
-                            '&:hover': { backgroundColor: 'primary.dark' },
-                            pointerEvents: 'auto',
-                          }}
-                        >
-                          詳細
-                        </Button>
-                      ) : (
-                        <Typography
-                          key={column.field}
-                          variant="body2"
-                          sx={{
-                            fontWeight: column.flex ? 'bold' : 'normal',
-                            marginBottom: 1,
-                          }}
-                        >
-                          {column.headerName}: {event[column.field]}
-                        </Typography>
-                      )
-                    )}
+                    {/* 作成日 */}
+                    <Typography variant="body2" sx={{ color: 'grey', marginBottom: 1 }}>
+                      作成日: {event.created_at}
+                    </Typography>
+
+                    {/* イベント名 */}
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: 1 }}>
+                      {event.subject}
+                    </Typography>
+
+                    {/* イベントの内容 */}
+                    <Typography variant="body2" sx={{ marginBottom: 2 }}>
+                      {event.description.length > 100
+                        ? `${event.description.substring(0, 100)}...`
+                        : event.description}
+                    </Typography>
+
+                    {/* 詳細ボタン */}
+                    <Box sx={{ textAlign: 'right' }}>
+                      <Button
+                        onClick={() => handleButtonClick(event)}
+                        variant="contained"
+                        color="primary"
+                        sx={{ display: 'inline-flex', alignItems: 'center', gap: 1 }}
+                      >
+                        詳細 <ArrowForward />
+                      </Button>
+                    </Box>
                   </CardContent>
                 </Card>
               ))}
 
+              {/* ページネーション */}
               <Pagination
                 count={Math.ceil(events.length / ITEMS_PER_PAGE)}
                 page={currentPage}
                 onChange={(e, page) => handlePageChange(page)}
+                sx={{ display: 'flex', justifyContent: 'center', marginTop: 2 }}
               />
             </Box>
           ) : (

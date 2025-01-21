@@ -318,6 +318,7 @@ const EventDetail: React.FC = () => {
         display="flex"
         sx={{
           justifyContent: 'left',
+          alignItems: 'center', // 中央揃えを追加
           height: '80px',
           border: '1px solid #ccc',
           padding: '20px',
@@ -325,7 +326,7 @@ const EventDetail: React.FC = () => {
           mt: '2%',
         }}
       >
-        <Typography gutterBottom sx={{ ...typographyStyles.header, marginRight: '16px' }}>
+        <Typography gutterBottom sx={{ ...typographyStyles.header, marginRight: '16px', mt: '1%' }}>
           {eventDetail?.events.subject}
         </Typography>
         <Tooltip title={tooltipTitle}>

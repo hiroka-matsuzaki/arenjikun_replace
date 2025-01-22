@@ -318,15 +318,26 @@ const NewEventPage: React.FC = () => {
     setIsLoading(true);
     setSuccessMessage('');
     setErrorMessage('');
+    console.log('data.dateOptions:', data.dateOptions);
+    console.log('eventDetail:', eventDetail);
+    const defaultEventDateId: number[] = [];
+    eventDetail?.event_dates.forEach((eventDate) => {
+      defaultEventDateId.push(eventDate.id);
+    });
+    console.log('defaultEventDatesId', defaultEventDateId);
+    const inputEventDateID = data.dateOptions.map((opt) => opt.id).filter((id) => id !== null);
+    console.log('inputEventDateID', inputEventDateID);
 
     const payload = {
       subject: data.eventName,
       description: data.venue,
       date_from: data.dateOptions.map((opt) => formatDateTime(opt.date, opt.start)),
       date_to: data.dateOptions.map((opt) => formatDateTime(opt.date, opt.end)),
-      event_dates_id: data.dateOptions.map((opt) => opt.id),
+      update_dates_id: inputEventDateID,
+      delete_dates_id: defaultEventDateId.filter((item) => !inputEventDateID.includes(item)),
     };
-    console.log('payload:', await payload);
+
+    console.log('Payload:', await payload);
 
     try {
       const response = await fetch(

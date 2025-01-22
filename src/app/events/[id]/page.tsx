@@ -98,6 +98,10 @@ const EventDetail: React.FC = () => {
   const handleEditClick = async () => {
     goTo(`/events/${id}/edit`);
   };
+  const [onOff, setonOff] = React.useState(false);
+  const { handleSubmit, control, setValue } = useForm<FormData>();
+  const tooltipTitle = '共有'; // ツールチップのタイトル
+
   // デバック専用削除処理
   // const handleDeleteClick = async () => {
   //   try {
@@ -213,12 +217,16 @@ const EventDetail: React.FC = () => {
 
   useEffect(() => {
     fetchEventDetail();
-    // fetchUsers();
-  }, []); // 空の依存配列にすることで、初回レンダリング時のみ実行
+  }, []);
 
-  const [onOff, setonOff] = React.useState(false);
-  const { handleSubmit, control } = useForm<FormData>();
-  const tooltipTitle = '共有'; // ツールチップのタイトル
+  useEffect(() => {
+    if (myPossibilities) {
+      myPossibilities.forEach((item, index) => {
+        setValue(`possibility_${index}`, item.possibility); // 特定のフィールドに値を設定
+      });
+      setonOff(true);
+    }
+  }, [myPossibilities, setValue]);
 
   const handleShare = async () => {
     if (!navigator.share) {
@@ -532,7 +540,6 @@ const EventDetail: React.FC = () => {
                                         component="span"
                                         onClick={async () => {
                                           await selectRespondentUser(respondent.email);
-                                          setonOff(true);
                                         }}
                                         sx={{
                                           cursor: 'pointer',
@@ -618,7 +625,6 @@ const EventDetail: React.FC = () => {
                               key={index}
                               onClick={async () => {
                                 await selectRespondentUser(respondent.email);
-                                setonOff(true);
                               }}
                               sx={{
                                 minWidth: 150,
@@ -1007,7 +1013,6 @@ const EventDetail: React.FC = () => {
           <Button
             onClick={async () => {
               await selectRespondentUser(user!.email);
-              setonOff(true);
             }}
             variant="contained"
             color="primary"

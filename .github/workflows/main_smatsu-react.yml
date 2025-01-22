@@ -54,7 +54,17 @@ jobs:
 
       - name: Cleanup old deployment files
         run: |
-          az webapp ssh --name smatsu-react --resource-group smatsu-test-2 --command "rm -rf /home/site/wwwroot/*"
+          az webapp config appsettings set \
+            --name smatsu-react \
+            --resource-group smatsu-test-2 \
+            --settings SCM_COMMAND_IDLE_TIMEOUT=60
+          az webapp config container set \
+            --name smatsu-react \
+            --resource-group smatsu-test-2 \
+            --docker-custom-image-name mcr.microsoft.com/appsvc/staticsite:latest
+          az webapp restart \
+            --name smatsu-react \
+            --resource-group smatsu-test-2
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp

@@ -28,7 +28,7 @@ jobs:
           npm run test --if-present
 
       - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
+        run: zip -r release.zip . -x@.zipignore
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -38,17 +38,13 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     needs: build
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
@@ -59,17 +55,7 @@ jobs:
 
       - name: Cleanup old deployment files
         run: |
-          az webapp config appsettings set \
-            --name smatsu-react \
-            --resource-group smatsu-test-2 \
-            --settings SCM_COMMAND_IDLE_TIMEOUT=60
-          az webapp config container set \
-            --name smatsu-react \
-            --resource-group smatsu-test-2 \
-            --docker-custom-image-name mcr.microsoft.com/appsvc/staticsite:latest
-          az webapp restart \
-            --name smatsu-react \
-            --resource-group smatsu-test-2
+          rm -rf /home/site/wwwroot/*
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
@@ -78,4 +64,4 @@ jobs:
           app-name: 'smatsu-react'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_77473D7A139C4141B86113FA734B608A }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_4DF93CE5E29B4F0387CC0C8BDD4C8F79 }}

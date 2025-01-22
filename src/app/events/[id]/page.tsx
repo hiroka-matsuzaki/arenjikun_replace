@@ -222,7 +222,8 @@ const EventDetail: React.FC = () => {
   useEffect(() => {
     if (myPossibilities) {
       myPossibilities.forEach((item, index) => {
-        setValue(`possibility_${index}`, item.possibility); // 特定のフィールドに値を設定
+        setValue(`possibility_${index}`, item.possibility);
+        setValue(`comment_${index}`, item.comment);
       });
       setonOff(true);
     }
@@ -525,29 +526,37 @@ const EventDetail: React.FC = () => {
                                 );
 
                                 return (
-                                  <Box key={respondent.user_code}>
+                                  <Box
+                                    key={respondent.user_code}
+                                    sx={{ display: 'flex', alignItems: 'center' }}
+                                  >
                                     <Typography
+                                      component="span"
+                                      onClick={async () => {
+                                        await selectRespondentUser(respondent.email);
+                                      }}
                                       sx={{
+                                        cursor: 'pointer',
+                                        textDecoration: 'underline',
+                                        marginRight: 1, // ユーザー名と状態の間に少しスペースを追加
+                                        color: 'blue', // クリックできることを示すために青色に設定
+                                      }}
+                                    >
+                                      {respondent.user_name}
+                                    </Typography>
+
+                                    <Typography
+                                      component="span"
+                                      sx={{
+                                        fontWeight: 'bold', // 状態部分を太字に
                                         color:
                                           userPossibility?.possibility === 1
                                             ? 'green'
                                             : userPossibility?.possibility === 5
                                               ? 'gray'
-                                              : 'red',
+                                              : 'red', // 状態に応じた色付け
                                       }}
                                     >
-                                      <Typography
-                                        component="span"
-                                        onClick={async () => {
-                                          await selectRespondentUser(respondent.email);
-                                        }}
-                                        sx={{
-                                          cursor: 'pointer',
-                                          textDecoration: 'underline',
-                                        }}
-                                      >
-                                        {respondent.user_name}
-                                      </Typography>
                                       :{' '}
                                       {userPossibility?.possibility === 1
                                         ? '〇'

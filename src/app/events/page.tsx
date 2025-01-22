@@ -137,7 +137,8 @@ const EventsPage = () => {
       <Box
         sx={{
           display: 'flex',
-          justifyContent: 'left',
+          justifyContent: 'space-between',
+          alignItems: 'center',
           height: '80px',
           border: '1px solid #ccc',
           padding: '20px',
@@ -148,6 +149,37 @@ const EventsPage = () => {
         <Typography variant="h4" gutterBottom sx={typographyStyles.header}>
           イベント一覧
         </Typography>
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={goToNewEvent}
+          sx={{
+            backgroundColor: 'white', // 背景は白
+            color: 'primary.main',
+            border: '1px solid', // ボーダー幅は控えめ
+            borderColor: 'primary.main',
+            textTransform: 'none',
+            padding: { xs: '4px 12px', sm: '6px 16px' }, // 横幅を小さくするパディング
+            minWidth: 'auto', // 幅を固定せず、コンテンツに合わせる
+            height: 'auto', // 高さはパディングに基づく
+            fontSize: { xs: '0.8rem', sm: '0.9rem' },
+            boxShadow: 'none', // 影を削除してシンプルに
+            '&:hover': {
+              backgroundColor: 'primary.light', // ホバー時の背景色を淡く
+              color: 'white',
+              borderColor: 'primary.light',
+            },
+          }}
+        >
+          <Add
+            sx={{
+              display: { xs: 'none', sm: 'flex' }, // モバイルでは非表示
+              mr: 0.5, // アイコンとの間隔を調整
+              color: 'primary.main',
+            }}
+          />
+          新規イベント
+        </Button>
       </Box>
 
       <Box
@@ -267,40 +299,7 @@ const EventsPage = () => {
           mx: { xs: '5%', sm: '10%' }, // 小さい画面ではより狭く、大きい画面では広く
           mt: '2%', // マージン追加（必要に応じて調整）
         }}
-      >
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={goToNewEvent}
-          sx={{
-            backgroundColor: 'white',
-            color: 'primary.main',
-            border: '2px solid',
-            borderColor: 'primary.main',
-            textTransform: 'none',
-            padding: { xs: '10px', sm: '12px 24px' }, // 小さい画面でパディングを調整
-            width: { xs: '100%', sm: 'auto' }, // モバイルではボタン幅を100%に
-            fontSize: { xs: '0.875rem', sm: '1rem' }, // モバイル向けにフォントサイズを小さく
-            '&:hover': {
-              backgroundColor: 'primary.main',
-              color: 'white',
-              borderColor: 'primary.main',
-              '.MuiSvgIcon-root': {
-                color: 'white',
-              },
-            },
-          }}
-        >
-          <Add
-            sx={{
-              display: { xs: 'none', sm: 'flex' }, // モバイルではアイコンを非表示
-              mr: 1,
-              color: 'primary.main',
-            }}
-          />
-          新規イベント
-        </Button>
-      </Box>
+      ></Box>
     </>
   );
 };

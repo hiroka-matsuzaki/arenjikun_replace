@@ -804,13 +804,20 @@ const EventDetail: React.FC = () => {
                 borderRadius: 2,
                 boxShadow: 24,
                 zIndex: (theme) => theme.zIndex.modal,
-                width: '90%', // 画面が小さいときは90%に
+                width: '90%',
                 maxWidth: '800px', // 最大幅は800pxに制限
-                height: 'auto',
+                height: '90%',
                 overflowY: 'auto',
               }}
             >
-              <Typography variant="h5" gutterBottom sx={typographyStyles.subHeader}>
+              <Typography
+                variant="h4"
+                gutterBottom
+                sx={{
+                  ...typographyStyles.subHeader,
+                  m: 2,
+                }}
+              >
                 参加・不参加の入力
               </Typography>
               <Box
@@ -864,7 +871,7 @@ const EventDetail: React.FC = () => {
                       component={Paper}
                       sx={{ boxShadow: 2, padding: 1, overflowX: 'auto' }}
                     >
-                      <Table sx={{ minWidth: '600px' }}>
+                      <Table sx={{ minWidth: '100px' }}>
                         <TableHead>
                           <TableRow>
                             <TableCell sx={{ minWidth: 150 }}>イベント候補日</TableCell>
@@ -876,7 +883,7 @@ const EventDetail: React.FC = () => {
                           {eventDetail?.event_dates.map((event_date, index) => (
                             <TableRow key={event_date.id}>
                               <TableCell sx={{ padding: '10px' }}>
-                                {new Date(event_date.dated_on).toLocaleDateString()}
+                                {formattedDataAndTime(event_date)}
                               </TableCell>
                               <TableCell sx={{ padding: '10px' }}>
                                 <Controller

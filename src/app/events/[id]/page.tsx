@@ -993,7 +993,7 @@ const EventDetail: React.FC = () => {
                                   defaultValue={
                                     myPossibilities?.find(
                                       (item) => item.event_date_id === event_date.id
-                                    )?.comment
+                                    )?.comment || ''
                                   }
                                   render={({ field }) => (
                                     <TextField

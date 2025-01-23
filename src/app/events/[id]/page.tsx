@@ -905,9 +905,6 @@ const EventDetail: React.FC = () => {
                                           '&:not(:last-of-type)': {
                                             borderRight: 'none',
                                           },
-                                          '&.Mui-selected': {
-                                            color: '#fff',
-                                          },
                                         },
                                       }}
                                       aria-label="選択肢"
@@ -925,6 +922,11 @@ const EventDetail: React.FC = () => {
                                           },
                                           '&:hover': {
                                             backgroundColor: '#e8f5e9',
+                                          },
+                                          '&.Mui-selected:hover': {
+                                            backgroundColor: '#388e3c', // 選択中のホバー色
+                                            borderColor: '#388e3c', // 選択中のホバー色
+                                            color: '#fff',
                                           },
                                           fontSize: '20px',
                                         }}
@@ -945,6 +947,11 @@ const EventDetail: React.FC = () => {
                                           '&:hover': {
                                             backgroundColor: '#f5f5f5',
                                           },
+                                          '&.Mui-selected:hover': {
+                                            backgroundColor: '#757575', // 選択中のホバー色
+                                            borderColor: '#757575', // 選択中のホバー色
+                                            color: '#fff',
+                                          },
                                           fontSize: '20px',
                                         }}
                                       >
@@ -963,6 +970,11 @@ const EventDetail: React.FC = () => {
                                           },
                                           '&:hover': {
                                             backgroundColor: '#ffebee',
+                                          },
+                                          '&.Mui-selected:hover': {
+                                            backgroundColor: '#d32f2f', // 選択中のホバー色
+                                            borderColor: '#d32f2f', // 選択中のホバー色
+                                            color: '#fff',
                                           },
                                           fontSize: '20px',
                                         }}

@@ -54,6 +54,5 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'arenjikun-react-app'
-          slot-name: 'Production'
           package: .
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_57687D8B7CC643439228E17912C663AC }}

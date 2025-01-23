@@ -54,6 +54,5 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'smatsu-react'
-          slot-name: 'Production'
           package: .
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_772732F2CBF04819A77AADEAB7B97F38 }}

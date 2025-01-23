@@ -21,6 +21,8 @@ import {
   Table,
   Autocomplete,
   Chip,
+  TableContainer,
+  Paper,
 } from '@mui/material';
 import {
   CalendarMonthSharp,
@@ -378,7 +380,7 @@ const NewEventPage: React.FC = () => {
           height: '80px',
           border: '1px solid #ccc',
           padding: '20px',
-          mx: '10%',
+          mx: { xs: '2%', sm: '10%' },
           mt: '2%',
         }}
       >
@@ -407,7 +409,7 @@ const NewEventPage: React.FC = () => {
           justifyContent: 'left',
           border: '1px solid #ccc',
           padding: '20px',
-          mx: '10%',
+          mx: { xs: '2%', sm: '10%' },
           backgroundColor: 'white',
           gap: 4,
         }}
@@ -468,164 +470,178 @@ const NewEventPage: React.FC = () => {
               <Typography sx={{ fontSize: '1.2rem' }}>候補日時</Typography>
             </Box>
           </FormLabel>
-          <Table sx={{ border: '1px solid lightgray ' }}>
-            <TableHead>
-              <TableRow>
-                <TableCell align="center" colSpan={1}>
-                  <Box display="flex" alignItems="center" justifyContent="flex-start">
-                    <Event />
-                    <Typography sx={{ ml: 1 }}>日付</Typography>
-                  </Box>
-                </TableCell>
-                <TableCell align="center" colSpan={1}>
-                  <Box display="flex" alignItems="center" justifyContent="flex-start">
-                    <AccessTime />
-                    <Typography sx={{ ml: 1 }}>開始</Typography>
-                  </Box>
-                </TableCell>
-                <TableCell align="center" colSpan={1}>
-                  <Box display="flex" alignItems="center" justifyContent="flex-start">
-                    <AccessTime />
-                    <Typography sx={{ ml: 1 }}>日付</Typography>
-                  </Box>
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {dateOptions.map((row, index) => (
-                <TableRow key={row.id}>
-                  <TableCell>
-                    <Controller
-                      control={control}
-                      name={`dateOptions.${index}.date`}
-                      rules={{
-                        required: '日付は必須です',
-                        validate: (value) => {
-                          if (!value || !dayjs(value).isValid()) {
-                            return '有効な日付を入力してください';
-                          }
-                          if (dayjs(value).isBefore(dayjs(), 'day')) {
-                            return 'イベント候補日は過去日付を設定できません';
-                          }
-                          return true;
-                        },
-                      }}
-                      render={({ field: { value, onChange }, fieldState: { error } }) => (
-                        <>
-                          <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DatePicker
-                              value={value ? dayjs(value) : null}
-                              onChange={(newValue) =>
-                                onChange(newValue ? newValue.toISOString() : '')
-                              }
-                              format="YYYY/MM/DD"
-                            />
-                          </LocalizationProvider>
-                          {error && (
-                            <Typography variant="body2" color="error">
-                              {error.message}
-                            </Typography>
-                          )}
-                        </>
-                      )}
-                    />
+          <TableContainer
+            component={Paper}
+            sx={{
+              overflowX: 'auto', // 横スクロールを許可
+              maxWidth: '100%', // 親要素に収まるように
+              border: '1px solid lightgray', // 外枠
+            }}
+          >
+            <Table
+              sx={{
+                minWidth: 510, // 必要な最低幅を指定
+                tableLayout: 'auto', // セル幅の自動調整
+              }}
+            >
+              <TableHead>
+                <TableRow>
+                  <TableCell align="center" colSpan={1}>
+                    <Box display="flex" alignItems="center" justifyContent="flex-start">
+                      <Event />
+                      <Typography sx={{ ml: 1 }}>日付</Typography>
+                    </Box>
                   </TableCell>
-                  <TableCell>
-                    <Controller
-                      control={control}
-                      name={`dateOptions.${index}.start`}
-                      rules={{
-                        required: '開始時刻は必須です',
-                      }}
-                      render={({ field: { value, onChange }, fieldState: { error } }) => (
-                        <>
-                          <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <TimePicker
-                              value={value ? dayjs(value) : null}
-                              onChange={(newValue) =>
-                                onChange(newValue ? newValue.toISOString() : '')
-                              }
-                              ampm={false}
-                            />
-                          </LocalizationProvider>
-                          {error && (
-                            <Typography variant="body2" color="error">
-                              {error.message}
-                            </Typography>
-                          )}
-                        </>
-                      )}
-                    />
+                  <TableCell align="center" colSpan={1}>
+                    <Box display="flex" alignItems="center" justifyContent="flex-start">
+                      <AccessTime />
+                      <Typography sx={{ ml: 1 }}>開始</Typography>
+                    </Box>
                   </TableCell>
-
-                  <TableCell>
-                    <Controller
-                      control={control}
-                      name={`dateOptions.${index}.end`}
-                      rules={{
-                        required: '終了時刻は必須です',
-                        validate: (value) => {
-                          const startValue = watch(`dateOptions.${index}.start`);
-                          if (!value || !dayjs(value).isValid()) {
-                            return '有効な時刻を入力してください';
-                          }
-                          if (startValue && dayjs(value).isBefore(dayjs(startValue))) {
-                            return '終了時刻は開始時刻以降で設定してください';
-                          }
-                          return true;
-                        },
-                      }}
-                      render={({ field: { value, onChange }, fieldState: { error } }) => (
-                        <>
-                          <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <TimePicker
-                              value={value ? dayjs(value) : null}
-                              onChange={(newValue) =>
-                                onChange(newValue ? newValue.toISOString() : '')
-                              }
-                              ampm={false}
-                            />
-                          </LocalizationProvider>
-                          {error && (
-                            <Typography variant="body2" color="error">
-                              {error.message}
-                            </Typography>
-                          )}
-                        </>
-                      )}
-                    />
+                  <TableCell align="center" colSpan={1}>
+                    <Box display="flex" alignItems="center" justifyContent="flex-start">
+                      <AccessTime />
+                      <Typography sx={{ ml: 1 }}>終了</Typography>
+                    </Box>
                   </TableCell>
-
-                  <TableCell align="center">
-                    {index !== 0 && (
-                      <IconButton color="secondary" onClick={() => handleRowRemove(row.u)}>
-                        <RemoveCircleOutline
-                          sx={{
-                            color: '#F44336',
-                            fontSize: '2rem',
-                          }}
-                        />
-                      </IconButton>
-                    )}
+                  <TableCell align="center" colSpan={1}>
+                    操作
                   </TableCell>
                 </TableRow>
-              ))}
-
-              <TableRow>
-                <TableCell colSpan={3}></TableCell>
-                <TableCell align="center">
-                  <IconButton color="primary" onClick={handleRowAdd}>
-                    <AddCircleOutline
-                      sx={{
-                        color: '#4CAF50',
-                        fontSize: '2rem',
-                      }}
-                    />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+              </TableHead>
+              <TableBody>
+                {dateOptions.map((row, index) => (
+                  <TableRow key={row.id}>
+                    <TableCell>
+                      <Controller
+                        control={control}
+                        name={`dateOptions.${index}.date`}
+                        rules={{
+                          required: '日付は必須です',
+                          validate: (value) => {
+                            if (!value || !dayjs(value).isValid()) {
+                              return '有効な日付を入力してください';
+                            }
+                            if (dayjs(value).isBefore(dayjs(), 'day')) {
+                              return 'イベント候補日は過去日付を設定できません';
+                            }
+                            return true;
+                          },
+                        }}
+                        render={({ field: { value, onChange }, fieldState: { error } }) => (
+                          <>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                              <DatePicker
+                                value={value ? dayjs(value) : null}
+                                onChange={(newValue) =>
+                                  onChange(newValue ? newValue.toISOString() : '')
+                                }
+                                format="YYYY/MM/DD"
+                              />
+                            </LocalizationProvider>
+                            {error && (
+                              <Typography variant="body2" color="error">
+                                {error.message}
+                              </Typography>
+                            )}
+                          </>
+                        )}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Controller
+                        control={control}
+                        name={`dateOptions.${index}.start`}
+                        rules={{
+                          required: '開始時刻は必須です',
+                        }}
+                        render={({ field: { value, onChange }, fieldState: { error } }) => (
+                          <>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                              <TimePicker
+                                value={value ? dayjs(value) : null}
+                                onChange={(newValue) =>
+                                  onChange(newValue ? newValue.toISOString() : '')
+                                }
+                                ampm={false}
+                              />
+                            </LocalizationProvider>
+                            {error && (
+                              <Typography variant="body2" color="error">
+                                {error.message}
+                              </Typography>
+                            )}
+                          </>
+                        )}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Controller
+                        control={control}
+                        name={`dateOptions.${index}.end`}
+                        rules={{
+                          required: '終了時刻は必須です',
+                          validate: (value) => {
+                            const startValue = watch(`dateOptions.${index}.start`);
+                            if (!value || !dayjs(value).isValid()) {
+                              return '有効な時刻を入力してください';
+                            }
+                            if (startValue && dayjs(value).isBefore(dayjs(startValue))) {
+                              return '終了時刻は開始時刻以降で設定してください';
+                            }
+                            return true;
+                          },
+                        }}
+                        render={({ field: { value, onChange }, fieldState: { error } }) => (
+                          <>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                              <TimePicker
+                                value={value ? dayjs(value) : null}
+                                onChange={(newValue) =>
+                                  onChange(newValue ? newValue.toISOString() : '')
+                                }
+                                ampm={false}
+                              />
+                            </LocalizationProvider>
+                            {error && (
+                              <Typography variant="body2" color="error">
+                                {error.message}
+                              </Typography>
+                            )}
+                          </>
+                        )}
+                      />
+                    </TableCell>
+                    <TableCell align="center">
+                      {index !== 0 && (
+                        <IconButton color="secondary" onClick={() => handleRowRemove(row.u)}>
+                          <RemoveCircleOutline
+                            sx={{
+                              color: '#F44336',
+                              fontSize: '2rem',
+                            }}
+                          />
+                        </IconButton>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+                <TableRow>
+                  <TableCell colSpan={3}></TableCell>
+                  <TableCell align="center">
+                    <IconButton color="primary" onClick={handleRowAdd}>
+                      <AddCircleOutline
+                        sx={{
+                          color: '#4CAF50',
+                          fontSize: '2rem',
+                        }}
+                      />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
         </FormControl>
         <Box sx={{ display: 'flex' }} gap={1}>
           <Event />

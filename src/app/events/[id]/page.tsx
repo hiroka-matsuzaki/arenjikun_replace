@@ -239,7 +239,7 @@ const EventDetail: React.FC = () => {
       await navigator.share({
         title: 'Reactアプリをシェア',
         text: 'このアプリをチェックしてください！',
-        url: window.location.href, // 現在のページのURL
+        url: `${window.location.origin}${window.location.pathname}`, // 現在のページのURL
       });
       console.log('コンテンツの共有に成功しました！');
     } catch (error) {

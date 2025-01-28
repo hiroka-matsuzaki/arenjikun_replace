@@ -23,6 +23,7 @@ export default function RootLayout({
   );
 }
 const MainContent: React.FC<{ children: ReactNode }> = ({ children }) => {
+  console.log('ver:1.0.0');
   const [isLoading, setIsLoading] = useState(true);
   const { setUser } = useUser();
   const fetchUser = async (loginEmail: string): Promise<User> => {
